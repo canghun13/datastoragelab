@@ -54,10 +54,8 @@ Do not rely on a machine-specific folder, an uncommitted local copy, browser cac
 
 ### Waiting / External propagation
 
-- HTTPS certificate availability or enforcement may still be propagating.
-- Do not repeatedly change DNS, GitHub Pages custom-domain settings, or Cloudflare proxy mode merely because HTTPS is not immediately available.
-- Verify the current certificate and GitHub Pages status before changing infrastructure.
-- Enable or enforce HTTPS only after GitHub Pages reports that the certificate is available.
+- HTTPS is currently available on the apex canonical URL and served the latest Phase 1 home page and planner after the Phase 1 push.
+- Do not repeatedly change DNS, GitHub Pages custom-domain settings, Cloudflare proxy mode, or HTTPS enforcement after this verification.
 - Keep the initial GitHub Pages DNS records in DNS-only mode unless a later documented decision changes this.
 
 ### Not started
@@ -398,7 +396,7 @@ Add new entries at the top.
 - Automated checks: `node tools/qa.mjs` passed. It verifies exactly seven public pages, links, duplicate IDs, unique titles/descriptions/canonicals, apex canonical URLs, GA4 once per page, JSON-LD parsing, sitemap/robots/CNAME, placeholders, encoding, JavaScript syntax, and calculator cases.
 - Calculator cases: passed normal household, creator, limited budget, slow upload, and valid/invalid boundary cases.
 - Browser QA: passed at 1440, 1280, 1024, 768, and 390 px across all seven pages (35 page/width checks): no horizontal overflow; title, H1, header navigation, and footer present. The planner produced a recommendation, showed field-level invalid-input feedback, copied results, and reset. The mobile menu opened and closed with Escape. Print controls and print CSS are present.
-- Production verification: pending commit/push and GitHub Pages deployment propagation check.
+- Production verification: after push, `https://datastoragelab.com/` served “Plan Home Storage and Backup — Data Storage Lab”; `https://datastoragelab.com/tools/storage-needs/home-storage-backup-planner/` served the published planner title and form. HTTPS was available. No DNS, Pages, proxy, HTTPS, GA4-property, or Search Console setting was changed.
 
 **Git**
 
@@ -604,7 +602,7 @@ Do not include environment-location wording or assume where the work is being pe
 
 ## Immediate State
 
-Phase 1 is implemented locally and ready for commit, push, and GitHub Pages deployment verification. The seven public Phase 1 URLs are fixed; Phase 2 is the next implementation scope after this task is synchronized.
+Phase 1 is committed, pushed, synchronized, and verified on GitHub Pages over HTTPS. The seven public Phase 1 URLs are fixed; Phase 2 is the next implementation scope.
 
 The fixed repository URL is `https://github.com/canghun13/datastoragelab`.
 
