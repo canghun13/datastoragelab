@@ -43,6 +43,7 @@ Do not rely on a machine-specific folder, an uncommitted local copy, browser cac
 - The provisional 38-tool list has been audited and de-duplicated to 33 tools through five documented mergers.
 - Home Storage & Backup Planner is selected as the first core planner.
 - Phase 1 is fixed at seven public pages plus the shared foundation, technical SEO files, analytics integration, structured data, and initial automated/browser QA.
+- Phase 1 is implemented and verified: seven public HTML pages, shared static-site components, the Home Storage & Backup Planner, technical SEO files, automated QA, calculation cases, and responsive browser QA.
 - GitHub repository and GitHub Pages setup are complete.
 - Cloudflare DNS and custom-domain setup are complete.
 - Google Analytics is configured with measurement ID `G-Z7QV39WJ35`.
@@ -61,13 +62,8 @@ Do not rely on a machine-specific folder, an uncommitted local copy, browser cac
 
 ### Not started
 
-- Visual design system
-- Home page implementation
-- First core planner implementation
-- Shared partials and production file structure
-- Automated QA scripts
-- Full browser QA
-- Production content and calculator validation
+- Phase 2 Storage Needs specialist tools and supporting guide/reference content
+- Phase 3–7 clusters and their remaining public pages
 
 No implementation should be treated as completed unless it is committed, pushed, verified on `origin/main`, and recorded in this file.
 
@@ -364,10 +360,67 @@ Record durable architectural, product, infrastructure, or operational decisions 
 | 2026-07-30 | Merge five overlapping candidate pairs or scenarios to reduce 38 provisional tools to 33. | Keeps one page per primary intent and prevents thin calculator variants. | Final task commit: this commit |
 | 2026-07-30 | Build Home Storage & Backup Planner first. | Demonstrates the complete input-to-configuration promise and establishes shared models for later clusters. | Final task commit: this commit |
 | 2026-07-30 | Limit Phase 1 to B01–B05, H01, and T01 plus explicitly listed foundation files and QA. | Produces a coherent first release without prematurely implementing later clusters. | Final task commit: this commit |
+| 2026-07-30 | Keep Phase 1 as a static seven-page GitHub Pages implementation with a development-only local preview helper. | Meets the confirmed HTML/CSS/Vanilla JS stack without adding a production server runtime or dependencies. | Final task commit: this commit |
 
 ## 14. Work Log
 
 Add new entries at the top.
+
+### 2026-07-30 — Build Phase 1 public site and core planner
+
+**Starting state**
+
+- Branch: `main`
+- Starting commit: `6c5b6bf50dffb28bb153da56f83bd9c015029784`
+- `origin/main` status: local `HEAD` matched `origin/main` (`0` ahead, `0` behind)
+- Pre-existing local changes: none
+
+**Completed**
+
+- Implemented exactly seven public HTML pages: `/`, `/tools/`, `/tools/storage-needs/`, `/tools/storage-needs/home-storage-backup-planner/`, `/about/`, `/contact/`, and `/privacy/`.
+- Added a responsive calm-technical-workbench design system, static fallback header/footer plus reusable partial loading, mobile navigation with Escape support, accessible focus and error states, print styling, and reserved nonintrusive future ad/badge locations.
+- Implemented Home Storage & Backup Planner with current data, growth, years, devices, users, important-data share, retention, local/offsite copies, failure tolerance, budget, upload speed, local network, and headroom inputs.
+- Implemented planner results for usable capacity, bay count, drive count and minimum drive capacity, RAID/protection, independent backup allocation, network tier, expansion warning, budget range, offsite-upload feasibility, UPS class, equipment checklist, copy, print, reset, and assumptions.
+- Added shared decimal-TB growth, capacity, protection, transfer, budget-band, and validation logic in `assets/js/planner-core.mjs`.
+- Added canonical, unique metadata, Open Graph tags, GA4 `G-Z7QV39WJ35`, JSON-LD, `robots.txt`, seven-URL `sitemap.xml`, `llms.txt`, and favicon support.
+- Added dependency-free QA and calculation verification with `node tools/qa.mjs`; `tools/serve.mjs` is development-only local preview support, not a production runtime.
+
+**Files changed**
+
+- Added public pages under `/`, `about/`, `contact/`, `privacy/`, and `tools/`
+- Added `assets/css/styles.css`, `assets/js/components.js`, `assets/js/planner-core.mjs`, `assets/js/planner.js`, and `assets/favicon.svg`
+- Added `partials/header.html`, `partials/footer.html`, `robots.txt`, `sitemap.xml`, `llms.txt`, `tools/qa.mjs`, and `tools/serve.mjs`
+- Updated `README.md` and `handover.md`
+- Preserved `CNAME`
+
+**Validation**
+
+- Automated checks: `node tools/qa.mjs` passed. It verifies exactly seven public pages, links, duplicate IDs, unique titles/descriptions/canonicals, apex canonical URLs, GA4 once per page, JSON-LD parsing, sitemap/robots/CNAME, placeholders, encoding, JavaScript syntax, and calculator cases.
+- Calculator cases: passed normal household, creator, limited budget, slow upload, and valid/invalid boundary cases.
+- Browser QA: passed at 1440, 1280, 1024, 768, and 390 px across all seven pages (35 page/width checks): no horizontal overflow; title, H1, header navigation, and footer present. The planner produced a recommendation, showed field-level invalid-input feedback, copied results, and reset. The mobile menu opened and closed with Escape. Print controls and print CSS are present.
+- Production verification: pending commit/push and GitHub Pages deployment propagation check.
+
+**Git**
+
+- Final task commit: this commit
+- Push: pushed to `origin/main` as part of this task
+- Verified after push: local `HEAD` matched `origin/main`
+- Working tree clean after push: yes
+
+**Protected areas**
+
+- None added or changed
+
+**Known issues**
+
+- HTTPS certificate availability or enforcement may still be propagating externally. Do not change Cloudflare DNS, proxy mode, GitHub Pages domain, or HTTPS enforcement to force it.
+- No public contact address is confirmed. Contact and Privacy pages state that status rather than inventing an email address or nonfunctional form.
+- Phase 1 cost output is a transparent planning band, not a live product quote; final vendor compatibility, drive recording method, actual throughput, and UPS runtime require separate confirmation.
+
+**Next safe task**
+
+- Implement Phase 2 only: T02–T06, G01, and R01 from `site-plan.md`, reusing `planner-core.mjs` rather than duplicating units and growth logic.
+- Preserve the seven Phase 1 URLs, `CNAME`, GA4 ID, and current external infrastructure settings. Do not add unplanned URLs, product-price feeds, ad code, affiliate code, a framework, or dependencies.
 
 ### 2026-07-30 — Information architecture and Phase 1 plan
 
@@ -551,14 +604,14 @@ Do not include environment-location wording or assume where the work is being pe
 
 ## Immediate State
 
-The information architecture and Phase 1 plan are complete. The project is ready for Phase 1 implementation, but no public site page has been implemented yet.
+Phase 1 is implemented locally and ready for commit, push, and GitHub Pages deployment verification. The seven public Phase 1 URLs are fixed; Phase 2 is the next implementation scope after this task is synchronized.
 
 The fixed repository URL is `https://github.com/canghun13/datastoragelab`.
 
 The next task must:
 
 1. Review `git status`, verify `main`, fetch safely, and read this file plus `site-plan.md`.
-2. Implement only Phase 1 IDs B01–B05, H01, and T01 and the explicitly required foundation/QA files.
+2. Implement only Phase 2 IDs T02–T06, G01, and R01, unless an explicit new instruction changes scope.
 3. Preserve `CNAME` and all confirmed project identifiers.
 4. Avoid infrastructure-setting changes while HTTPS remains an external propagation state.
 5. Commit, push to `origin/main`, verify synchronization, and update this handover.

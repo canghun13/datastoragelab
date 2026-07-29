@@ -1,0 +1,13 @@
+# Data Storage Lab
+
+Canonical URL: https://datastoragelab.com/
+
+Data Storage Lab provides vendor-neutral planning tools for home and small-team data storage, backups, network performance, cost, and power decisions. The current public tool is the Home Storage & Backup Planner, which connects data growth, usable capacity, drive and bay sizing, array protection, independent backup copies, network tier, expansion headroom, and a planning-level budget range.
+
+Current public areas:
+- Home: https://datastoragelab.com/
+- Tools: https://datastoragelab.com/tools/
+- Storage needs: https://datastoragelab.com/tools/storage-needs/
+- Home Storage & Backup Planner: https://datastoragelab.com/tools/storage-needs/home-storage-backup-planner/
+
+Recommendations are specifications-first and do not begin with specific brands or products. RAID or other array protection is not treated as a substitute for independent backup.
