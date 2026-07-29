@@ -38,6 +38,11 @@ Do not rely on a machine-specific folder, an uncommitted local copy, browser cac
 ### Completed
 
 - Project name, domain, topic, market, monetization direction, and technical stack are confirmed.
+- The complete launch information architecture and phased development plan are fixed in `site-plan.md`.
+- The launch inventory is fixed at 63 public pages: 5 foundational pages, 8 hubs, 33 tools/planners, 10 guides, 4 references, and 3 comparison/buying pages.
+- The provisional 38-tool list has been audited and de-duplicated to 33 tools through five documented mergers.
+- Home Storage & Backup Planner is selected as the first core planner.
+- Phase 1 is fixed at seven public pages plus the shared foundation, technical SEO files, analytics integration, structured data, and initial automated/browser QA.
 - GitHub repository and GitHub Pages setup are complete.
 - Cloudflare DNS and custom-domain setup are complete.
 - Google Analytics is configured with measurement ID `G-Z7QV39WJ35`.
@@ -56,9 +61,6 @@ Do not rely on a machine-specific folder, an uncommitted local copy, browser cac
 
 ### Not started
 
-- Final information architecture
-- Final selection and de-duplication of the initial 30–35 tools
-- Guide, reference, and buying-guide page map
 - Visual design system
 - Home page implementation
 - First core planner implementation
@@ -358,10 +360,85 @@ Record durable architectural, product, infrastructure, or operational decisions 
 | 2026-07-30 | Use GA4 ID `G-Z7QV39WJ35`. | Confirmed analytics property. | Initial handover |
 | 2026-07-30 | Wait for HTTPS certificate propagation before changing working DNS settings. | Avoid infrastructure churn during normal certificate issuance. | Initial handover |
 | 2026-07-30 | Do not begin page implementation until the information architecture and first development plan are approved. | Prevent duplicate, thin, or poorly sequenced pages. | Initial handover |
+| 2026-07-30 | Fix the launch inventory at 63 public pages: 5 foundational, 8 hubs, 33 tools, 10 guides, 4 references, and 3 comparisons. | Gives section indexes real URLs, stays within the 55–65 target, and avoids artificial article counts. | Final task commit: this commit |
+| 2026-07-30 | Merge five overlapping candidate pairs or scenarios to reduce 38 provisional tools to 33. | Keeps one page per primary intent and prevents thin calculator variants. | Final task commit: this commit |
+| 2026-07-30 | Build Home Storage & Backup Planner first. | Demonstrates the complete input-to-configuration promise and establishes shared models for later clusters. | Final task commit: this commit |
+| 2026-07-30 | Limit Phase 1 to B01–B05, H01, and T01 plus explicitly listed foundation files and QA. | Produces a coherent first release without prematurely implementing later clusters. | Final task commit: this commit |
 
 ## 14. Work Log
 
 Add new entries at the top.
+
+### 2026-07-30 — Information architecture and Phase 1 plan
+
+**Starting state**
+
+- Branch: `main`
+- Starting commit: `ecfe342cd8e66aed00e8b6eba161275060a4c6d4`
+- `origin/main` status: local `HEAD` matched `origin/main` (`0` ahead, `0` behind)
+- Pre-existing local changes: none
+- Environment recovery: the workspace initially contained an empty unborn `master`; configured the required `origin`, fetched, and created local `main` tracking the untouched remote branch before editing
+
+**Completed**
+
+- Defined the product strategy, audience, durable search intents, monetization fit, and specification-first recommendation principle.
+- Fixed the exact 63-page launch inventory: 5 foundational pages, 8 hubs, 33 tools/planners, 10 guides, 4 references, and 3 comparison/buying pages.
+- Assigned every public page a unique ID, cluster, type, title, final URL, intent, inputs, outputs, action, monetization fit, phase, dependencies, and implementation notes.
+- Audited all 38 provisional tools and documented the five mergers that yield 33 non-duplicative final tools.
+- Defined shared unit, growth, RAID, retention, snapshot, backup, transfer, electricity, replacement, lifecycle-cost, and UPS models.
+- Selected Home Storage & Backup Planner as the first core planner.
+- Fixed Phase 1 at seven public pages: Home, Tools directory, About, Contact, Privacy, Storage Needs hub, and Home Storage & Backup Planner.
+- Defined seven implementation phases, visual direction, SEO/internal-linking rules, content-depth requirements, and planning QA gates.
+
+**Files changed**
+
+- Added `site-plan.md`
+- Updated `handover.md`
+- Updated `README.md` with the minimum project description and planning status
+
+**Confirmed totals**
+
+- Public pages: 63
+- Tool / Planner: 33
+- Guide: 10
+- Reference: 4
+- Comparison / Buying: 3
+- Foundational pages and hubs: 5 + 8
+
+**Not implemented**
+
+- No public HTML page, CSS, JavaScript calculator, header/footer partial, image, favicon, sitemap, robots file, package/build configuration, external library, GitHub Action, ad code, or affiliate code was created or changed.
+- No Cloudflare DNS, GitHub Pages custom-domain, proxy, HTTPS enforcement, GA4 property, or Search Console setting was changed.
+
+**Validation**
+
+- Automated checks: inventory totals, phase totals, unique IDs, unique URLs, exact duplicate primary intents, required tool fields, content-to-tool dependencies, required project identifiers, UTF-8 replacement characters, and `git diff --check`
+- Calculator cases: not applicable; planning task only
+- Browser widths/pages: not applicable; no public page implementation
+- Production verification: not applicable; documentation does not alter the deployed site
+
+**Git**
+
+- Final task commit: this commit
+- Push: pushed to `origin/main` as part of this task
+- Verified after push: local `HEAD` matched `origin/main`
+- Working tree clean after push: yes
+
+**Protected areas**
+
+- None added or changed
+
+**Known issues**
+
+- HTTPS certificate availability or enforcement may still be propagating; this remains an external infrastructure wait state, not a repository code issue.
+- The project contact method is still unconfirmed and must be resolved before publishing the Contact and Privacy pages.
+- Calculator presets, validation thresholds, and final visual tokens require implementation-stage review and test cases.
+
+**Next safe task**
+
+- Implement Phase 1 exactly as specified in `site-plan.md`: B01–B05, H01, and T01; the static production structure and original design system; shared header/footer; the minimum shared models used by T01; GA4/canonical/JSON-LD; `robots.txt`, `sitemap.xml`, `llms.txt`, and favicon; automated QA; and browser QA at 1440, 1280, 1024, 768, and 390 px.
+- Preserve `CNAME`, use GA4 ID `G-Z7QV39WJ35`, and do not alter Cloudflare, Pages, proxy, HTTPS, Analytics-property, or Search Console settings.
+- Do not implement Phase 2–7 pages, ads, affiliate code, a framework, build system, external library, or product-price feed in the next task.
 
 ### 2026-07-30 — Initial operational handover
 
@@ -474,15 +551,14 @@ Do not include environment-location wording or assume where the work is being pe
 
 ## Immediate State
 
-The project is ready for its first repository documentation commit, but not yet for page implementation.
+The information architecture and Phase 1 plan are complete. The project is ready for Phase 1 implementation, but no public site page has been implemented yet.
 
 The fixed repository URL is `https://github.com/canghun13/datastoragelab`.
 
-After this file is placed in the repository root:
+The next task must:
 
-1. Review `git status`.
-2. Verify that `origin` is exactly `https://github.com/canghun13/datastoragelab` and the branch is `main`.
-3. Commit only the intended initial files.
-4. Push to `origin/main`.
-5. Confirm local `HEAD` equals `origin/main`.
-6. Replace the “Current commit” placeholder in the next handover update.
+1. Review `git status`, verify `main`, fetch safely, and read this file plus `site-plan.md`.
+2. Implement only Phase 1 IDs B01–B05, H01, and T01 and the explicitly required foundation/QA files.
+3. Preserve `CNAME` and all confirmed project identifiers.
+4. Avoid infrastructure-setting changes while HTTPS remains an external propagation state.
+5. Commit, push to `origin/main`, verify synchronization, and update this handover.
