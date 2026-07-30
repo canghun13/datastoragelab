@@ -2,12 +2,19 @@
 
 Canonical URL: https://datastoragelab.com/
 
-Data Storage Lab provides vendor-neutral planning tools for home and small-team data storage, backups, network performance, cost, and power decisions. The current public tool is the Home Storage & Backup Planner, which connects data growth, usable capacity, drive and bay sizing, array protection, independent backup copies, network tier, expansion headroom, and a planning-level budget range.
+Data Storage Lab provides vendor-neutral planning tools for home and small-team data storage. Tools distinguish decimal-TB primary capacity, protection, independent backups, growth, and expansion headroom. They do not recommend specific products or treat RAID as a backup.
 
 Current public areas:
 - Home: https://datastoragelab.com/
 - Tools: https://datastoragelab.com/tools/
-- Storage needs: https://datastoragelab.com/tools/storage-needs/
+- Storage needs hub: https://datastoragelab.com/tools/storage-needs/
 - Home Storage & Backup Planner: https://datastoragelab.com/tools/storage-needs/home-storage-backup-planner/
+- Annual Storage Growth Calculator: https://datastoragelab.com/tools/storage-needs/annual-storage-growth-calculator/
+- Creator Media Storage Planner: https://datastoragelab.com/tools/storage-needs/creator-media-storage-planner/
+- Computer Backup Storage Planner: https://datastoragelab.com/tools/storage-needs/computer-backup-storage-planner/
+- Small Office Storage Planner: https://datastoragelab.com/tools/storage-needs/small-office-storage-planner/
+- Media Library Storage Planner: https://datastoragelab.com/tools/storage-needs/media-library-storage-planner/
+- Guide: https://datastoragelab.com/guides/how-much-nas-storage-do-i-need/
+- Reference: https://datastoragelab.com/reference/tb-vs-tib/
 
-Recommendations are specifications-first and do not begin with specific brands or products. RAID or other array protection is not treated as a substitute for independent backup.
+Contact: mailto:canghun13@naver.com

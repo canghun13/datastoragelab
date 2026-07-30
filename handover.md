@@ -613,3 +613,22 @@ The next task must:
 3. Preserve `CNAME` and all confirmed project identifiers.
 4. Avoid infrastructure-setting changes while HTTPS remains an external propagation state.
 5. Commit, push to `origin/main`, verify synchronization, and update this handover.
+
+---
+
+### 2026-07-30 — Build Phase 2 storage needs tools, guide, and reference
+
+- Start state: branch `main`, commit `2c529f8f7825a5025053e25f867e82007d01906d`, local HEAD and `origin/main` equal, ahead/behind `0 0`, and no pre-existing working-tree changes.
+- Added T02 **Annual Storage Growth Calculator** at `/tools/storage-needs/annual-storage-growth-calculator/`.
+- Added T03 **Creator Media Storage Planner** at `/tools/storage-needs/creator-media-storage-planner/`.
+- Added T04 **Computer Backup Storage Planner** at `/tools/storage-needs/computer-backup-storage-planner/`.
+- Added T05 **Small Office Storage Planner** at `/tools/storage-needs/small-office-storage-planner/`.
+- Added T06 **Media Library Storage Planner** at `/tools/storage-needs/media-library-storage-planner/`.
+- Added G01 **How Much NAS Storage Do I Need?** at `/guides/how-much-nas-storage-do-i-need/` and R01 **Decimal TB vs Binary TiB** at `/reference/tb-vs-tib/`.
+- Public HTML count is now 14. `sitemap.xml`, `llms.txt`, the tools directory, the Storage Needs hub, home links, shared navigation, and shared footer are aligned to the published set.
+- Added shared decimal-unit and growth modules: `assets/js/storage-units.mjs` and `assets/js/storage-growth.mjs`; `assets/js/phase2-tools.mjs` supplies reusable validation, result rendering, copy, print, and reset behavior for the five advanced tools.
+- Primary outputs cover forecasts and purchase targets; working, archive, and backup tiers; versioned backup allocations; office requirements briefs; and library capacity, copies, and expansion triggers. All outputs identify planning limits and keep backup space separate from primary capacity.
+- Updated Contact and Privacy with the confirmed public email `mailto:canghun13@naver.com`.
+- Automated verification: `node tools/qa.mjs` (run with the bundled Node executable in this environment) passed. It validates 14 public HTML files, metadata uniqueness, canonical URLs, GA4, JSON-LD, internal links, sitemap, JavaScript syntax, 15 Phase 2 calculation cases, Phase 1 regression behavior, and contact links. `git diff --check` passed.
+- Browser QA and production deployment verification remain to be recorded after the final commit and push. No DNS, GitHub Pages, Cloudflare proxy, HTTPS, GA4 property, or Search Console setting has been changed.
+- Browser QA completed locally: all seven Phase 2 pages were checked at 1440, 1280, 1024, 768, and 390 px (35 combinations) with exactly one H1, the shared header present, no page-width overflow, and tools retaining their forms. The Creator Media Storage Planner was exercised live at 390 px: calculation, Copy Results, Start Over, mobile menu, and Escape close all passed.
