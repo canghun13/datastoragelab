@@ -703,5 +703,6 @@ The next task must:
 - Automated QA: all 63 public pages passed metadata, canonical, sitemap, internal-link, GA4, JSON-LD, JavaScript, badge, and contact checks; all 96 calculation cases passed. `git diff --check` passed.
 - Local browser QA: all 63 pages passed at 1440, 1280, 1024, 768, 600, and 390 px (378 combinations) with exactly one H1, shared header/footer, semantic breadcrumbs on non-home pages, and no horizontal overflow.
 - Manual interaction QA: the UPS tool passed calculation, Copy Results, Reset, mobile-menu, and Escape checks at 390 px; the desktop Tools panel passed click-open, Escape-close, and outside-click-close checks at 1280 px. Browser console errors were empty.
+- Added a shared `?v=20260730` version marker to the CSS and component-script URLs on all 63 pages after production verification reproduced a stale cached `components.js`; this ensures existing visitors receive the new design and runtime breadcrumb behavior. QA resolves query-bearing local asset paths explicitly.
 - No DNS, GitHub Pages, proxy, HTTPS, GA4 property, or Search Console configuration was changed.
 - Production deployment verification and final commit/push synchronization are recorded below after publication.
