@@ -685,3 +685,23 @@ The next task must:
 - Deployment verification details follow after publication. No DNS, Pages, proxy, HTTPS, GA4, or Search Console setting was changed.
 - Deployment verification: after normal GitHub Pages propagation, HTTPS served Home, H04, T21–T26, R03, C03, Contact, and Privacy. Each had one H1, its expected apex canonical URL, and a loaded stylesheet. T21 calculated live to **Initial upload: 18.5 days** with browser console errors empty. Contact and Privacy retained `mailto:canghun13@naver.com`.
 - Phase 5 implementation commit: `bb93bd41d4134227c026eb35ea833919838f50ad` (`Build Data Storage Lab Phase 5`), pushed to `origin/main` with local and remote heads equal and ahead/behind `0 0` before this deployment-record update.
+
+---
+
+### 2026-07-30 — Complete the 63-page launch inventory and visual system
+
+- Starting state: `main` at `90d164d02bb3002639e8e786d4c29da743bae309`, local and `origin/main` synchronized (`0 0`), with no pre-existing working-tree changes.
+- Completed the exact remaining scope from `site-plan.md`: H05–H08, T27–T33, G04, and R04. No unplanned public page was added.
+- Added the Cost and Power hub and seven calculators covering five-year NAS/cloud cost, DAS/NAS cost, usable-TB drive cost, electricity, replacement reserves, UPS sizing/runtime, and full-system budgets.
+- Added the Guides, Reference, and Comparisons indexes, the UPS sizing guide, and the UPS watts/VA/runtime reference.
+- Public inventory is now exactly 63 HTML pages: 33 tools, 10 guides, 4 references, 3 comparisons, 8 hubs, and 5 foundational pages.
+- Rebuilt the shared visual system across the site: compact workflow-oriented hero treatment, storage-meter brand motif, restrained technical grid, decision-lane hubs, consistent two-zone tool workbenches, semantic runtime breadcrumbs, compact four-column footer, and a reduced top-level navigation.
+- Shared navigation now exposes Home, Tools, Learn, About, and Home Planner. Tools and Learn use accessible desktop panels; mobile navigation, keyboard Escape handling, and outside-click dismissal were verified.
+- Removed the obsolete badge/directory placeholder from the shared footer and the remaining Phase 1 fallback. No badge is displayed because no user-managed badge was supplied.
+- Added bounded validation and explicit limitations to the cost/power model. UPS results remain estimates and require manufacturer load/runtime-curve confirmation.
+- Updated Home, the Tools directory, sitemap, `llms.txt`, README, and automated QA for the completed launch inventory. Contact remains `canghun13@naver.com`; GA4 remains `G-Z7QV39WJ35`.
+- Automated QA: all 63 public pages passed metadata, canonical, sitemap, internal-link, GA4, JSON-LD, JavaScript, badge, and contact checks; all 96 calculation cases passed. `git diff --check` passed.
+- Local browser QA: all 63 pages passed at 1440, 1280, 1024, 768, 600, and 390 px (378 combinations) with exactly one H1, shared header/footer, semantic breadcrumbs on non-home pages, and no horizontal overflow.
+- Manual interaction QA: the UPS tool passed calculation, Copy Results, Reset, mobile-menu, and Escape checks at 390 px; the desktop Tools panel passed click-open, Escape-close, and outside-click-close checks at 1280 px. Browser console errors were empty.
+- No DNS, GitHub Pages, proxy, HTTPS, GA4 property, or Search Console configuration was changed.
+- Production deployment verification and final commit/push synchronization are recorded below after publication.
