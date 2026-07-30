@@ -725,3 +725,21 @@ The next task must:
 - Implementation commit: `93521af` (`Fix home decision step alignment`). Cache-version commit: `313d13a` (`Version Home alignment stylesheet`), changing only the CSS query marker from `20260730` to `20260730-2` on all 63 pages after production reproduced the old cached stylesheet.
 - Production verification: `https://datastoragelab.com/` serves HTTPS with `styles.css?v=20260730-2`. At 1440px and 390px, all three markers were 33.59px, `display:flex`, horizontally/vertically centered with a 16px line height; rows 2 and 3 had a 1px divider beginning to the right of the marker, and there was no horizontal overflow. Browser console errors were empty.
 - Final push and local/remote synchronization are recorded in the following deployment-record commit.
+
+---
+
+### 2026-07-30 — Complete site-wide favicon and decision-content audit
+
+- Starting state: `main` at `4bbfd5a3339decb802ac898003735ceecc147e4b`, with local and `origin/main` synchronized (`0 0`) and a clean worktree.
+- Reused the existing valid `assets/favicon.svg`. All 63 public HTML pages now declare exactly one root-absolute SVG favicon with `href="/assets/favicon.svg"` and `type="image/svg+xml"`. No replacement artwork or infrastructure setting was introduced.
+- Audited all 33 tool pages against their implemented calculation functions and default inputs. Each tool now has unique, decision-specific sections for purpose, preparation, method, interpretation, a worked example, assumptions and limitations, and related next steps.
+- Tool explanatory guidance has a 701-word minimum and a 758.1-word average. Exact duplicate paragraphs and repeated exact 12-word sequences across tool guidance are rejected by automated QA.
+- Expanded the eight required hubs—five planning clusters plus Guides, Reference, and Comparisons—with start-point selection, recommended workflow, evidence to prepare, tool differentiators, and next-cluster guidance.
+- Audited the ten guides, four references, three comparisons, and five foundational pages for thin text, placeholders, empty blocks, metadata, and internal-link integrity. Existing substantial editorial pages were preserved because they passed the defined quality checks.
+- Added `tools/content-qa.mjs` to enforce the 63-page inventory, group counts, favicon consistency and SVG validity, tool and hub content contracts, minimum and average word counts, internal next-step links, placeholder detection, empty-block checks, duplicate paragraphs, and repeated 12-word sequences.
+- Automated QA passed: `node tools/content-qa.mjs`, `node tools/qa.mjs`, JavaScript syntax, metadata, canonical, sitemap, GA4, JSON-LD, internal links, contact address, and all 96 calculation cases.
+- Local browser QA passed all 63 sitemap URLs at 1440, 1280, 1024, 900, 768, and 390 px: 378 combinations with one H1, shared header/footer, exact favicon declaration, required tool/hub content, and no horizontal overflow.
+- All 33 tools passed live default-input calculation and Start Over checks; all exposed Copy, Print, and Reset controls. Copy Results was exercised successfully across six representative tool families. Desktop dropdown, mobile menu, and Escape-close behavior passed.
+- The favicon asset loaded in-browser as a standalone SVG with `viewBox="0 0 64 64"`. A fresh representative calculator interaction produced no console warnings or errors.
+- The first logical commit is `3264eb1` (`Fix favicon across Data Storage Lab`). Content, final deployment verification, and synchronization details follow in subsequent commits.
+- No DNS, GitHub Pages, Cloudflare proxy, HTTPS, GA4 property, Search Console, or contact-address setting was changed. Contact remains `canghun13@naver.com`.
