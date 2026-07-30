@@ -69,11 +69,12 @@ h3 { margin: 0 0 .35rem; font-size: 1.12rem; }
 .signal-card, .card, .result-card, .info-panel, .form-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); }
 .signal-card { padding: 1.25rem; }
 .signal-card h2 { font-size: 1rem; letter-spacing: 0; }
-.signal-row { display: flex; align-items: center; gap: .7rem; padding: .7rem 0; border-top: 1px solid var(--line); }
-.signal-row:first-of-type { border-top: 0; }
-.signal-icon { display: grid; place-items: center; flex: 0 0 2.1rem; width: 2.1rem; height: 2.1rem; border-radius: 50%; color: var(--teal-dark); background: var(--teal-soft); font-weight: 800; }
-.signal-row strong, .signal-row span { display: block; }
-.signal-row span { color: var(--slate); font-size: .84rem; }
+.signal-row { display: flex; align-items: center; gap: .7rem; padding: .7rem 0; }
+.signal-row + .signal-row > div { align-self: stretch; border-top: 1px solid var(--line); }
+.signal-row .signal-icon { display: inline-flex; flex: 0 0 2.1rem; inline-size: 2.1rem; block-size: 2.1rem; align-items: center; justify-content: center; border-radius: 50%; color: var(--teal-dark); background: var(--teal-soft); font-weight: 800; line-height: 1; text-align: center; }
+.signal-row > div { min-width: 0; }
+.signal-row > div strong, .signal-row > div span { display: block; }
+.signal-row > div span { color: var(--slate); font-size: .84rem; }
 .section { padding: clamp(2.8rem, 6vw, 5rem) 0; }
 .section.tint { background: #edf4f7; }
 .section-heading { display: grid; grid-template-columns: minmax(0, 650px) auto; justify-content: space-between; gap: 1.5rem; align-items: end; margin-bottom: 1.7rem; }

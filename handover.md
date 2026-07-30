@@ -709,3 +709,17 @@ The next task must:
 - Production deployment verification: after normal GitHub Pages propagation, HTTPS served Home, Tools, all eight hubs, two new Cost and Power tools, existing RAID/backup/network tools, the UPS guide and reference, a comparison, About, Contact, and Privacy (21 representative URLs). Every checked page had one H1, the expected apex canonical URL, the versioned stylesheet and component script, the new shared header/footer, no badge placeholder, and a semantic breadcrumb on non-home pages.
 - The live UPS calculator returned **Specify at least 300 VA and 200 W** for a 150 W load with the default assumptions. Copy Results, Reset, the desktop Tools panel, and Escape close all passed; browser console errors were empty.
 - Final synchronization details follow in the deployment-record commit.
+
+---
+
+### 2026-07-30 — Fix Home decision step alignment
+
+- Starting state: `main` at `6194e32522cad0a87af81d816601219f32c1e228`, local and `origin/main` synchronized (`0 0`), with no pre-existing working-tree changes.
+- Investigated only the Home hero card headed **One plan, connected decisions**. The `.signal-row span` selector matched the numbered `.signal-icon` spans and overrode their intended `display: grid` alignment with `display: block`.
+- Updated only `assets/css/styles.css`. The marker now has a fixed 2.1rem flex basis and inline/block size, `inline-flex`, explicit horizontal and vertical centering, and `line-height: 1`. Text rules now apply only to the content wrapper.
+- Moved the divider to the content wrapper of later rows. It starts after the marker/gap, uses the same left edge for rows 2 and 3, does not cross a marker, and leaves no trailing divider after the final row.
+- Scope check: `.signal-row` and `.signal-icon` are used only by the Home hero; no tool results, guide checklists, hub workflows, ordered lists, calculator behavior, Copy, Print, or Reset were changed.
+- Home responsive QA at 1440, 1280, 1024, 900, 768, and 390 px confirmed all three markers retain identical 33.59px dimensions, `display:flex`, centered axes, `line-height:16px`, no horizontal overflow, and divider starts to the right of the marker. The 390px visual check covered wrapped descriptions and the full decision card.
+- Representative local browser QA passed for Home, Tools, NAS Configuration, Backup Planning, Network Performance, Home Planner, a Cost and Power tool, a guide, a reference, a comparison, About, Contact, and Privacy: one H1, shared header/footer, non-home breadcrumb, no horizontal overflow, and no badge placeholder. Desktop dropdown plus mobile menu/Escape also passed; browser console errors were empty.
+- Automated QA: `node tools/qa.mjs` passed all 63 public pages and 96 calculation cases. `git diff --check` passed. No DNS, Pages, Cloudflare proxy, HTTPS, GA4, or Search Console setting was changed.
+- Commit, production verification, and final synchronization are recorded below after publication.
