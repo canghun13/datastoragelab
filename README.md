@@ -2,7 +2,7 @@
 
 Static GitHub Pages site for vendor-neutral home and small-team storage planning.
 
-Phase 2 is implemented with 14 public pages: the Phase 1 foundation plus five storage-needs planners, a NAS capacity-sizing guide, and a TB-versus-TiB reference. The advanced tools cover annual growth, creator media, computer backups, small-office storage, and personal media libraries.
+Phase 3 is implemented with 27 public pages. It adds the NAS Configuration hub, six NAS planners, four operational guides, a storage-and-RAID formula reference, and a 2-bay versus 4-bay NAS specification comparison.
 
 Run automated QA with the bundled Node runtime when Node is not on PATH:
 

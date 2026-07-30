@@ -19,7 +19,7 @@
 | GA4 industry | Computers & Electronics |
 | GA4 reporting time zone | South Korea |
 | Default currency | USD |
-| Contact email | Not yet confirmed for this project |
+| Contact email | `canghun13@naver.com` |
 
 ## 2. Source-of-Truth Order
 
@@ -634,3 +634,18 @@ The next task must:
 - Browser QA completed locally: all seven Phase 2 pages were checked at 1440, 1280, 1024, 768, and 390 px (35 combinations) with exactly one H1, the shared header present, no page-width overflow, and tools retaining their forms. The Creator Media Storage Planner was exercised live at 390 px: calculation, Copy Results, Start Over, mobile menu, and Escape close all passed.
 - Deployment verification after push: GitHub Pages first served the prior Phase 1 deployment during normal propagation, then served the Phase 2 pages over HTTPS. Verified Home, T02, G01, R01, Contact, and Privacy with one H1 each, their expected apex canonical URLs, and the stylesheet loaded. T02 calculated live to “Reserve 12.4 TB by year 5”; Contact and Privacy exposed the required `mailto:canghun13@naver.com` link. No infrastructure or analytics configuration was changed.
 - Phase 2 implementation commit: `744dd6063ad445db967102adb437533398628ab0` (`Build Data Storage Lab Phase 2`), pushed to `origin/main` with local and remote heads equal and ahead/behind `0 0` before this deployment-record update.
+
+---
+
+### 2026-07-30 — Build Phase 3 NAS Configuration
+
+- Starting state: `main` at `e32e91e0d3f61ecf88f33afd62a657f9db076da4`, local and `origin/main` synchronized (`0 0`), working tree clean.
+- Confirmed Phase 3 scope from `site-plan.md`: H02, T07–T12, G02, G03, G07, G10, R02, and C01 (13 new public pages).
+- Added H02 **NAS Configuration Tools** at `/tools/nas-configuration/`.
+- Added T07 **NAS Bay, Drive Count & Capacity Planner**, T08 **RAID Capacity Calculator**, T09 **RAID Protection Decision Tool**, T10 **NAS Expansion Headroom Planner**, T11 **HDD vs SSD Storage Planner**, and T12 **CMR vs SMR Suitability Checker` under `/tools/nas-configuration/`.
+- Added G02 **RAID Is Not a Backup**, G03 **CMR vs SMR for NAS**, G07 **NAS Drive Replacement Planning**, G10 **HDD vs SSD for Bulk Storage**, R02 **Storage and RAID Capacity Formulas**, and C01 **2-Bay vs 4-Bay NAS** at their planned guide, reference, and comparison URLs.
+- Added `assets/js/raid-core.mjs` for shared generic same-size RAID metadata/capacity logic and `assets/js/phase3-tools.mjs` for NAS form validation, result rendering, Copy Results, Print Results, and Start Over behavior.
+- Updated navigation, Home and Tools discovery links, sitemap, llms, README, and automated QA. Public HTML count is now 27.
+- Automated QA: bundled `node tools/qa.mjs` passed with metadata, links, sitemap, GA4, JSON-LD, JavaScript, Phase 1 regression, and 33 Phase 2/3 calculation checks. `git diff --check` passed.
+- Browser QA: all 13 Phase 3 pages passed at 1440, 1280, 1024, 768, and 390 px (65 combinations): one H1, shared header, no horizontal overflow, and forms on the six tools. RAID Capacity Calculator passed live calculation, Copy Results, Start Over, mobile menu, and Escape close checks at 390 px.
+- No DNS, Pages, proxy, HTTPS, GA4, or Search Console configuration was changed. Deployment verification and final commit/push details follow after publication.

@@ -2,19 +2,19 @@
 
 Canonical URL: https://datastoragelab.com/
 
-Data Storage Lab provides vendor-neutral planning tools for home and small-team data storage. Tools distinguish decimal-TB primary capacity, protection, independent backups, growth, and expansion headroom. They do not recommend specific products or treat RAID as a backup.
+Data Storage Lab provides vendor-neutral planning tools for home and small-team storage. Capacity, RAID availability, independent backup, and media selection are treated as separate decisions.
 
 Current public areas:
-- Home: https://datastoragelab.com/
-- Tools: https://datastoragelab.com/tools/
-- Storage needs hub: https://datastoragelab.com/tools/storage-needs/
-- Home Storage & Backup Planner: https://datastoragelab.com/tools/storage-needs/home-storage-backup-planner/
-- Annual Storage Growth Calculator: https://datastoragelab.com/tools/storage-needs/annual-storage-growth-calculator/
-- Creator Media Storage Planner: https://datastoragelab.com/tools/storage-needs/creator-media-storage-planner/
-- Computer Backup Storage Planner: https://datastoragelab.com/tools/storage-needs/computer-backup-storage-planner/
-- Small Office Storage Planner: https://datastoragelab.com/tools/storage-needs/small-office-storage-planner/
-- Media Library Storage Planner: https://datastoragelab.com/tools/storage-needs/media-library-storage-planner/
-- Guide: https://datastoragelab.com/guides/how-much-nas-storage-do-i-need/
-- Reference: https://datastoragelab.com/reference/tb-vs-tib/
+- Storage needs: https://datastoragelab.com/tools/storage-needs/
+- NAS configuration: https://datastoragelab.com/tools/nas-configuration/
+- NAS Bay, Drive Count & Capacity Planner: https://datastoragelab.com/tools/nas-configuration/nas-bay-drive-capacity-planner/
+- RAID Capacity Calculator: https://datastoragelab.com/tools/nas-configuration/raid-capacity-calculator/
+- RAID Protection Decision Tool: https://datastoragelab.com/tools/nas-configuration/raid-protection-decision-tool/
+- NAS Expansion Headroom Planner: https://datastoragelab.com/tools/nas-configuration/nas-expansion-headroom-planner/
+- HDD vs SSD Storage Planner: https://datastoragelab.com/tools/nas-configuration/hdd-vs-ssd-storage-planner/
+- CMR vs SMR Suitability Checker: https://datastoragelab.com/tools/nas-configuration/cmr-vs-smr-suitability-checker/
+- RAID guide: https://datastoragelab.com/guides/raid-is-not-a-backup/
+- RAID formulas: https://datastoragelab.com/reference/storage-raid-capacity-formulas/
+- Bay-class comparison: https://datastoragelab.com/compare/2-bay-vs-4-bay-nas/
 
 Contact: mailto:canghun13@naver.com
