@@ -2,7 +2,7 @@
 
 Static GitHub Pages site for vendor-neutral home and small-team storage planning.
 
-Phase 3 is implemented with 27 public pages. It adds the NAS Configuration hub, six NAS planners, four operational guides, a storage-and-RAID formula reference, and a 2-bay versus 4-bay NAS specification comparison.
+Phase 4 is implemented with 41 public pages. It adds the Backup Planning hub, eight backup planners, four backup guides, and a NAS-versus-cloud family-photo comparison.
 
 Run automated QA with the bundled Node runtime when Node is not on PATH:
 

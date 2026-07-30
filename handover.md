@@ -651,3 +651,18 @@ The next task must:
 - No DNS, Pages, proxy, HTTPS, GA4, or Search Console configuration was changed. Deployment verification and final commit/push details follow after publication.
 - Deployment verification: after normal GitHub Pages propagation, HTTPS served Home, H02, T08, G02, R02, C01, Contact, and Privacy. Each had the expected apex canonical URL, one H1, and loaded CSS. T08 calculated live to “36.0 TB usable (32.7 TiB) from 48.0 TB raw”; Contact and Privacy exposed `mailto:canghun13@naver.com`.
 - Phase 3 implementation commit: `233e110b3fba35492b95dad4b38df159d22c7f33` (`Build Data Storage Lab Phase 3`), pushed to `origin/main` with local and remote heads equal and ahead/behind `0 0` before this deployment-record update.
+
+---
+
+### 2026-07-30 — Build Phase 4 Backup Planning
+
+- Starting state: `main` at `e3b5076c0b0c5fb69b74aca039c2498ea9d41010`, local and `origin/main` synchronized (`0 0`), with no pre-existing working-tree changes.
+- Confirmed Phase 4 scope from `site-plan.md`: H03, T13–T20, G05, G06, G08, G09, and C02 (14 new public pages).
+- Added H03 **Backup Planning Tools** at `/tools/backup-planning/`.
+- Added T13 **3-2-1 Backup Plan Generator**, T14 **Local vs Cloud vs Hybrid Backup Selector**, T15 **Backup Retention Calculator**, T16 **Snapshot Storage Planner**, T17 **Offsite Backup Capacity Planner**, T18 **Backup Frequency Selector**, T19 **Recovery Time Estimator**, and T20 **Backup Verification Schedule Planner** under `/tools/backup-planning/`.
+- Added G05 **Backup Retention Basics**, G06 **3-2-1 Backup Explained**, G08 **Local Backup vs Offsite Backup**, G09 **Snapshots vs Backups**, and C02 **NAS vs Cloud for Family Photos** at their planned guide and comparison URLs.
+- Added `assets/js/backup-tools.mjs` with bounded input validation, capacity/recovery/scheduling calculations, rendered output, Copy Results, Print Results, and Start Over behavior. Recovery transfer speed is validated explicitly.
+- Updated the tools directory, home discovery section, shared navigation and footer, sitemap, llms, README, and automated QA. Public HTML count is now 41.
+- Automated verification: bundled `node tools/qa.mjs` passed. It validates all public metadata, canonical URLs, GA4, JSON-LD, links, sitemap parity, JavaScript syntax, 57 Phase 2/3/4 calculation cases (including 24 Phase 4 cases), Phase 1 regression behavior, and confirmed contact links. `git diff --check` passed.
+- Local browser QA: all 14 Phase 4 pages passed at 1440, 1280, 1024, 768, and 390 px (70 combinations): exactly one H1, shared header present, no horizontal overflow, and each tool form present. At 390 px, T13 passed calculation, Copy Results, Start Over, the mobile menu, and Escape close checks; browser console errors were empty.
+- No DNS, Pages, proxy, HTTPS, GA4, or Search Console setting was changed. Deployment verification and final commit/push details follow after publication.

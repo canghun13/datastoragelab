@@ -4,10 +4,18 @@ import { spawnSync } from 'node:child_process';
 import { calculatePlan } from '../assets/js/planner-core.mjs';
 import { calculateTool } from '../assets/js/phase2-tools.mjs';
 import { calculateNasTool } from '../assets/js/phase3-tools.mjs';
+import { calculateBackup } from '../assets/js/backup-tools.mjs';
 
 const root = process.cwd();
 const baseUrl = 'https://datastoragelab.com';
-const expected = ['index.html','tools/index.html','tools/storage-needs/index.html','tools/storage-needs/home-storage-backup-planner/index.html','tools/storage-needs/annual-storage-growth-calculator/index.html','tools/storage-needs/creator-media-storage-planner/index.html','tools/storage-needs/computer-backup-storage-planner/index.html','tools/storage-needs/small-office-storage-planner/index.html','tools/storage-needs/media-library-storage-planner/index.html','tools/nas-configuration/index.html','tools/nas-configuration/nas-bay-drive-capacity-planner/index.html','tools/nas-configuration/raid-capacity-calculator/index.html','tools/nas-configuration/raid-protection-decision-tool/index.html','tools/nas-configuration/nas-expansion-headroom-planner/index.html','tools/nas-configuration/hdd-vs-ssd-storage-planner/index.html','tools/nas-configuration/cmr-vs-smr-suitability-checker/index.html','guides/how-much-nas-storage-do-i-need/index.html','guides/raid-is-not-a-backup/index.html','guides/cmr-vs-smr-for-nas/index.html','guides/nas-drive-replacement-planning/index.html','guides/hdd-vs-ssd-for-bulk-storage/index.html','reference/tb-vs-tib/index.html','reference/storage-raid-capacity-formulas/index.html','compare/2-bay-vs-4-bay-nas/index.html','about/index.html','contact/index.html','privacy/index.html'];
+const expected = [
+  'index.html', 'tools/index.html',
+  'tools/storage-needs/index.html', 'tools/storage-needs/home-storage-backup-planner/index.html', 'tools/storage-needs/annual-storage-growth-calculator/index.html', 'tools/storage-needs/creator-media-storage-planner/index.html', 'tools/storage-needs/computer-backup-storage-planner/index.html', 'tools/storage-needs/small-office-storage-planner/index.html', 'tools/storage-needs/media-library-storage-planner/index.html',
+  'tools/nas-configuration/index.html', 'tools/nas-configuration/nas-bay-drive-capacity-planner/index.html', 'tools/nas-configuration/raid-capacity-calculator/index.html', 'tools/nas-configuration/raid-protection-decision-tool/index.html', 'tools/nas-configuration/nas-expansion-headroom-planner/index.html', 'tools/nas-configuration/hdd-vs-ssd-storage-planner/index.html', 'tools/nas-configuration/cmr-vs-smr-suitability-checker/index.html',
+  'tools/backup-planning/index.html', 'tools/backup-planning/3-2-1-backup-plan-generator/index.html', 'tools/backup-planning/local-cloud-hybrid-backup-selector/index.html', 'tools/backup-planning/backup-retention-calculator/index.html', 'tools/backup-planning/snapshot-storage-planner/index.html', 'tools/backup-planning/offsite-backup-capacity-planner/index.html', 'tools/backup-planning/backup-frequency-selector/index.html', 'tools/backup-planning/recovery-time-estimator/index.html', 'tools/backup-planning/backup-verification-schedule-planner/index.html',
+  'guides/how-much-nas-storage-do-i-need/index.html', 'guides/raid-is-not-a-backup/index.html', 'guides/cmr-vs-smr-for-nas/index.html', 'guides/nas-drive-replacement-planning/index.html', 'guides/hdd-vs-ssd-for-bulk-storage/index.html', 'guides/backup-retention-basics/index.html', 'guides/3-2-1-backup-explained/index.html', 'guides/local-backup-vs-offsite-backup/index.html', 'guides/snapshots-vs-backups/index.html',
+  'reference/tb-vs-tib/index.html', 'reference/storage-raid-capacity-formulas/index.html', 'compare/2-bay-vs-4-bay-nas/index.html', 'compare/nas-vs-cloud-for-family-photos/index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html'
+];
 const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
 const file = (path) => readFileSync(join(root, path), 'utf8');
@@ -59,8 +67,20 @@ const nasCases = [
 ];
 for (const [kind,input] of nasCases) check(calculateNasTool(kind,input).result, `${kind}: Phase 3 valid calculation failed`);
 for (const kind of ['bay','raid','expansion','media']) check(Object.keys(calculateNasTool(kind,{required:-1,current:-1,rate:-1,years:1,headroom:0,ceiling:1,drives:1,drive:1,capacity:-1,active:1,free:0,usable:1,work:1,layout:'mirror',protection:'single',need:'capacity',backup:'yes',performance:'low',noise:'low',budget:'limited',array:'yes',writes:'low',rebuild:'important',docs:'yes'}).errors).length, `${kind}: Phase 3 invalid input was accepted`);
+const backupTools = [
+  ['3-2-1 plan generator', 'topology'], ['local, cloud, or hybrid selector', 'topology'], ['retention calculator', 'retention'], ['snapshot planner', 'retention'],
+  ['offsite capacity planner', 'offsite'], ['frequency selector', 'frequency'], ['recovery time estimator', 'recovery'], ['verification schedule planner', 'verify']
+];
+for (const [label, kind] of backupTools) {
+  const standard = { data: 4, rate: 5, period: 12, copies: 2, speed: 100 };
+  const minimal = { data: .01, rate: 0, period: 1, copies: 1, speed: 1 };
+  const large = { data: 1000, rate: 50, period: 120, copies: 3, speed: 10000 };
+  for (const input of [standard, minimal, large]) check(calculateBackup(kind, input).result, `${label}: Phase 4 valid calculation failed`);
+  check(Object.keys(calculateBackup(kind, { ...standard, data: -1, speed: 0 }).errors).length, `${label}: Phase 4 invalid input was accepted`);
+}
 for (const path of expected.filter((page) => /storage-needs\/(annual|creator|computer|small-office|media-library)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /nas-configuration\/(nas-bay|raid-capacity|raid-protection|nas-expansion|hdd-vs|cmr-vs)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
+for (const path of expected.filter((page) => /backup-planning\/(3-2-1|local-cloud|backup-retention|snapshot|offsite|backup-frequency|recovery-time|backup-verification)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of ['contact/index.html','privacy/index.html']) check(/mailto:canghun13@naver\.com/.test(file(path)), `${path}: confirmed contact email missing`);
 if (failures.length) { console.error(`QA FAILED (${failures.length})`); failures.forEach((failure) => console.error(`- ${failure}`)); process.exit(1); }
-console.log(`QA PASSED: ${expected.length} public HTML pages; metadata, links, sitemap, GA4, JSON-LD, JavaScript, 33 Phase 2/3 calculations, Phase 1 regression, and contact checks passed.`);
+console.log(`QA PASSED: ${expected.length} public HTML pages; metadata, links, sitemap, GA4, JSON-LD, JavaScript, 57 Phase 2/3/4 calculations, Phase 1 regression, and contact checks passed.`);

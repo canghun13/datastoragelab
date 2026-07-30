@@ -7,6 +7,20 @@ Data Storage Lab provides vendor-neutral planning tools for home and small-team 
 Current public areas:
 - Storage needs: https://datastoragelab.com/tools/storage-needs/
 - NAS configuration: https://datastoragelab.com/tools/nas-configuration/
+- Backup planning: https://datastoragelab.com/tools/backup-planning/
+- 3-2-1 Backup Plan Generator: https://datastoragelab.com/tools/backup-planning/3-2-1-backup-plan-generator/
+- Backup Retention Calculator: https://datastoragelab.com/tools/backup-planning/backup-retention-calculator/
+- Local, Cloud, or Hybrid Backup Selector: https://datastoragelab.com/tools/backup-planning/local-cloud-hybrid-backup-selector/
+- Snapshot Storage Planner: https://datastoragelab.com/tools/backup-planning/snapshot-storage-planner/
+- Offsite Backup Capacity Planner: https://datastoragelab.com/tools/backup-planning/offsite-backup-capacity-planner/
+- Backup Frequency Selector: https://datastoragelab.com/tools/backup-planning/backup-frequency-selector/
+- Recovery Time Estimator: https://datastoragelab.com/tools/backup-planning/recovery-time-estimator/
+- Backup Verification Schedule Planner: https://datastoragelab.com/tools/backup-planning/backup-verification-schedule-planner/
+- Backup retention guide: https://datastoragelab.com/guides/backup-retention-basics/
+- 3-2-1 guide: https://datastoragelab.com/guides/3-2-1-backup-explained/
+- Local versus offsite guide: https://datastoragelab.com/guides/local-backup-vs-offsite-backup/
+- Snapshots versus backups guide: https://datastoragelab.com/guides/snapshots-vs-backups/
+- Family photos comparison: https://datastoragelab.com/compare/nas-vs-cloud-for-family-photos/
 - NAS Bay, Drive Count & Capacity Planner: https://datastoragelab.com/tools/nas-configuration/nas-bay-drive-capacity-planner/
 - RAID Capacity Calculator: https://datastoragelab.com/tools/nas-configuration/raid-capacity-calculator/
 - RAID Protection Decision Tool: https://datastoragelab.com/tools/nas-configuration/raid-protection-decision-tool/
