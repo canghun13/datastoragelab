@@ -32,6 +32,14 @@
   <url><loc>https://datastoragelab.com/tools/network-performance/network-tier-selector/</loc></url>
   <url><loc>https://datastoragelab.com/tools/network-performance/concurrent-user-bandwidth-planner/</loc></url>
   <url><loc>https://datastoragelab.com/tools/network-performance/video-editing-network-planner/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/cost-power/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/cost-power/nas-vs-cloud-five-year-cost-calculator/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/cost-power/das-vs-nas-cost-calculator/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/cost-power/drive-cost-per-usable-tb-calculator/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/cost-power/storage-electricity-cost-calculator/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/cost-power/drive-replacement-reserve-calculator/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/cost-power/ups-size-runtime-calculator/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/cost-power/full-storage-system-budget-planner/</loc></url>
   <url><loc>https://datastoragelab.com/guides/how-much-nas-storage-do-i-need/</loc></url>
   <url><loc>https://datastoragelab.com/guides/raid-is-not-a-backup/</loc></url>
   <url><loc>https://datastoragelab.com/guides/cmr-vs-smr-for-nas/</loc></url>
@@ -41,12 +49,17 @@
   <url><loc>https://datastoragelab.com/guides/3-2-1-backup-explained/</loc></url>
   <url><loc>https://datastoragelab.com/guides/local-backup-vs-offsite-backup/</loc></url>
   <url><loc>https://datastoragelab.com/guides/snapshots-vs-backups/</loc></url>
+  <url><loc>https://datastoragelab.com/guides/how-to-size-a-ups-for-a-nas/</loc></url>
+  <url><loc>https://datastoragelab.com/guides/</loc></url>
   <url><loc>https://datastoragelab.com/reference/tb-vs-tib/</loc></url>
   <url><loc>https://datastoragelab.com/reference/storage-raid-capacity-formulas/</loc></url>
   <url><loc>https://datastoragelab.com/reference/backup-transfer-time-bandwidth/</loc></url>
+  <url><loc>https://datastoragelab.com/reference/ups-watts-va-runtime/</loc></url>
+  <url><loc>https://datastoragelab.com/reference/</loc></url>
   <url><loc>https://datastoragelab.com/compare/2-bay-vs-4-bay-nas/</loc></url>
   <url><loc>https://datastoragelab.com/compare/nas-vs-cloud-for-family-photos/</loc></url>
   <url><loc>https://datastoragelab.com/compare/2-5gbe-vs-10gbe-for-nas/</loc></url>
+  <url><loc>https://datastoragelab.com/compare/</loc></url>
   <url><loc>https://datastoragelab.com/about/</loc></url>
   <url><loc>https://datastoragelab.com/contact/</loc></url>
   <url><loc>https://datastoragelab.com/privacy/</loc></url>

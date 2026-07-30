@@ -9,6 +9,19 @@ Current public areas:
 - NAS configuration: https://datastoragelab.com/tools/nas-configuration/
 - Backup planning: https://datastoragelab.com/tools/backup-planning/
 - Network and transfer planning: https://datastoragelab.com/tools/network-performance/
+- Cost and power planning: https://datastoragelab.com/tools/cost-power/
+- NAS vs Cloud 5-Year Cost Calculator: https://datastoragelab.com/tools/cost-power/nas-vs-cloud-five-year-cost-calculator/
+- DAS vs NAS Cost Calculator: https://datastoragelab.com/tools/cost-power/das-vs-nas-cost-calculator/
+- Drive Cost per Usable TB Calculator: https://datastoragelab.com/tools/cost-power/drive-cost-per-usable-tb-calculator/
+- Storage Electricity Cost Calculator: https://datastoragelab.com/tools/cost-power/storage-electricity-cost-calculator/
+- Drive Replacement Reserve Calculator: https://datastoragelab.com/tools/cost-power/drive-replacement-reserve-calculator/
+- UPS Size & Runtime Calculator: https://datastoragelab.com/tools/cost-power/ups-size-runtime-calculator/
+- Full Storage System Budget Planner: https://datastoragelab.com/tools/cost-power/full-storage-system-budget-planner/
+- Guide index: https://datastoragelab.com/guides/
+- UPS sizing guide: https://datastoragelab.com/guides/how-to-size-a-ups-for-a-nas/
+- Reference index: https://datastoragelab.com/reference/
+- UPS units reference: https://datastoragelab.com/reference/ups-watts-va-runtime/
+- Comparison index: https://datastoragelab.com/compare/
 - Cloud Backup Upload & Restore Time Calculator: https://datastoragelab.com/tools/network-performance/cloud-backup-transfer-time-calculator/
 - Local Network Transfer Time Calculator: https://datastoragelab.com/tools/network-performance/local-network-transfer-time-calculator/
 - Backup Window Calculator: https://datastoragelab.com/tools/network-performance/backup-window-calculator/
