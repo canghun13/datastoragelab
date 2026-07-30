@@ -743,3 +743,8 @@ The next task must:
 - The favicon asset loaded in-browser as a standalone SVG with `viewBox="0 0 64 64"`. A fresh representative calculator interaction produced no console warnings or errors.
 - The first logical commit is `3264eb1` (`Fix favicon across Data Storage Lab`). Content, final deployment verification, and synchronization details follow in subsequent commits.
 - No DNS, GitHub Pages, Cloudflare proxy, HTTPS, GA4 property, Search Console, or contact-address setting was changed. Contact remains `canghun13@naver.com`.
+- Content and QA commit: `35ec740` (`Complete tool and hub decision content`).
+- Production deployment verification passed after GitHub Pages propagation. At 1280 and 390 px, 23 representative HTTPS pages—Home, Tools, all eight hubs, six tools spanning every planning cluster, two guides, one reference, one comparison, About, Contact, and Privacy—passed 46 checks for one H1, canonical URL, shared header/footer, normalized SVG favicon, required tool/hub guidance, contact link, and horizontal overflow.
+- The live RAID Capacity Calculator returned **36.0 TB usable (32.7 TiB) from 48.0 TB raw**. Copy Results completed with its success status and matching clipboard text; Start Over hid the result; the Print control remained enabled; desktop and mobile navigation opened and closed with Escape.
+- `https://datastoragelab.com/assets/favicon.svg` loaded as a standalone SVG with `viewBox="0 0 64 64"`, and the final production browser console contained no warnings or errors.
+- Final deployment-record commit and local/remote synchronization follow this entry.
