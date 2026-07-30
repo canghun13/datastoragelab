@@ -2,7 +2,7 @@
 
 Static GitHub Pages site for vendor-neutral home and small-team storage planning.
 
-Phase 4 is implemented with 41 public pages. It adds the Backup Planning hub, eight backup planners, four backup guides, and a NAS-versus-cloud family-photo comparison.
+Phase 5 is implemented with 50 public pages. It adds the Network and Transfer Planning hub, six timing and network planners, a transfer-time reference, and a 2.5GbE versus 10GbE NAS comparison.
 
 Run automated QA with the bundled Node runtime when Node is not on PATH:
 

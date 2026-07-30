@@ -8,6 +8,15 @@ Current public areas:
 - Storage needs: https://datastoragelab.com/tools/storage-needs/
 - NAS configuration: https://datastoragelab.com/tools/nas-configuration/
 - Backup planning: https://datastoragelab.com/tools/backup-planning/
+- Network and transfer planning: https://datastoragelab.com/tools/network-performance/
+- Cloud Backup Upload & Restore Time Calculator: https://datastoragelab.com/tools/network-performance/cloud-backup-transfer-time-calculator/
+- Local Network Transfer Time Calculator: https://datastoragelab.com/tools/network-performance/local-network-transfer-time-calculator/
+- Backup Window Calculator: https://datastoragelab.com/tools/network-performance/backup-window-calculator/
+- 1GbE vs 2.5GbE vs 10GbE Selector: https://datastoragelab.com/tools/network-performance/network-tier-selector/
+- Concurrent User Bandwidth Planner: https://datastoragelab.com/tools/network-performance/concurrent-user-bandwidth-planner/
+- Video Editing Network Planner: https://datastoragelab.com/tools/network-performance/video-editing-network-planner/
+- Backup transfer formulas: https://datastoragelab.com/reference/backup-transfer-time-bandwidth/
+- 2.5GbE vs 10GbE NAS comparison: https://datastoragelab.com/compare/2-5gbe-vs-10gbe-for-nas/
 - 3-2-1 Backup Plan Generator: https://datastoragelab.com/tools/backup-planning/3-2-1-backup-plan-generator/
 - Backup Retention Calculator: https://datastoragelab.com/tools/backup-planning/backup-retention-calculator/
 - Local, Cloud, or Hybrid Backup Selector: https://datastoragelab.com/tools/backup-planning/local-cloud-hybrid-backup-selector/

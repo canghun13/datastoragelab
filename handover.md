@@ -668,3 +668,18 @@ The next task must:
 - No DNS, Pages, proxy, HTTPS, GA4, or Search Console setting was changed. Deployment verification and final commit/push details follow after publication.
 - Deployment verification: after normal GitHub Pages propagation, HTTPS served Home, H03, T13, T19, G05, G06, G08, G09, C02, Contact, and Privacy. Each had one H1, its expected apex canonical URL, and a loaded stylesheet. T13 calculated live to **Close the independent-copy gap**; browser console errors were empty. Contact and Privacy retained `mailto:canghun13@naver.com`.
 - Phase 4 implementation commit: `5f09717b7c11c1de427eae361ebca402ee987a75` (`Build Data Storage Lab Phase 4`), pushed to `origin/main` with local and remote heads equal and ahead/behind `0 0` before this deployment-record update.
+
+---
+
+### 2026-07-30 — Build Phase 5 Network & Performance
+
+- Starting state: `main` at `2c897044909e611bf9603fbbbe45584180fb430c`, local and `origin/main` synchronized (`0 0`), with no pre-existing working-tree changes.
+- Confirmed Phase 5 scope from `site-plan.md`: H04, T21–T26, R03, and C03 (nine new public pages).
+- Added H04 **Network and Transfer Planning Tools** at `/tools/network-performance/`.
+- Added T21 **Cloud Backup Upload & Restore Time Calculator**, T22 **Local Network Transfer Time Calculator**, T23 **Backup Window Calculator**, T24 **1GbE vs 2.5GbE vs 10GbE Selector**, T25 **Concurrent User Bandwidth Planner**, and T26 **Video Editing Network Planner** under `/tools/network-performance/`.
+- Added R03 **Backup Transfer Time and Bandwidth Formulas** and C03 **2.5GbE vs 10GbE for NAS** at their planned URLs.
+- Added `assets/js/network-tools.mjs`, a shared bounded bottleneck model for WAN/LAN effective throughput, transfer ranges, recurring backup windows, concurrent workloads, editing streams, and practical Ethernet-tier guidance. Every estimate discloses protocol/operational limitations and does not treat link rate as payload throughput.
+- Updated Home, tools directory, shared navigation/footer, sitemap, llms, README, and automated QA. Public HTML count is now 50.
+- Automated verification: bundled `node tools/qa.mjs` passed. It validates metadata, canonical URLs, GA4, JSON-LD, internal links, sitemap parity, JavaScript syntax, 75 Phase 2/3/4/5 calculation cases (including 18 Phase 5 cases), Phase 1 regression behavior, and confirmed contact links. `git diff --check` passed.
+- Local browser QA: all nine Phase 5 pages passed at 1440, 1280, 1024, 768, and 390 px (45 combinations): exactly one H1, shared header present, and no horizontal overflow. The expanded primary navigation originally overflowed at 768 px; the mobile-menu breakpoint was moved to 900 px and the retest passed. At 390 px, T21 passed calculation, Copy Results, Start Over, mobile menu, and Escape close checks; browser console errors were empty.
+- Deployment verification details follow after publication. No DNS, Pages, proxy, HTTPS, GA4, or Search Console setting was changed.
