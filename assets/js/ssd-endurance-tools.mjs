@@ -66,9 +66,10 @@ export function calculateCache(input) {
   const shares = input.layout === 'custom' ? String(input.shares || '').split(',').map(Number) : [];
   if (input.layout === 'custom' && (shares.length !== num(input.drives) || shares.some((x) => !finite(x) || x < 0) || Math.abs(shares.reduce((a,b)=>a+b,0)-100) > .01)) errors.shares = 'Custom shares must match drive count and total 100%.';
   if (Object.keys(errors).length) return { errors };
-  const per = distributeWritesPerDrive(logical, input.layout, num(input.drives), shares)[0], effective = calculateEffectiveWrites(per, input.waf), required = calculateRequiredTBW(effective, input.years) * (1 + num(input.reserve) / 100), remaining = num(input.rated) - num(input.existing || 0);
-  if (remaining < 0) return { errors: { existing: 'Rating exceeded for this drive.' } };
-  return { result: { logical, per, effective, required, dwpd: required * 1000 / (num(input.capacity) * 365 * num(input.years)), years: calculateYearsToRating(remaining, effective), margin: calculateEnduranceMargin(remaining, required), status: status(calculateEnduranceMargin(remaining, required)) } };
+  const capacity = normalizeCapacityToGB(input.capacity, input.capacityUnit), rated = normalizeEnduranceToTBW(input.rated, input.enduranceUnit), existing = normalizeExistingWritesToTBW(input.existing || 0, input.existingUnit);
+  const per = distributeWritesPerDrive(logical, input.layout, num(input.drives), shares)[0], effective = calculateEffectiveWrites(per, input.waf), required = calculateRequiredTBW(effective, input.years) * (1 + num(input.reserve) / 100), remaining = rated - existing;
+  if (existing >= rated) return { errors: { existing: 'Endurance exhausted: existing writes meet or exceed rated TBW.' } };
+  return { result: { logical, per, effective, required, dwpd: required * 1000 / (capacity * 365 * num(input.years)), years: calculateYearsToRating(remaining, effective), margin: calculateEnduranceMargin(remaining, required), status: status(calculateEnduranceMargin(remaining, required)) } };
 }
 export function calculateVm(input) {
   const errors = {};
@@ -78,8 +79,10 @@ export function calculateVm(input) {
   const shares = String(input.shares || '100').split(',').map(Number); if (shares.some((x) => !finite(x) || x < 0) || Math.abs(shares.reduce((a,b)=>a+b,0)-100) > .01) errors.shares = 'Drive shares must total 100%.';
   const vm = num(input.vms) * num(input.perVm), total = vm + num(input.containers) + num(input.logs) + num(input.snapshots); if (!(total > 0)) errors.logs = 'At least one workload must write data.';
   if (Object.keys(errors).length) return { errors };
-  const per = total * num(input.copies) * shares[0] / 100, effective = per * num(input.waf), required = calculateRequiredTBW(effective, input.years), remaining = num(input.rated) - num(input.existing || 0), margin = calculateEnduranceMargin(remaining, required);
-  return { result: { vm, total, per, effective, required, dwpd: required * 1000 / (num(input.capacity) * 365 * num(input.years)), margin, largest: [['VMs',vm],['Containers',num(input.containers)],['Database and logs',num(input.logs)],['Snapshots',num(input.snapshots)]].sort((a,b)=>b[1]-a[1])[0][0], status: status(margin) } };
+  const capacity = normalizeCapacityToGB(input.capacity, input.capacityUnit), rated = normalizeEnduranceToTBW(input.rated, input.enduranceUnit), existing = normalizeExistingWritesToTBW(input.existing || 0, input.existingUnit);
+  if (existing >= rated) return { errors: { existing: 'Endurance exhausted: existing writes meet or exceed rated TBW.' } };
+  const per = total * num(input.copies) * shares[0] / 100, effective = per * num(input.waf), required = calculateRequiredTBW(effective, input.years), remaining = rated - existing, margin = calculateEnduranceMargin(remaining, required);
+  return { result: { vm, total, per, effective, required, dwpd: required * 1000 / (capacity * 365 * num(input.years)), margin, largest: [['VMs',vm],['Containers',num(input.containers)],['Database and logs',num(input.logs)],['Snapshots',num(input.snapshots)]].sort((a,b)=>b[1]-a[1])[0][0], status: status(margin) } };
 }
 export function calculateRemaining(input) {
   const errors = {};
@@ -88,8 +91,9 @@ export function calculateRemaining(input) {
   if (num(input.current) < num(input.previous)) errors.current = 'Counter reset or unit mismatch: current value is lower.';
   if (input.smart && (num(input.smart) < 0 || num(input.smart) > 255)) errors.smart = 'SMART Percentage Used must be 0–255.';
   if (Object.keys(errors).length) return { errors };
-  const previous = input.unit === 'units' ? nvmeDataUnitsToTB(input.previous) : num(input.previous), current = input.unit === 'units' ? nvmeDataUnitsToTB(input.current) : num(input.current), measured = calculateMeasuredWriteRate(previous, current, input.days), future = measured * (1 + num(input.growth) / 100), threshold = num(input.rated) * num(input.threshold) / 100, remaining = threshold - current, days = future > 0 ? remaining / future : null;
-  return { result: { measured, future, dwpd: measured * 1000 / num(input.capacity), usage: current / num(input.rated) * 100, remaining, days, date: calculateThresholdDate(days), prepare: calculateThresholdDate(days === null ? NaN : days - num(input.lead)), exceeded: current > num(input.rated) } };
+  const rated = normalizeEnduranceToTBW(input.rated, input.enduranceUnit), capacity = normalizeCapacityToGB(input.capacity, input.capacityUnit);
+  const previous = input.unit === 'units' ? nvmeDataUnitsToTB(input.previous) : num(input.previous), current = input.unit === 'units' ? nvmeDataUnitsToTB(input.current) : num(input.current), measured = calculateMeasuredWriteRate(previous, current, input.days), future = measured * (1 + num(input.growth) / 100), threshold = rated * num(input.threshold) / 100, remaining = threshold - current, days = future > 0 ? remaining / future : null;
+  return { result: { measured, future, dwpd: measured * 1000 / capacity, usage: current / rated * 100, remaining, days, date: calculateThresholdDate(days), prepare: calculateThresholdDate(days === null ? NaN : days - num(input.lead)), exceeded: current > rated } };
 }
 
 const render = (node, result, type) => {
@@ -110,13 +114,18 @@ function enhanceSsdInputs(form) {
   ];
   units.forEach(([inputName, selectName, options, defaultValue, kind]) => {
     const input = form.elements.namedItem(inputName); if (!(input instanceof HTMLInputElement)) return;
-    const field = input.closest('.field'); if (!field || field.querySelector(`[name="${selectName}"]`)?.closest('.ssd-unit-group')) return;
+    const field = input.closest('.field'); if (!field) return;
     let select = form.elements.namedItem(selectName);
     if (!(select instanceof HTMLSelectElement)) { select = createUnitSelect(selectName, options, defaultValue, `${inputName} unit`); }
-    select.value = select.value || defaultValue; select.dataset.previousUnit = select.value;
-    const group = document.createElement('div'); group.className = 'ssd-unit-group'; group.dataset.unitKind = kind;
-    const inputHost = input.closest('.input-wrap') || input; if (inputHost.classList?.contains('input-wrap')) inputHost.querySelector('span')?.remove();
-    inputHost.before(group); group.append(inputHost, select);
+    select.classList.add('ssd-unit-select'); select.value = select.value || defaultValue; select.dataset.previousUnit = select.value;
+    let group = input.closest('.ssd-unit-group');
+    if (!group) {
+      group = document.createElement('div'); group.className = 'ssd-unit-group'; group.dataset.unitKind = kind;
+      const inputHost = input.closest('.input-wrap') || input; if (inputHost.classList?.contains('input-wrap')) inputHost.querySelector('span')?.remove();
+      inputHost.before(group); group.append(inputHost, select);
+    }
+    if (select.dataset.unitReady) return;
+    select.dataset.unitReady = 'true';
     select.addEventListener('change', () => {
       const oldUnit = select.dataset.previousUnit || defaultValue, nextUnit = select.value, value = num(input.value);
       if (finite(value)) input.value = String(value * unitFactor(oldUnit, kind) / unitFactor(nextUnit, kind));
@@ -130,7 +139,7 @@ function enhanceSsdInputs(form) {
     const group = document.createElement('div'); group.className = 'ssd-unit-group'; const addon = document.createElement('span'); addon.className = 'ssd-unit-addon'; addon.textContent = suffix;
     input.before(group); group.append(input, addon);
   });
-  const existing = form.elements.namedItem('existing'); if (existing instanceof HTMLInputElement) { const helper = existing.closest('.field')?.querySelector('.helper'); if (helper) helper.textContent = 'Optional; enter host writes already recorded by the drive.'; }
+  const existing = form.elements.namedItem('existing'); if (existing instanceof HTMLInputElement) { const helper = existing.closest('.field')?.querySelector('.help, .helper'); if (helper) helper.textContent = 'Optional; host writes already recorded by the drive.'; }
   if (form.dataset.ssdForm === 'lifespan') {
     document.querySelector('[data-ssd-results] th:nth-child(2)')?.replaceChildren('Years to reserve threshold');
     const method = document.querySelector('[data-content-section="method"] p');
@@ -138,13 +147,26 @@ function enhanceSsdInputs(form) {
     if (method) method.textContent = 'Logical writes equal daily GB multiplied by 365 and the planning years. Effective writes multiply logical GB/day by WAF. The reserve is retained from remaining rated TBW: usable endurance equals remaining TBW times one minus reserve percent. Required TBW is compared with that usable endurance, while rated DWPD uses the full published rating, capacity, and warranty term.';
     if (example) example.textContent = 'With a 1,000 GB drive rated for 600 TBW, 120 logical GB/day creates 219 TB over five years. Base WAF 1.5 creates 328.5 TB of effective writes. A 20% reserve retains 120 TB, leaving 480 TB usable endurance and 151.5 TB base headroom. The rated endurance is about 0.329 DWPD over five warranty years.';
   }
+  const metric = form.elements.namedItem('metric');
+  if (metric instanceof HTMLSelectElement) {
+    const sourceUnit = form.querySelector('[data-source-unit]'), sourceHelp = form.querySelector('[data-source-help]');
+    const updateSourceMetric = () => { if (sourceUnit) sourceUnit.textContent = metric.value; if (sourceHelp) sourceHelp.textContent = `Enter the published value in ${metric.value}.`; };
+    metric.addEventListener('change', updateSourceMetric); updateSourceMetric();
+  }
+  const mode = form.elements.namedItem('mode');
+  if (mode instanceof HTMLSelectElement) {
+    const updateMode = () => form.querySelectorAll('[data-mode-field]').forEach((field) => { const active = field.dataset.modeField === mode.value; field.hidden = !active; field.querySelectorAll('input, select').forEach((control) => { control.disabled = !active; }); });
+    mode.addEventListener('change', updateMode); updateMode();
+  }
 }
 if (typeof document !== 'undefined') {
 document.querySelectorAll('[data-ssd-form]').forEach((form) => {
   const type = form.dataset.ssdForm, target = document.querySelector('[data-ssd-results]');
   enhanceSsdInputs(form);
-  form.addEventListener('submit', (event) => { event.preventDefault(); const input = Object.fromEntries(new FormData(form)); const fn = ({ lifespan: calculateLifespan, converter: calculateConverter, cache: calculateCache, vm: calculateVm, remaining: calculateRemaining })[type]; const output = fn(input); form.querySelectorAll('[data-error]').forEach((el)=>el.textContent=''); if (output.errors) { Object.entries(output.errors).forEach(([key,msg]) => { const el=form.querySelector(`[data-error="${key}"]`); if(el) el.textContent=msg; }); target.hidden=true; return; } render(target, output.result, type); });
-  form.querySelector('[data-reset-tool]')?.addEventListener('click', () => { form.reset(); form.querySelectorAll('select[data-previous-unit]').forEach((select) => { select.dataset.previousUnit = select.value; }); target.hidden=true; form.querySelectorAll('[data-error]').forEach((el)=>el.textContent=''); });
+  form.addEventListener('submit', (event) => { event.preventDefault(); const input = Object.fromEntries(new FormData(form)); const fn = ({ lifespan: calculateLifespan, converter: calculateConverter, cache: calculateCache, vm: calculateVm, remaining: calculateRemaining })[type]; const output = fn(input); form.querySelectorAll('[data-error]').forEach((el)=>el.textContent=''); form.querySelectorAll('[aria-invalid="true"]').forEach((el)=>el.removeAttribute('aria-invalid')); if (output.errors) { Object.entries(output.errors).forEach(([key,msg]) => { const el=form.querySelector(`[data-error="${key}"]`); const control=form.elements.namedItem(key); if(el) el.textContent=msg; if (control instanceof HTMLElement) control.setAttribute('aria-invalid','true'); }); target.hidden=true; return; } render(target, output.result, type); });
+  form.addEventListener('input', () => { if (!target.hidden) form.requestSubmit(); });
+  form.addEventListener('change', () => { if (!target.hidden) form.requestSubmit(); });
+  form.querySelector('[data-reset-tool]')?.addEventListener('click', () => { form.reset(); form.querySelectorAll('select[data-previous-unit]').forEach((select) => { select.dataset.previousUnit = select.value; }); form.querySelector('[name="metric"]')?.dispatchEvent(new Event('change')); form.querySelector('[name="mode"]')?.dispatchEvent(new Event('change')); target.hidden=true; form.querySelectorAll('[data-error]').forEach((el)=>el.textContent=''); form.querySelectorAll('[aria-invalid="true"]').forEach((el)=>el.removeAttribute('aria-invalid')); });
 });
 document.querySelector('[data-copy-results]')?.addEventListener('click', async () => { const results=document.querySelector('[data-ssd-results]'); try { await navigator.clipboard.writeText(`${document.title}\n${results.innerText}\n${location.href}`); document.querySelector('[data-copy-status]').textContent='Results copied.'; } catch { document.querySelector('[data-copy-status]').textContent='Copy was unavailable; select the results to copy.'; } });
 document.querySelector('[data-print-results]')?.addEventListener('click', () => print());

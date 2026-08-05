@@ -1,2 +1,196 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NAS SSD Cache Endurance Planner | TBW &amp; Daily Writes</title><meta name="description" content="Plan per-drive NAS SSD cache endurance from measured cache writes or estimated ingest, layout behavior, WAF, reserve, and TBW."><link rel="canonical" href="https://datastoragelab.com/tools/ssd-endurance/nas-ssd-cache-endurance-planner/"><meta property="og:title" content="NAS SSD Cache Endurance Planner"><meta property="og:description" content="Model measured or estimated NAS cache writes per SSD."><meta property="og:type" content="website"><meta property="og:url" content="https://datastoragelab.com/tools/ssd-endurance/nas-ssd-cache-endurance-planner/"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/styles.css?v=20260805"><script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7QV39WJ35"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Z7QV39WJ35');</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"NAS SSD Cache Endurance Planner","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","url":"https://datastoragelab.com/tools/ssd-endurance/nas-ssd-cache-endurance-planner/"}</script><script defer src="/assets/js/components.js?v=20260730"></script><script type="module" src="/assets/js/ssd-endurance-tools.mjs"></script></head><body><div data-header></div><main id="main-content"><section class="page-hero"><div class="container"><p class="breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / <a href="/tools/ssd-endurance/">SSD endurance</a> / NAS cache</p><p class="eyebrow">Cache workload planner</p><h1>NAS SSD Cache Endurance Planner</h1><p>Estimate per-drive cache writes without treating mirror writes as stripe writes or an estimate as a measurement.</p></div></section><section class="section"><div class="container tool-layout"><form class="form-card" data-ssd-form="cache" novalidate><h2>Cache inputs</h2><fieldset><legend>Measured or estimated write rate</legend><div class="field-grid"><div class="field"><label for="mode">Input mode</label><select id="mode" name="mode"><option value="measured">Measured cache host writes</option><option value="estimated">Estimated NAS ingest</option></select></div><div class="field"><label for="measured">Measured cache writes</label><input id="measured" name="measured" type="number" min="0" value="200"><p class="helper">GB/day, for measured mode.</p><p class="error" data-error="measured"></p></div><div class="field"><label for="ingest">NAS daily ingest</label><input id="ingest" name="ingest" type="number" min="0" value="300"><p class="helper">GB/day, for estimated mode.</p></div><div class="field"><label for="cachePercent">Written through cache</label><input id="cachePercent" name="cachePercent" type="number" min="0" max="100" value="70"><p class="helper">Percent, for estimated mode.</p></div><div class="field"><label for="layout">Cache layout</label><select id="layout" name="layout"><option value="single">Single</option><option value="mirror">Mirror</option><option value="stripe">Stripe</option><option value="custom">Custom shares</option></select></div><div class="field"><label for="drives">Cache drive count</label><input id="drives" name="drives" type="number" min="1" value="2"><p class="error" data-error="drives"></p></div><div class="field"><label for="shares">Custom shares</label><input id="shares" name="shares" value="50,50"><p class="helper">Comma-separated percentages.</p><p class="error" data-error="shares"></p></div><div class="field"><label for="capacity">Per-drive capacity</label><input id="capacity" name="capacity" type="number" min="1" value="1000"><p class="error" data-error="capacity"></p></div><div class="field"><label for="rated">TBW per drive</label><input id="rated" name="rated" type="number" min=".1" value="600"><p class="error" data-error="rated"></p></div><div class="field"><label for="existing">Existing writes</label><input id="existing" name="existing" type="number" min="0" value="0"><p class="helper">TB per drive.</p><p class="error" data-error="existing"></p></div><div class="field"><label for="waf">WAF</label><input id="waf" name="waf" type="number" min="1" step=".1" value="1.5"><p class="error" data-error="waf"></p></div><div class="field"><label for="years">Planning horizon</label><input id="years" name="years" type="number" min=".1" value="5"><p class="error" data-error="years"></p></div><div class="field"><label for="reserve">Reserve</label><input id="reserve" name="reserve" type="number" min="0" value="20"><p class="error" data-error="reserve"></p></div></div></fieldset><div class="form-actions button-row"><button class="button" type="submit">Plan cache endurance</button><button class="button ghost" type="button" data-reset-tool>Reset</button></div></form><div class="results" data-ssd-results hidden aria-live="polite"><section class="result-card primary"><p class="result-kicker">Per-drive cache result</p><h2 data-result-title></h2><p data-result-summary></p><div class="table-wrap"><table><tbody data-result-rows></tbody></table></div></section><div class="button-row no-print"><button class="button" type="button" data-copy-results>Copy results</button><button class="button secondary" type="button" data-print-results>Print results</button></div><p class="planner-copy-status" data-copy-status></p></div></div></section>
-<section class="section tool-content" data-tool-content><div class="container prose"><p class="eyebrow">Decision guide</p><h2>Plan cache endurance from the writes each drive actually receives</h2><div data-content-section="decide"><h2>What this tool helps you decide</h2><p>A NAS cache can accelerate a workload while concentrating writes on a small set of SSDs. This planner estimates whether each cache drive has enough TBW for a defined horizon. It distinguishes measured cache host writes from an ingest-based estimate and makes the layout rule explicit. In a mirror, every mirrored drive receives the full logical write stream; in a stripe, the model divides that stream across drives. That distinction matters more than a generic pool capacity number.</p></div><div data-content-section="prepare"><h2>Before you start</h2><p>Prefer a measured cache host-write counter over a percentage estimate whenever the NAS exposes one. Otherwise collect a representative daily ingest figure and state what percentage is written through the cache. Identify the cache layout, drive count, per-drive TBW, current writes, and whether the appliance uses write-back or read-only behavior. Enter custom shares only when they are known and make them total 100 percent. Choose WAF and reserve values as documented scenarios.</p></div><div data-content-section="method"><h2>How the calculation works</h2><p>The pool logical rate is either the measured rate or daily ingest multiplied by the cache percentage. Single and mirror layouts assign that full rate to each participating drive. Stripe layouts divide it by the drive count; custom layouts apply supplied percentages. Per-drive effective GB per day multiplies the assigned logical rate by WAF. Required TBW converts effective daily GB across the horizon and adds reserve. The result compares that requirement with remaining per-drive TBW.</p></div><div data-content-section="interpret"><h2>How to interpret the results</h2><p>Read the result per drive, not as an aggregate pool allowance. A strong pool TBW total can conceal a weak individual result when mirrored writes are replicated. The status is a planning signal: Pass offers margin, Marginal needs monitoring and a replacement plan, and Insufficient calls for a different drive class, lower write demand, shorter horizon, or revised cache design. Measured writes should take priority over the estimate when they disagree.</p></div><div data-content-section="example"><h2>Worked example</h2><p>A two-drive mirrored cache receiving 200 GB per day assigns 200 logical GB per day to each SSD, not 100 GB. With WAF 1.5, each drive sees 300 effective GB per day. Over five years with a 20 percent reserve, required endurance is 657 TBW. A 600 TBW drive therefore falls short before existing writes are considered. In a two-drive stripe under this simplified model, the per-drive logical rate becomes 100 GB per day.</p></div><div data-content-section="limits"><h2>Assumptions and limitations</h2><p>The planner cannot infer NAS cache algorithms, metadata churn, cache hit ratio, flush behavior, TRIM, write-back policy, firmware, or vendor-specific mirroring semantics. Read-only cache may not carry the write share assumed here. It does not promise that an endurance rating maps to a physical failure date. Cache activity can be bursty, so a short sample may miss maintenance, sync, rebuild, or backup periods. Treat estimates as a reason to measure rather than a substitute for measurement.</p></div><div data-content-section="next"><h2>Next steps</h2><p>Record cache counters at two dates and run the <a href="/tools/ssd-endurance/ssd-remaining-endurance-planner/">Remaining Endurance Planner</a> for a measured trend. Revisit the underlying <a href="/tools/nas-configuration/hdd-vs-ssd-storage-planner/">HDD vs SSD Storage Planner</a> to decide whether caching is justified by the workload. Keep a replacement interval and a tested backup plan; cache endurance does not replace data recovery planning.</p></div></div></section></main><div data-footer></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NAS SSD Cache Endurance Planner | TBW &amp; Daily Writes</title>
+<meta name="description" content="Plan per-drive NAS SSD cache endurance from measured cache writes or estimated ingest, layout behavior, WAF, reserve, and TBW.">
+<link rel="canonical" href="https://datastoragelab.com/tools/ssd-endurance/nas-ssd-cache-endurance-planner/">
+<meta property="og:title" content="NAS SSD Cache Endurance Planner">
+<meta property="og:description" content="Model measured or estimated NAS cache writes per SSD.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://datastoragelab.com/tools/ssd-endurance/nas-ssd-cache-endurance-planner/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/styles.css?v=20260805">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7QV39WJ35">
+</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Z7QV39WJ35');</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"NAS SSD Cache Endurance Planner","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","url":"https://datastoragelab.com/tools/ssd-endurance/nas-ssd-cache-endurance-planner/"}</script>
+<script defer src="/assets/js/components.js?v=20260730">
+</script>
+<script type="module" src="/assets/js/ssd-endurance-tools.mjs">
+</script>
+</head>
+<body>
+<div data-header>
+</div>
+<main id="main-content">
+<section class="page-hero">
+<div class="container">
+<p class="breadcrumb">
+<a href="/">Home</a> / <a href="/tools/">Tools</a> / <a href="/tools/ssd-endurance/">SSD endurance</a> / NAS cache</p>
+<p class="eyebrow">Cache workload planner</p>
+<h1>NAS SSD Cache Endurance Planner</h1>
+<p>Estimate per-drive cache writes without treating mirror writes as stripe writes or an estimate as a measurement.</p>
+</div>
+</section>
+<section class="section">
+<div class="container tool-layout">
+<form class="form-card" data-ssd-form="cache" novalidate>
+<h2>Cache inputs</h2>
+<fieldset>
+<legend>Measured or estimated write rate</legend>
+<div class="field-grid">
+<div class="field full">
+<label for="mode">Input mode</label>
+<select id="mode" name="mode" class="ssd-form-select">
+<option value="measured">Measured cache host writes</option>
+<option value="estimated">Estimated NAS ingest</option>
+</select>
+<p class="help" data-mode-help>Use measured host writes when available; otherwise estimate the write share from NAS ingest.</p>
+</div>
+<div class="field" data-mode-field="measured">
+<label for="measured">Measured cache writes</label>
+<div class="ssd-unit-group"><input id="measured" name="measured" type="number" min="0" value="200"><span class="ssd-unit-addon">GB/day</span></div>
+<p class="help">Used only in measured mode.</p>
+<p class="error" data-error="measured">
+</p>
+</div>
+<div class="field" data-mode-field="estimated">
+<label for="ingest">NAS daily ingest</label>
+<div class="ssd-unit-group"><input id="ingest" name="ingest" type="number" min="0" value="300"><span class="ssd-unit-addon">GB/day</span></div>
+<p class="help">Used only in estimated mode.</p>
+</div>
+<div class="field" data-mode-field="estimated">
+<label for="cachePercent">Written through cache</label>
+<div class="ssd-unit-group"><input id="cachePercent" name="cachePercent" type="number" min="0" max="100" value="70"><span class="ssd-unit-addon">%</span></div>
+<p class="help">Used only in estimated mode.</p>
+</div>
+<div class="field">
+<label for="layout">Cache layout</label>
+<select id="layout" name="layout">
+<option value="single">Single</option>
+<option value="mirror">Mirror</option>
+<option value="stripe">Stripe</option>
+<option value="custom">Custom shares</option>
+</select>
+</div>
+<div class="field">
+<label for="drives">Cache drive count</label>
+<input id="drives" name="drives" type="number" min="1" value="2">
+<p class="error" data-error="drives">
+</p>
+</div>
+<div class="field">
+<label for="shares">Custom shares</label>
+<input id="shares" name="shares" value="50,50">
+<p class="helper">Comma-separated percentages.</p>
+<p class="error" data-error="shares">
+</p>
+</div>
+<div class="field">
+<label for="capacity">Per-drive capacity</label>
+<div class="ssd-unit-group"><input id="capacity" name="capacity" type="number" min="1" value="1000"><select class="ssd-unit-select" name="capacityUnit" aria-label="Per-drive capacity unit"><option>GB</option><option>TB</option></select></div>
+<p class="error" data-error="capacity">
+</p>
+</div>
+<div class="field">
+<label for="rated">TBW per drive</label>
+<div class="ssd-unit-group"><input id="rated" name="rated" type="number" min=".1" value="600"><select class="ssd-unit-select" name="enduranceUnit" aria-label="TBW per drive unit"><option>TBW</option><option>PBW</option></select></div>
+<p class="error" data-error="rated">
+</p>
+</div>
+<div class="field">
+<label for="existing">Existing writes</label>
+<div class="ssd-unit-group"><input id="existing" name="existing" type="number" min="0" value="0"><select class="ssd-unit-select" name="existingUnit" aria-label="Existing writes unit"><option>TB</option><option>PB</option></select></div>
+<p class="help">Per drive; host writes already recorded.</p>
+<p class="error" data-error="existing">
+</p>
+</div>
+<div class="field">
+<label for="waf">WAF</label>
+<div class="ssd-unit-group"><input id="waf" name="waf" type="number" min="1" step=".1" value="1.5"><span class="ssd-unit-addon">WAF</span></div>
+<p class="error" data-error="waf">
+</p>
+</div>
+<div class="field">
+<label for="years">Planning horizon</label>
+<div class="ssd-unit-group"><input id="years" name="years" type="number" min=".1" value="5"><span class="ssd-unit-addon">years</span></div>
+<p class="error" data-error="years">
+</p>
+</div>
+<div class="field">
+<label for="reserve">Reserve</label>
+<div class="ssd-unit-group"><input id="reserve" name="reserve" type="number" min="0" value="20"><span class="ssd-unit-addon">%</span></div>
+<p class="error" data-error="reserve">
+</p>
+</div>
+</div>
+</fieldset>
+<div class="form-actions button-row">
+<button class="button" type="submit">Plan cache endurance</button>
+<button class="button ghost" type="button" data-reset-tool>Reset</button>
+</div>
+</form>
+<div class="results" data-ssd-results hidden aria-live="polite">
+<section class="result-card primary">
+<p class="result-kicker">Per-drive cache result</p>
+<h2 data-result-title>
+</h2>
+<p data-result-summary>
+</p>
+<div class="table-wrap">
+<table>
+<tbody data-result-rows>
+</tbody>
+</table>
+</div>
+</section>
+<div class="button-row no-print">
+<button class="button" type="button" data-copy-results>Copy results</button>
+<button class="button secondary" type="button" data-print-results>Print results</button>
+</div>
+<p class="planner-copy-status" data-copy-status>
+</p>
+</div>
+</div>
+</section>
+<section class="section tool-content" data-tool-content>
+<div class="container prose">
+<p class="eyebrow">Decision guide</p>
+<h2>Plan cache endurance from the writes each drive actually receives</h2>
+<div data-content-section="decide">
+<h2>What this tool helps you decide</h2>
+<p>A NAS cache can accelerate a workload while concentrating writes on a small set of SSDs. This planner estimates whether each cache drive has enough TBW for a defined horizon. It distinguishes measured cache host writes from an ingest-based estimate and makes the layout rule explicit. In a mirror, every mirrored drive receives the full logical write stream; in a stripe, the model divides that stream across drives. That distinction matters more than a generic pool capacity number.</p>
+</div>
+<div data-content-section="prepare">
+<h2>Before you start</h2>
+<p>Prefer a measured cache host-write counter over a percentage estimate whenever the NAS exposes one. Otherwise collect a representative daily ingest figure and state what percentage is written through the cache. Identify the cache layout, drive count, per-drive TBW, current writes, and whether the appliance uses write-back or read-only behavior. Enter custom shares only when they are known and make them total 100 percent. Choose WAF and reserve values as documented scenarios.</p>
+</div>
+<div data-content-section="method">
+<h2>How the calculation works</h2>
+<p>The pool logical rate is either the measured rate or daily ingest multiplied by the cache percentage. Single and mirror layouts assign that full rate to each participating drive. Stripe layouts divide it by the drive count; custom layouts apply supplied percentages. Per-drive effective GB per day multiplies the assigned logical rate by WAF. Required TBW converts effective daily GB across the horizon and adds reserve. The result compares that requirement with remaining per-drive TBW.</p>
+</div>
+<div data-content-section="interpret">
+<h2>How to interpret the results</h2>
+<p>Read the result per drive, not as an aggregate pool allowance. A strong pool TBW total can conceal a weak individual result when mirrored writes are replicated. The status is a planning signal: Pass offers margin, Marginal needs monitoring and a replacement plan, and Insufficient calls for a different drive class, lower write demand, shorter horizon, or revised cache design. Measured writes should take priority over the estimate when they disagree.</p>
+</div>
+<div data-content-section="example">
+<h2>Worked example</h2>
+<p>A two-drive mirrored cache receiving 200 GB per day assigns 200 logical GB per day to each SSD, not 100 GB. With WAF 1.5, each drive sees 300 effective GB per day. Over five years with a 20 percent reserve, required endurance is 657 TBW. A 600 TBW drive therefore falls short before existing writes are considered. In a two-drive stripe under this simplified model, the per-drive logical rate becomes 100 GB per day.</p>
+</div>
+<div data-content-section="limits">
+<h2>Assumptions and limitations</h2>
+<p>The planner cannot infer NAS cache algorithms, metadata churn, cache hit ratio, flush behavior, TRIM, write-back policy, firmware, or vendor-specific mirroring semantics. Read-only cache may not carry the write share assumed here. It does not promise that an endurance rating maps to a physical failure date. Cache activity can be bursty, so a short sample may miss maintenance, sync, rebuild, or backup periods. Treat estimates as a reason to measure rather than a substitute for measurement.</p>
+</div>
+<div data-content-section="next">
+<h2>Next steps</h2>
+<p>Record cache counters at two dates and run the <a href="/tools/ssd-endurance/ssd-remaining-endurance-planner/">Remaining Endurance Planner</a> for a measured trend. Revisit the underlying <a href="/tools/nas-configuration/hdd-vs-ssd-storage-planner/">HDD vs SSD Storage Planner</a> to decide whether caching is justified by the workload. Keep a replacement interval and a tested backup plan; cache endurance does not replace data recovery planning.</p>
+</div>
+</div>
+</section>
+</main>
+<div data-footer>
+</div>
+</body>
+</html>

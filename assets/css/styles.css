@@ -115,20 +115,21 @@ legend { padding: 0 .35rem; color: var(--ink); font-size: .93rem; font-weight: 8
 .field { min-width: 0; }
 .field.full { grid-column: 1 / -1; }
 label { display: block; margin-bottom: .3rem; color: var(--ink-soft); font-size: .88rem; font-weight: 700; }
-.help { margin: .3rem 0 0; color: var(--slate); font-size: .76rem; }
+.help, .helper { margin: .3rem 0 0; color: var(--slate); font-size: .76rem; }
 .input-wrap { position: relative; }
 .input-wrap span { position: absolute; top: 50%; right: .7rem; transform: translateY(-50%); color: var(--slate); font-size: .82rem; pointer-events: none; }
 input, select { width: 100%; border: 1px solid #bcccdc; border-radius: 8px; color: var(--ink); background: white; padding: .58rem .7rem; }
 .input-wrap input { padding-right: 3.65rem; }
-.ssd-unit-group { display: flex; min-width: 0; }
+.ssd-unit-group { display: flex; min-width: 0; min-height: 44px; }
 .ssd-unit-group > input, .ssd-unit-group > .input-wrap { min-width: 0; flex: 1 1 auto; }
 .ssd-unit-group > input, .ssd-unit-group > .input-wrap input { border-radius: 8px 0 0 8px; }
 .ssd-unit-group > .input-wrap input { width: 100%; }
-.ssd-unit-select, .ssd-unit-addon { flex: 0 0 112px; width: 112px; min-height: 44px; border: 1px solid #bcccdc; border-left: 0; border-radius: 0 8px 8px 0; background: #f7fafc; color: var(--ink-soft); }
-.ssd-unit-select { padding: .58rem 1.75rem .58rem .65rem; }
+.ssd-unit-select, .ssd-unit-addon { flex: 0 0 108px; width: 108px; min-height: 44px; border: 1px solid #bcccdc; border-left: 0; border-radius: 0 8px 8px 0; background: #f7fafc; color: var(--ink-soft); }
+.ssd-unit-select { padding: .58rem 1.5rem .58rem .65rem; }
 .ssd-unit-addon { display: inline-flex; align-items: center; padding: .58rem .7rem; font-size: .82rem; font-weight: 700; }
 .ssd-unit-group:focus-within { outline: 3px solid #f59e0b; outline-offset: 3px; border-radius: 8px; }
 .ssd-unit-group:focus-within input, .ssd-unit-group:focus-within select { outline: 0; }
+.field[hidden] { display: none; }
 input[aria-invalid="true"] { border-color: var(--danger); background: var(--danger-soft); }
 .error { min-height: 1.15rem; margin: .2rem 0 0; color: var(--danger); font-size: .78rem; font-weight: 650; }
 .form-actions { margin-top: 1rem; }

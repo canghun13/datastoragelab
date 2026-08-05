@@ -1,2 +1,193 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SSD Endurance &amp; Lifespan Calculator | TBW, DWPD, WAF</title><meta name="description" content="Test SSD TBW against daily host writes, WAF sensitivity, existing writes, reserve, warranty duration, and a planning horizon."><link rel="canonical" href="https://datastoragelab.com/tools/ssd-endurance/ssd-endurance-lifespan-calculator/"><meta property="og:title" content="SSD Endurance &amp; Lifespan Calculator"><meta property="og:description" content="Plan SSD write endurance with transparent TBW and WAF scenarios."><meta property="og:type" content="website"><meta property="og:url" content="https://datastoragelab.com/tools/ssd-endurance/ssd-endurance-lifespan-calculator/"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/styles.css?v=20260805"><script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7QV39WJ35"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Z7QV39WJ35');</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SSD Endurance and Lifespan Calculator","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","url":"https://datastoragelab.com/tools/ssd-endurance/ssd-endurance-lifespan-calculator/"}</script><script defer src="/assets/js/components.js?v=20260730"></script><script type="module" src="/assets/js/ssd-endurance-tools.mjs"></script></head><body><div data-header></div><main id="main-content"><section class="page-hero"><div class="container"><p class="breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / <a href="/tools/ssd-endurance/">SSD endurance</a> / Lifespan calculator</p><p class="eyebrow">Candidate drive test</p><h1>SSD Endurance &amp; Lifespan Calculator</h1><p>Test rated TBW against measured or planned host writes with low, base, and high WAF scenarios.</p></div></section><section class="section"><div class="container tool-layout"><form class="form-card" data-ssd-form="lifespan" novalidate><h2>Drive and workload inputs</h2><fieldset><legend>Rating, workload, and reserve</legend><div class="field-grid"><div class="field"><label for="capacity">SSD capacity</label><input id="capacity" name="capacity" type="number" min="1" value="1000"><select name="capacityUnit" aria-label="Capacity unit"><option>GB</option><option>TB</option></select><p class="error" data-error="capacity"></p></div><div class="field"><label for="rated">Rated endurance</label><input id="rated" name="rated" type="number" min=".1" value="600"><select name="enduranceUnit" aria-label="Endurance unit"><option>TBW</option><option>PBW</option></select><p class="error" data-error="rated"></p></div><div class="field"><label for="warranty">Warranty period</label><input id="warranty" name="warranty" type="number" min=".1" value="5"><p class="error" data-error="warranty"></p></div><div class="field"><label for="writes">Average logical writes</label><input id="writes" name="writes" type="number" min="0" value="120"><p class="error" data-error="writes"></p></div><div class="field"><label for="existing">Existing host writes</label><input id="existing" name="existing" type="number" min="0" value="0"><p class="helper">TB; optional.</p><p class="error" data-error="existing"></p></div><div class="field"><label for="low">Low WAF</label><input id="low" name="low" type="number" min="1" step=".1" value="1.1"><p class="error" data-error="low"></p></div><div class="field"><label for="base">Base WAF</label><input id="base" name="base" type="number" min="1" step=".1" value="1.5"><p class="error" data-error="base"></p></div><div class="field"><label for="high">High WAF</label><input id="high" name="high" type="number" min="1" step=".1" value="2"><p class="error" data-error="high"></p></div><div class="field"><label for="horizon">Planning horizon</label><input id="horizon" name="horizon" type="number" min=".1" value="5"><p class="error" data-error="horizon"></p></div><div class="field"><label for="reserve">Endurance reserve</label><input id="reserve" name="reserve" type="number" min="0" value="20"><p class="error" data-error="reserve"></p></div></div></fieldset><div class="form-actions button-row"><button class="button" type="submit">Calculate endurance</button><button class="button ghost" type="button" data-reset-tool>Reset</button></div></form><div class="results" data-ssd-results hidden aria-live="polite"><section class="result-card primary"><p class="result-kicker">Endurance outlook</p><h2 data-result-title></h2><p data-result-summary></p><div class="table-wrap"><table><thead><tr><th>Scenario</th><th>Years to rating</th><th>Required TBW</th><th>Margin</th></tr></thead><tbody data-result-rows></tbody></table></div></section><div class="button-row no-print"><button class="button" type="button" data-copy-results>Copy results</button><button class="button secondary" type="button" data-print-results>Print results</button></div><p class="planner-copy-status" data-copy-status></p></div></div></section>
-<section class="section tool-content" data-tool-content><div class="container prose"><p class="eyebrow">Decision guide</p><h2>Turn a write workload into an endurance planning scenario</h2><div data-content-section="decide"><h2>What this tool helps you decide</h2><p>This calculator answers whether a specific SSD rating leaves adequate write headroom for a stated planning horizon. It separates the drive capacity, TBW rating, current host-write counter, daily logical workload, and a chosen WAF scenario. The decision is not “will this drive fail?” It is whether the warranty-style endurance allowance appears proportionate to a workload you can describe. Low, base, and high cases make uncertainty visible instead of hiding it in one supposedly typical multiplier.</p></div><div data-content-section="prepare"><h2>Before you start</h2><p>Gather the capacity, TBW or PBW rating, warranty years, and existing host writes from a current device or specification sheet. Estimate a normal daily logical write rate from monitoring over enough days to include busy periods. Pick WAF scenarios that your team can explain; they are planning assumptions, not certified values. Enter a reserve for uncertainty or a desired early-replacement buffer. A zero write rate is valid evidence only if measurement actually supports it.</p></div><div data-content-section="method"><h2>How the calculation works</h2><p>Effective writes per day equal logical GB per day multiplied by WAF. Required TBW equals effective daily writes times 365 times the planning years, divided by 1,000; the reserve increases that requirement. Remaining TBW is rated TBW minus existing host writes. Years to rating divides remaining TBW by effective annual writes. Rated DWPD uses rated TBW, capacity, and warranty years. Actual workload DWPD uses effective daily writes divided by capacity GB.</p></div><div data-content-section="interpret"><h2>How to interpret the results</h2><p>Pass means the base scenario exceeds the requested need with room; Marginal means it meets the model but leaves little room; Insufficient means the planned requirement is higher than remaining rating. Compare all three scenarios rather than treating the base case as fact. Existing writes reduce remaining allowance immediately. If the rating is already exceeded, stop the forecast and verify the counter and units. The result informs maintenance and procurement planning, not a prediction of physical failure.</p></div><div data-content-section="example"><h2>Worked example</h2><p>A 1 TB SSD rated for 600 TBW, with 120 logical GB per day, a base WAF of 1.5, a five-year horizon, and 20% reserve needs 394.2 TBW. With no existing writes, its base margin is about 1.52× and its base endurance duration is about 9.1 years. The low and high WAF rows show why a single lifespan claim would be misleading. Adding 150 TB of observed writes cuts every remaining result.</p></div><div data-content-section="limits"><h2>Assumptions and limitations</h2><p>TBW is an endurance and warranty-planning metric, not a clock for physical failure. The calculator does not model temperature, controller health, interface errors, power events, wear leveling, firmware behavior, spare area, workload bursts, or manufacturer warranty exclusions. WAF may vary with data pattern and operating conditions. Decimal units are used for the formula. Do not call a scenario guaranteed, manufacturer-certified, or typical unless your evidence independently supports that wording.</p></div><div data-content-section="next"><h2>Next steps</h2><p>Convert unfamiliar labels in the <a href="/tools/ssd-endurance/tbw-dwpd-converter/">TBW &amp; DWPD Converter</a>, then measure counter changes in the <a href="/tools/ssd-endurance/ssd-remaining-endurance-planner/">Remaining Endurance Planner</a>. For cache or virtual workloads, model per-drive distribution before buying. Keep the result with its WAF, reserve, measurement window, and source documentation so a later review can explain why the replacement budget was chosen.</p></div></div></section></main><div data-footer></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SSD Endurance &amp; Lifespan Calculator | TBW, DWPD, WAF</title>
+<meta name="description" content="Test SSD TBW against daily host writes, WAF sensitivity, existing writes, reserve, warranty duration, and a planning horizon.">
+<link rel="canonical" href="https://datastoragelab.com/tools/ssd-endurance/ssd-endurance-lifespan-calculator/">
+<meta property="og:title" content="SSD Endurance &amp; Lifespan Calculator">
+<meta property="og:description" content="Plan SSD write endurance with transparent TBW and WAF scenarios.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://datastoragelab.com/tools/ssd-endurance/ssd-endurance-lifespan-calculator/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/styles.css?v=20260805">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7QV39WJ35">
+</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Z7QV39WJ35');</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SSD Endurance and Lifespan Calculator","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","url":"https://datastoragelab.com/tools/ssd-endurance/ssd-endurance-lifespan-calculator/"}</script>
+<script defer src="/assets/js/components.js?v=20260730">
+</script>
+<script type="module" src="/assets/js/ssd-endurance-tools.mjs">
+</script>
+</head>
+<body>
+<div data-header>
+</div>
+<main id="main-content">
+<section class="page-hero">
+<div class="container">
+<p class="breadcrumb">
+<a href="/">Home</a> / <a href="/tools/">Tools</a> / <a href="/tools/ssd-endurance/">SSD endurance</a> / Lifespan calculator</p>
+<p class="eyebrow">Candidate drive test</p>
+<h1>SSD Endurance &amp; Lifespan Calculator</h1>
+<p>Test rated TBW against measured or planned host writes with low, base, and high WAF scenarios.</p>
+</div>
+</section>
+<section class="section">
+<div class="container tool-layout">
+<form class="form-card" data-ssd-form="lifespan" novalidate>
+<h2>Drive and workload inputs</h2>
+<fieldset>
+<legend>Rating, workload, and reserve</legend>
+<div class="field-grid">
+<div class="field">
+<label for="capacity">SSD capacity</label>
+<div class="ssd-unit-group">
+<input id="capacity" name="capacity" type="number" min="1" value="1000">
+<select class="ssd-unit-select" name="capacityUnit" aria-label="Capacity unit">
+<option>GB</option>
+<option>TB</option>
+</select>
+</div>
+<p class="error" data-error="capacity">
+</p>
+</div>
+<div class="field">
+<label for="rated">Rated endurance</label>
+<div class="ssd-unit-group">
+<input id="rated" name="rated" type="number" min=".1" value="600">
+<select class="ssd-unit-select" name="enduranceUnit" aria-label="Endurance unit">
+<option>TBW</option>
+<option>PBW</option>
+</select>
+</div>
+<p class="error" data-error="rated">
+</p>
+</div>
+<div class="field">
+<label for="warranty">Warranty period</label>
+<div class="ssd-unit-group"><input id="warranty" name="warranty" type="number" min=".1" value="5"><span class="ssd-unit-addon">years</span></div>
+<p class="error" data-error="warranty">
+</p>
+</div>
+<div class="field">
+<label for="writes">Average logical writes</label>
+<div class="ssd-unit-group"><input id="writes" name="writes" type="number" min="0" value="120"><span class="ssd-unit-addon">GB/day</span></div>
+<p class="error" data-error="writes">
+</p>
+</div>
+<div class="field">
+<label for="existing">Existing host writes</label>
+<div class="ssd-unit-group"><input id="existing" name="existing" type="number" min="0" value="0"><select class="ssd-unit-select" name="existingUnit" aria-label="Existing writes unit"><option>TB</option><option>PB</option></select></div>
+<p class="help">Optional; host writes already recorded by the drive.</p>
+<p class="error" data-error="existing">
+</p>
+</div>
+<div class="field">
+<label for="low">Low WAF</label>
+<div class="ssd-unit-group"><input id="low" name="low" type="number" min="1" step=".1" value="1.1"><span class="ssd-unit-addon">WAF</span></div>
+<p class="error" data-error="low">
+</p>
+</div>
+<div class="field">
+<label for="base">Base WAF</label>
+<div class="ssd-unit-group"><input id="base" name="base" type="number" min="1" step=".1" value="1.5"><span class="ssd-unit-addon">WAF</span></div>
+<p class="error" data-error="base">
+</p>
+</div>
+<div class="field">
+<label for="high">High WAF</label>
+<div class="ssd-unit-group"><input id="high" name="high" type="number" min="1" step=".1" value="2"><span class="ssd-unit-addon">WAF</span></div>
+<p class="error" data-error="high">
+</p>
+</div>
+<div class="field">
+<label for="horizon">Planning horizon</label>
+<div class="ssd-unit-group"><input id="horizon" name="horizon" type="number" min=".1" value="5"><span class="ssd-unit-addon">years</span></div>
+<p class="error" data-error="horizon">
+</p>
+</div>
+<div class="field">
+<label for="reserve">Endurance reserve</label>
+<div class="ssd-unit-group"><input id="reserve" name="reserve" type="number" min="0" value="20"><span class="ssd-unit-addon">%</span></div>
+<p class="error" data-error="reserve">
+</p>
+</div>
+</div>
+</fieldset>
+<div class="form-actions button-row">
+<button class="button" type="submit">Calculate endurance</button>
+<button class="button ghost" type="button" data-reset-tool>Reset</button>
+</div>
+</form>
+<div class="results" data-ssd-results hidden aria-live="polite">
+<section class="result-card primary">
+<p class="result-kicker">Endurance outlook</p>
+<h2 data-result-title>
+</h2>
+<p data-result-summary>
+</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Years to rating</th>
+<th>Required TBW</th>
+<th>Margin</th>
+</tr>
+</thead>
+<tbody data-result-rows>
+</tbody>
+</table>
+</div>
+</section>
+<div class="button-row no-print">
+<button class="button" type="button" data-copy-results>Copy results</button>
+<button class="button secondary" type="button" data-print-results>Print results</button>
+</div>
+<p class="planner-copy-status" data-copy-status>
+</p>
+</div>
+</div>
+</section>
+<section class="section tool-content" data-tool-content>
+<div class="container prose">
+<p class="eyebrow">Decision guide</p>
+<h2>Turn a write workload into an endurance planning scenario</h2>
+<div data-content-section="decide">
+<h2>What this tool helps you decide</h2>
+<p>This calculator answers whether a specific SSD rating leaves adequate write headroom for a stated planning horizon. It separates the drive capacity, TBW rating, current host-write counter, daily logical workload, and a chosen WAF scenario. The decision is not “will this drive fail?” It is whether the warranty-style endurance allowance appears proportionate to a workload you can describe. Low, base, and high cases make uncertainty visible instead of hiding it in one supposedly typical multiplier.</p>
+</div>
+<div data-content-section="prepare">
+<h2>Before you start</h2>
+<p>Gather the capacity, TBW or PBW rating, warranty years, and existing host writes from a current device or specification sheet. Estimate a normal daily logical write rate from monitoring over enough days to include busy periods. Pick WAF scenarios that your team can explain; they are planning assumptions, not certified values. Enter a reserve for uncertainty or a desired early-replacement buffer. A zero write rate is valid evidence only if measurement actually supports it.</p>
+</div>
+<div data-content-section="method">
+<h2>How the calculation works</h2>
+<p>Effective writes per day equal logical GB per day multiplied by WAF. Required TBW equals effective daily writes times 365 times the planning years, divided by 1,000; the reserve increases that requirement. Remaining TBW is rated TBW minus existing host writes. Years to rating divides remaining TBW by effective annual writes. Rated DWPD uses rated TBW, capacity, and warranty years. Actual workload DWPD uses effective daily writes divided by capacity GB.</p>
+</div>
+<div data-content-section="interpret">
+<h2>How to interpret the results</h2>
+<p>Pass means the base scenario exceeds the requested need with room; Marginal means it meets the model but leaves little room; Insufficient means the planned requirement is higher than remaining rating. Compare all three scenarios rather than treating the base case as fact. Existing writes reduce remaining allowance immediately. If the rating is already exceeded, stop the forecast and verify the counter and units. The result informs maintenance and procurement planning, not a prediction of physical failure.</p>
+</div>
+<div data-content-section="example">
+<h2>Worked example</h2>
+<p>A 1 TB SSD rated for 600 TBW, with 120 logical GB per day, a base WAF of 1.5, a five-year horizon, and 20% reserve needs 394.2 TBW. With no existing writes, its base margin is about 1.52× and its base endurance duration is about 9.1 years. The low and high WAF rows show why a single lifespan claim would be misleading. Adding 150 TB of observed writes cuts every remaining result.</p>
+</div>
+<div data-content-section="limits">
+<h2>Assumptions and limitations</h2>
+<p>TBW is an endurance and warranty-planning metric, not a clock for physical failure. The calculator does not model temperature, controller health, interface errors, power events, wear leveling, firmware behavior, spare area, workload bursts, or manufacturer warranty exclusions. WAF may vary with data pattern and operating conditions. Decimal units are used for the formula. Do not call a scenario guaranteed, manufacturer-certified, or typical unless your evidence independently supports that wording.</p>
+</div>
+<div data-content-section="next">
+<h2>Next steps</h2>
+<p>Convert unfamiliar labels in the <a href="/tools/ssd-endurance/tbw-dwpd-converter/">TBW &amp; DWPD Converter</a>, then measure counter changes in the <a href="/tools/ssd-endurance/ssd-remaining-endurance-planner/">Remaining Endurance Planner</a>. For cache or virtual workloads, model per-drive distribution before buying. Keep the result with its WAF, reserve, measurement window, and source documentation so a later review can explain why the replacement budget was chosen.</p>
+</div>
+</div>
+</section>
+</main>
+<div data-footer>
+</div>
+</body>
+</html>

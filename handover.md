@@ -364,6 +364,34 @@ Record durable architectural, product, infrastructure, or operational decisions 
 
 Add new entries at the top.
 
+### 2026-08-05 — Repair SSD endurance calculator form regression
+
+**Starting state**
+
+- Branch: `main`; starting commit and live GitHub `main`: `576ab23228f0565d7cfc5c793cf813350b666eaa`.
+- `git fetch --prune origin main` succeeded; local `HEAD`, `origin/main`, and `git ls-remote origin refs/heads/main` matched with `0` ahead and `0` behind.
+- Working tree was clean before this task.
+
+**Completed**
+
+- Rebuilt source form markup for T34–T38 around shared compact `ssd-unit-group` controls: selectable GB/TB, TBW/PBW, and TB/PB pairs; fixed units as one suffix.
+- Removed duplicate and detached unit text, including converter `years years`, standalone GB/day and days helpers, and repeated T38 decimal/percentage wording. Existing-write notes now sit below their own control.
+- Standardized the five forms' control dimensions, focus treatment, helper style, and responsive layout. The 108px select/add-on leaves room for the arrow and stays one line at 390px.
+- Added T35 source-metric feedback and T36 mode-aware display/disabled controls, so only active measured or estimated cache inputs are submitted.
+- Extended unit normalization to cache, VM/container, and remaining-endurance calculations. Equivalent GB/TB, TBW/PBW, and TB/PB values produce equal results; exhausted existing-write states are explicit.
+- Kept T34's verified reserve model: reserve is retained from remaining endurance. The reference scenario remains 219 TB logical writes, 328.5 TB base physical writes, 480 TB usable endurance, 151.5 TB headroom, and about 0.329 rated DWPD.
+- Added automated source-structure and unit-equivalence checks for the SSD forms and calculators.
+
+**Validation**
+
+- `node --check assets/js/ssd-endurance-tools.mjs`, `node tools/qa.mjs`, `node tools/content-qa.mjs`, and `git diff --check` passed.
+- Browser QA covered T34–T38 at 1440, 1280, 1024, 768, and 390px: 25 page/width checks had zero horizontal overflow, result-panel clipping, unit-control wrapping, select-width failures, and console errors. A 390px visual check confirmed the compact cache form and 108px suffix/select treatment.
+- T34 produced the reference 240.9/328.5/438 TB low/base/high rows, retained the same result after GB→TB, TBW→PBW, and TB→PB changes, and reset to 1000 GB, 600 TBW, and 0 TB. T36 toggled measured/estimated mode correctly, disabling the inactive fields. All five calculators produced results, copied successfully, printed through their visible action, and reset cleanly.
+
+**Next safe task**
+
+- The verified SSD form-regression repair is committed as `Fix SSD endurance calculator form regression`; push it and verify local `HEAD`, `origin/main`, and live GitHub `main` match before considering the task complete. Do not alter URLs, sitemap, header, footer, GA4, CNAME, or non-SSD calculator behavior.
+
 ### 2026-07-30 — Build Phase 1 public site and core planner
 
 **Starting state**

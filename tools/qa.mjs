@@ -61,6 +61,14 @@ const h09 = file('tools/ssd-endurance/index.html');
 for (const slug of ssdTools) check(h09.includes(`/tools/ssd-endurance/${slug}/`), `H09 is missing ${slug}`);
 check(h09.includes('/guides/ssd-endurance-for-nas-cache-vms-backups/') && h09.includes('/compare/consumer-vs-nas-vs-enterprise-ssd-endurance/'), 'H09 is missing its guide or comparison');
 for (const slug of ssdTools) { const page = file(`tools/ssd-endurance/${slug}/index.html`); check(page.includes('data-ssd-form') && page.includes('data-ssd-results') && page.includes('data-copy-results') && page.includes('data-print-results') && page.includes('data-reset-tool'), `${slug}: SSD calculator shell or actions missing`); check(page.includes(ssdHub), `${slug}: return link to H09 missing`); }
+for (const slug of ssdTools) {
+  const page = file(`tools/ssd-endurance/${slug}/index.html`);
+  check((page.match(/class="ssd-unit-group"/g) ?? []).length >= 3, `${slug}: compact unit input groups are missing`);
+  check(!/years\s*<\/span>\s*<\/div>\s*<p[^>]*>\s*years/i.test(page), `${slug}: duplicate years suffix found`);
+  check(!/>\s*(?:GB\/day|Days|Percent of rated TBW|Decimal GB)\.\s*</i.test(page), `${slug}: standalone unit helper found`);
+}
+const cachePage = file('tools/ssd-endurance/nas-ssd-cache-endurance-planner/index.html');
+check(cachePage.includes('data-mode-field="measured"') && cachePage.includes('data-mode-field="estimated"') && cachePage.includes('Measured cache host writes') && cachePage.includes('Estimated NAS ingest'), 'Cache planner mode controls are incomplete');
 for (const jsPath of allFiles(join(root, 'assets', 'js')).filter((path) => /\.m?js$/.test(path))) { const result = spawnSync(process.execPath, ['--check', jsPath], { encoding: 'utf8' }); check(result.status === 0, `JavaScript syntax error in ${relative(root, jsPath)}: ${result.stderr}`); }
 const baseInput = { dataSize: 4, growthRate: 20, years: 5, devices: 3, users: 2, importantData: 85, retention: 'balanced', localCopies: '1', offsite: 'yes', tolerance: 'single', budget: 'balanced', uploadMbps: 20, lanMbps: '1000', headroom: 25 };
 check(calculatePlan(baseInput).plan?.usableTb > 4, 'Phase 1 normal household calculation failed'); check(calculatePlan({ ...baseInput, dataSize: -1 }).errors.dataSize, 'Phase 1 invalid input validation failed');
@@ -137,6 +145,12 @@ check(calculateLifespan({...lifespanAudit, capacity:1, capacityUnit:'TB', rated:
 check(calculateLifespan({...lifespanAudit, low:2, base:1.5, high:1.1}).errors?.base, 'WAF ordering validation failed');
 check(calculateLifespan({...lifespanAudit, existing:600}).errors?.existing, 'Exhausted endurance validation failed');
 check(calculateLifespan({...lifespanAudit, reserve:81}).errors?.reserve, 'Reserve upper-bound validation failed');
+const cacheUnitAudit = { mode:'measured', measured:200, layout:'single', drives:1, capacity:1000, capacityUnit:'GB', rated:600, enduranceUnit:'TBW', existing:0, existingUnit:'TB', waf:1.5, years:5, reserve:20 };
+check(Math.abs(calculateCache(cacheUnitAudit).result.margin - calculateCache({...cacheUnitAudit, capacity:1, capacityUnit:'TB', rated:.6, enduranceUnit:'PBW', existing:0, existingUnit:'PB'}).result.margin) < 1e-12, 'Cache planner selectable unit equivalence failed');
+const vmUnitAudit = { vms:4, perVm:20, containers:30, logs:40, snapshots:25, copies:2, shares:'50,50', capacity:1000, capacityUnit:'GB', rated:1200, enduranceUnit:'TBW', existing:0, existingUnit:'TB', waf:1.7, years:5 };
+check(Math.abs(calculateVm(vmUnitAudit).result.margin - calculateVm({...vmUnitAudit, capacity:1, capacityUnit:'TB', rated:1.2, enduranceUnit:'PBW', existing:0, existingUnit:'PB'}).result.margin) < 1e-12, 'VM planner selectable unit equivalence failed');
+const remainingUnitAudit = { rated:600, enduranceUnit:'TBW', capacity:1000, capacityUnit:'GB', unit:'tb', previous:100, current:115, days:30, smart:20, threshold:80, growth:10, lead:60 };
+check(Math.abs(calculateRemaining(remainingUnitAudit).result.usage - calculateRemaining({...remainingUnitAudit, rated:.6, enduranceUnit:'PBW', capacity:1, capacityUnit:'TB'}).result.usage) < 1e-12, 'Remaining planner selectable unit equivalence failed');
 for (const path of expected.filter((page) => /storage-needs\/(annual|creator|computer|small-office|media-library)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /nas-configuration\/(nas-bay|raid-capacity|raid-protection|nas-expansion|hdd-vs|cmr-vs)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /backup-planning\/(3-2-1|local-cloud|backup-retention|snapshot|offsite|backup-frequency|recovery-time|backup-verification)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }

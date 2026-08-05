@@ -1,1 +1,174 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SSD Remaining Endurance Planner | SMART Host Writes</title><meta name="description" content="Estimate SSD write-rate trend, remaining TBW to a chosen threshold, and replacement preparation timing from SMART or NVMe counters."><link rel="canonical" href="https://datastoragelab.com/tools/ssd-endurance/ssd-remaining-endurance-planner/"><meta property="og:title" content="SSD Remaining Endurance Planner"><meta property="og:description" content="Plan replacement timing from observed SSD write counters."><meta property="og:type" content="website"><meta property="og:url" content="https://datastoragelab.com/tools/ssd-endurance/ssd-remaining-endurance-planner/"><link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/css/styles.css?v=20260805"><script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7QV39WJ35"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Z7QV39WJ35');</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SSD Remaining Endurance Planner","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","url":"https://datastoragelab.com/tools/ssd-endurance/ssd-remaining-endurance-planner/"}</script><script defer src="/assets/js/components.js?v=20260730"></script><script type="module" src="/assets/js/ssd-endurance-tools.mjs"></script></head><body><div data-header></div><main id="main-content"><section class="page-hero"><div class="container"><p class="breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / <a href="/tools/ssd-endurance/">SSD endurance</a> / Remaining endurance</p><p class="eyebrow">Measured counter trend</p><h1>SSD Remaining Endurance Planner</h1><p>Use two write-counter readings to plan a review threshold and replacement preparation date without claiming a failure date.</p></div></section><section class="section"><div class="container tool-layout"><form class="form-card" data-ssd-form="remaining" novalidate><h2>Counter readings</h2><fieldset><legend>Rating, counter interval, and review policy</legend><div class="field-grid"><div class="field"><label for="rated">Rated TBW</label><input id="rated" name="rated" type="number" min=".1" value="600"><p class="error" data-error="rated"></p></div><div class="field"><label for="capacity">SSD capacity</label><input id="capacity" name="capacity" type="number" min="1" value="1000"><p class="helper">Decimal GB.</p><p class="error" data-error="capacity"></p></div><div class="field"><label for="unit">Counter unit</label><select id="unit" name="unit"><option value="tb">TB written</option><option value="units">NVMe Data Units Written</option></select></div><div class="field"><label for="previous">Previous counter</label><input id="previous" name="previous" type="number" min="0" value="100"><p class="error" data-error="previous"></p></div><div class="field"><label for="current">Current counter</label><input id="current" name="current" type="number" min="0" value="115"><p class="error" data-error="current"></p></div><div class="field"><label for="days">Days between readings</label><input id="days" name="days" type="number" min="1" value="30"><p class="error" data-error="days"></p></div><div class="field"><label for="smart">SMART Percentage Used</label><input id="smart" name="smart" type="number" min="0" max="255"><p class="helper">Optional; compare with vendor documentation.</p><p class="error" data-error="smart"></p></div><div class="field"><label for="threshold">Planning threshold</label><input id="threshold" name="threshold" type="number" min="1" max="100" value="80"><p class="helper">Percent of rated TBW.</p><p class="error" data-error="threshold"></p></div><div class="field"><label for="growth">Expected write growth</label><input id="growth" name="growth" type="number" min="0" value="10"><p class="error" data-error="growth"></p></div><div class="field"><label for="lead">Replacement preparation lead</label><input id="lead" name="lead" type="number" min="0" value="60"><p class="helper">Days.</p><p class="error" data-error="lead"></p></div></div></fieldset><div class="form-actions button-row"><button class="button" type="submit">Plan threshold date</button><button class="button ghost" type="button" data-reset-tool>Reset</button></div></form><div class="results" data-ssd-results hidden aria-live="polite"><section class="result-card primary"><p class="result-kicker">Measured endurance trend</p><h2 data-result-title></h2><p data-result-summary></p><div class="table-wrap"><table><tbody data-result-rows></tbody></table></div></section><div class="button-row no-print"><button class="button" type="button" data-copy-results>Copy results</button><button class="button secondary" type="button" data-print-results>Print results</button></div><p class="planner-copy-status" data-copy-status></p></div></div></section><section class="section tool-content" data-tool-content><div class="container prose"><p class="eyebrow">Decision guide</p><h2>Use measured writes to schedule attention, not to forecast failure</h2><div data-content-section="decide"><h2>What this tool helps you decide</h2><p>This planner turns two observed counter readings into a daily write-rate trend and a date at which a chosen TBW threshold may be reached. It helps set monitoring and replacement-preparation milestones. It deliberately does not name a physical failure date. You can use a plain TB-written counter or NVMe Data Units Written, where one unit equals 512,000 bytes. The selected threshold is a management policy, not a statement about drive health.</p></div><div data-content-section="prepare"><h2>Before you start</h2><p>Record the exact counter name, unit, source, date, and rated TBW from the SSD documentation. Take readings far enough apart to smooth a quiet day or a backup spike. Check that both readings came from the same drive and same counter definition. Enter SMART Percentage Used only as an optional comparison, because interpretation varies by vendor and interface. Choose a threshold and lead time that allow procurement, migration, validation, and recovery testing.</p></div><div data-content-section="method"><h2>How the calculation works</h2><p>NVMe data units convert to decimal TB by multiplying units by 512,000 bytes and dividing by one trillion. The measured rate is current TB minus previous TB, divided by days. Future daily writes grow that rate by the stated percentage. Threshold TB equals rated TBW times the threshold percentage. Remaining TB is threshold TB minus current writes. Days to threshold divide remaining TB by future daily TB; the preparation date subtracts the lead time.</p></div><div data-content-section="interpret"><h2>How to interpret the results</h2><p>A zero measured rate means there is no evidence for a threshold-date projection, not that the drive has infinite endurance. A counter lower than the previous reading is flagged as a reset or unit mismatch. If current writes exceed rated TBW, the planner continues to report the condition as a warning. Compare the rate with upcoming backup, cache, VM, and logging changes before acting. A date is best used to schedule another measurement and a replacement decision review.</p></div><div data-content-section="example"><h2>Worked example</h2><p>Suppose a 600 TBW, 1,000 GB drive rises from 100 TB to 115 TB in 30 days. Its measured rate is 0.5 TB per day, or 500 GB per day and 0.5 DWPD. With 10 percent expected growth and an 80 percent threshold, remaining threshold allowance is 365 TB. The model estimates about 664 days to that threshold. A 60-day preparation lead moves the procurement review earlier.</p></div><div data-content-section="limits"><h2>Assumptions and limitations</h2><p>Counter availability, units, reset behavior, and Percentage Used meaning differ by vendor and interface. The model assumes a straight write rate with one adjustable growth percentage; workloads can change abruptly after migrations, retention changes, cache activation, or new applications. TBW and SMART values do not establish a physical failure date. Do not replace backup verification, alerting, error review, or vendor support procedures with this calculation. Always preserve a tested recovery path before maintenance.</p></div><div data-content-section="next"><h2>Next steps</h2><p>Re-run this tool after the next observation interval and compare the rate rather than relying on one sample. Use the <a href="/tools/ssd-endurance/tbw-dwpd-converter/">TBW &amp; DWPD Converter</a> to normalize a new candidate rating, then use the <a href="/tools/cost-power/drive-replacement-reserve-calculator/">Drive Replacement Reserve Calculator</a> to fund the operational response. Record observed exceptions such as a counter reset in the maintenance log.</p></div></div></section></main><div data-footer></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SSD Remaining Endurance Planner | SMART Host Writes</title>
+<meta name="description" content="Estimate SSD write-rate trend, remaining TBW to a chosen threshold, and replacement preparation timing from SMART or NVMe counters.">
+<link rel="canonical" href="https://datastoragelab.com/tools/ssd-endurance/ssd-remaining-endurance-planner/">
+<meta property="og:title" content="SSD Remaining Endurance Planner">
+<meta property="og:description" content="Plan replacement timing from observed SSD write counters.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://datastoragelab.com/tools/ssd-endurance/ssd-remaining-endurance-planner/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/css/styles.css?v=20260805">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7QV39WJ35">
+</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Z7QV39WJ35');</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SSD Remaining Endurance Planner","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","url":"https://datastoragelab.com/tools/ssd-endurance/ssd-remaining-endurance-planner/"}</script>
+<script defer src="/assets/js/components.js?v=20260730">
+</script>
+<script type="module" src="/assets/js/ssd-endurance-tools.mjs">
+</script>
+</head>
+<body>
+<div data-header>
+</div>
+<main id="main-content">
+<section class="page-hero">
+<div class="container">
+<p class="breadcrumb">
+<a href="/">Home</a> / <a href="/tools/">Tools</a> / <a href="/tools/ssd-endurance/">SSD endurance</a> / Remaining endurance</p>
+<p class="eyebrow">Measured counter trend</p>
+<h1>SSD Remaining Endurance Planner</h1>
+<p>Use two write-counter readings to plan a review threshold and replacement preparation date without claiming a failure date.</p>
+</div>
+</section>
+<section class="section">
+<div class="container tool-layout">
+<form class="form-card" data-ssd-form="remaining" novalidate>
+<h2>Counter readings</h2>
+<fieldset>
+<legend>Rating, counter interval, and review policy</legend>
+<div class="field-grid">
+<div class="field">
+<label for="rated">Rated TBW</label>
+<div class="ssd-unit-group"><input id="rated" name="rated" type="number" min=".1" value="600"><select class="ssd-unit-select" name="enduranceUnit" aria-label="Rated endurance unit"><option>TBW</option><option>PBW</option></select></div>
+<p class="error" data-error="rated">
+</p>
+</div>
+<div class="field">
+<label for="capacity">SSD capacity</label>
+<div class="ssd-unit-group"><input id="capacity" name="capacity" type="number" min="1" value="1000"><select class="ssd-unit-select" name="capacityUnit" aria-label="SSD capacity unit"><option>GB</option><option>TB</option></select></div>
+<p class="error" data-error="capacity">
+</p>
+</div>
+<div class="field">
+<label for="unit">Counter unit</label>
+<select id="unit" name="unit">
+<option value="tb">TB written</option>
+<option value="units">NVMe Data Units Written</option>
+</select>
+</div>
+<div class="field">
+<label for="previous">Previous counter</label>
+<input id="previous" name="previous" type="number" min="0" value="100">
+<p class="error" data-error="previous">
+</p>
+</div>
+<div class="field">
+<label for="current">Current counter</label>
+<input id="current" name="current" type="number" min="0" value="115">
+<p class="error" data-error="current">
+</p>
+</div>
+<div class="field">
+<label for="days">Days between readings</label>
+<div class="ssd-unit-group"><input id="days" name="days" type="number" min="1" value="30"><span class="ssd-unit-addon">days</span></div>
+<p class="error" data-error="days">
+</p>
+</div>
+<div class="field">
+<label for="smart">SMART Percentage Used</label>
+<div class="ssd-unit-group"><input id="smart" name="smart" type="number" min="0" max="255"><span class="ssd-unit-addon">%</span></div>
+<p class="helper">Optional; compare with vendor documentation.</p>
+<p class="error" data-error="smart">
+</p>
+</div>
+<div class="field">
+<label for="threshold">Planning threshold</label>
+<div class="ssd-unit-group"><input id="threshold" name="threshold" type="number" min="1" max="100" value="80"><span class="ssd-unit-addon">%</span></div>
+<p class="error" data-error="threshold">
+</p>
+</div>
+<div class="field">
+<label for="growth">Expected write growth</label>
+<div class="ssd-unit-group"><input id="growth" name="growth" type="number" min="0" value="10"><span class="ssd-unit-addon">%</span></div>
+<p class="error" data-error="growth">
+</p>
+</div>
+<div class="field">
+<label for="lead">Replacement preparation lead</label>
+<div class="ssd-unit-group"><input id="lead" name="lead" type="number" min="0" value="60"><span class="ssd-unit-addon">days</span></div>
+<p class="error" data-error="lead">
+</p>
+</div>
+</div>
+</fieldset>
+<div class="form-actions button-row">
+<button class="button" type="submit">Plan threshold date</button>
+<button class="button ghost" type="button" data-reset-tool>Reset</button>
+</div>
+</form>
+<div class="results" data-ssd-results hidden aria-live="polite">
+<section class="result-card primary">
+<p class="result-kicker">Measured endurance trend</p>
+<h2 data-result-title>
+</h2>
+<p data-result-summary>
+</p>
+<div class="table-wrap">
+<table>
+<tbody data-result-rows>
+</tbody>
+</table>
+</div>
+</section>
+<div class="button-row no-print">
+<button class="button" type="button" data-copy-results>Copy results</button>
+<button class="button secondary" type="button" data-print-results>Print results</button>
+</div>
+<p class="planner-copy-status" data-copy-status>
+</p>
+</div>
+</div>
+</section>
+<section class="section tool-content" data-tool-content>
+<div class="container prose">
+<p class="eyebrow">Decision guide</p>
+<h2>Use measured writes to schedule attention, not to forecast failure</h2>
+<div data-content-section="decide">
+<h2>What this tool helps you decide</h2>
+<p>This planner turns two observed counter readings into a daily write-rate trend and a date at which a chosen TBW threshold may be reached. It helps set monitoring and replacement-preparation milestones. It deliberately does not name a physical failure date. You can use a plain TB-written counter or NVMe Data Units Written, where one unit equals 512,000 bytes. The selected threshold is a management policy, not a statement about drive health.</p>
+</div>
+<div data-content-section="prepare">
+<h2>Before you start</h2>
+<p>Record the exact counter name, unit, source, date, and rated TBW from the SSD documentation. Take readings far enough apart to smooth a quiet day or a backup spike. Check that both readings came from the same drive and same counter definition. Enter SMART Percentage Used only as an optional comparison, because interpretation varies by vendor and interface. Choose a threshold and lead time that allow procurement, migration, validation, and recovery testing.</p>
+</div>
+<div data-content-section="method">
+<h2>How the calculation works</h2>
+<p>NVMe data units convert to decimal TB by multiplying units by 512,000 bytes and dividing by one trillion. The measured rate is current TB minus previous TB, divided by days. Future daily writes grow that rate by the stated percentage. Threshold TB equals rated TBW times the threshold percentage. Remaining TB is threshold TB minus current writes. Days to threshold divide remaining TB by future daily TB; the preparation date subtracts the lead time.</p>
+</div>
+<div data-content-section="interpret">
+<h2>How to interpret the results</h2>
+<p>A zero measured rate means there is no evidence for a threshold-date projection, not that the drive has infinite endurance. A counter lower than the previous reading is flagged as a reset or unit mismatch. If current writes exceed rated TBW, the planner continues to report the condition as a warning. Compare the rate with upcoming backup, cache, VM, and logging changes before acting. A date is best used to schedule another measurement and a replacement decision review.</p>
+</div>
+<div data-content-section="example">
+<h2>Worked example</h2>
+<p>Suppose a 600 TBW, 1,000 GB drive rises from 100 TB to 115 TB in 30 days. Its measured rate is 0.5 TB per day, or 500 GB per day and 0.5 DWPD. With 10 percent expected growth and an 80 percent threshold, remaining threshold allowance is 365 TB. The model estimates about 664 days to that threshold. A 60-day preparation lead moves the procurement review earlier.</p>
+</div>
+<div data-content-section="limits">
+<h2>Assumptions and limitations</h2>
+<p>Counter availability, units, reset behavior, and Percentage Used meaning differ by vendor and interface. The model assumes a straight write rate with one adjustable growth percentage; workloads can change abruptly after migrations, retention changes, cache activation, or new applications. TBW and SMART values do not establish a physical failure date. Do not replace backup verification, alerting, error review, or vendor support procedures with this calculation. Always preserve a tested recovery path before maintenance.</p>
+</div>
+<div data-content-section="next">
+<h2>Next steps</h2>
+<p>Re-run this tool after the next observation interval and compare the rate rather than relying on one sample. Use the <a href="/tools/ssd-endurance/tbw-dwpd-converter/">TBW &amp; DWPD Converter</a> to normalize a new candidate rating, then use the <a href="/tools/cost-power/drive-replacement-reserve-calculator/">Drive Replacement Reserve Calculator</a> to fund the operational response. Record observed exceptions such as a counter reset in the maintenance log.</p>
+</div>
+</div>
+</section>
+</main>
+<div data-footer>
+</div>
+</body>
+</html>
