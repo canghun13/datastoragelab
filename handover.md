@@ -766,3 +766,12 @@ The next task must:
 - Added contextual continuation links for NAS configuration, Cost & Power, HDD vs SSD, Drive Replacement Reserve, and the HDD vs SSD guide through the existing shared UI flow. Learn remains index-only and Reference remains unchanged.
 - Extended `tools/qa.mjs` to enforce Header, directory, hub, tool-shell, and supporting-content structure. `tools/qa.mjs`, `tools/content-qa.mjs`, and `git diff --check` passed. Browser checks confirmed desktop navigation, all index entry points, H09/T34 responsive rendering at 390px, zero overflow, and no console warnings or errors.
 - No DNS, Cloudflare, GitHub Pages settings, HTTPS, GA4, Search Console, contact address, protected Home badge area, page inventory, URL, or SSD calculation logic changed.
+
+### 2026-08-05 — SSD endurance unit and input-control correction
+
+- Starting branch and live main: `main` at `1a5d2019777721d985ec84bd71639702ec50c0b5`, clean and `0/0` ahead/behind.
+- Corrected common SSD unit handling: capacity normalizes GB/TB to GB; endurance normalizes TBW/PBW to TBW; existing host writes now normalize TB/PB to TBW. Unit changes preserve the represented quantity (`1000 GB` becomes `1 TB`; `600 TBW` becomes `0.6 PBW`) and Reset restores `1000 GB`, `600 TBW`, and `0 TB` defaults.
+- Lifespan reserve is now explicitly retained from remaining rating rather than multiplied into required writes. With 1,000 GB, 600 TBW, five years, 120 GB/day, WAF 1.5, and 20% reserve: logical writes are 219 TB, effective base writes 328.5 TB, usable endurance 480 TB, base headroom 151.5 TB, and rated DWPD about 0.329.
+- Added Low ≤ Base ≤ High WAF validation, reserve range 0–80%, and an exhausted state when existing writes meet or exceed rated endurance. No page count, URL, sitemap, or non-SSD calculator logic changed.
+- Added compact responsive input groups and unit suffixes for capacity, rating, existing writes, daily logical writes, years, reserve, and WAF. At 390px the unit groups remained single-line with no horizontal overflow; calculation, conversion, Reset, and console checks passed.
+- Extended automated QA with equivalent-unit, independent arithmetic, WAF-ordering, reserve-bound, and exhausted-endurance cases. `tools/qa.mjs`, `tools/content-qa.mjs`, JavaScript syntax, and `git diff --check` passed.

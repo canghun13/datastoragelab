@@ -7,7 +7,7 @@ import { calculateNasTool } from '../assets/js/phase3-tools.mjs';
 import { calculateBackup } from '../assets/js/backup-tools.mjs';
 import { calculateNetwork } from '../assets/js/network-tools.mjs';
 import { calculateCost } from '../assets/js/cost-tools.mjs';
-import { calculateLifespan, calculateConverter, calculateCache, calculateVm, calculateRemaining } from '../assets/js/ssd-endurance-tools.mjs';
+import { calculateLifespan, calculateConverter, calculateCache, calculateVm, calculateRemaining, normalizeCapacityToGB, normalizeEnduranceToTBW, normalizeExistingWritesToTBW } from '../assets/js/ssd-endurance-tools.mjs';
 
 const root = process.cwd();
 const baseUrl = 'https://datastoragelab.com';
@@ -125,6 +125,18 @@ for (const [name, fn, input, expectedKey] of enduranceCases) {
   check(fn({...input, existing:0, waf:2}).errors || fn({...input, existing:0, waf:2})[expectedKey], `${name}: sensitivity variation failed`);
   check(fn({...input, years:1, days:1}).errors || fn({...input, years:1, days:1})[expectedKey], `${name}: boundary variation failed`);
 }
+const lifespanAudit = { capacity:1000, capacityUnit:'GB', rated:600, enduranceUnit:'TBW', warranty:5, writes:120, existing:0, existingUnit:'TB', low:1.1, base:1.5, high:2, horizon:5, reserve:20 };
+const lifespanResult = calculateLifespan(lifespanAudit).result;
+check(Math.abs(normalizeCapacityToGB(1000, 'GB') - normalizeCapacityToGB(1, 'TB')) < 1e-9, 'SSD capacity GB/TB equivalence failed');
+check(Math.abs(normalizeEnduranceToTBW(600, 'TBW') - normalizeEnduranceToTBW(.6, 'PBW')) < 1e-9, 'SSD endurance TBW/PBW equivalence failed');
+check(Math.abs(normalizeExistingWritesToTBW(600, 'TB') - normalizeExistingWritesToTBW(.6, 'PB')) < 1e-9, 'Existing writes TB/PB equivalence failed');
+check(Math.abs(lifespanResult.scenarios[1].required - 328.5) < 1e-9, 'Base physical writes should be 328.5 TB over five years');
+check(Math.abs(lifespanResult.usable - 480) < 1e-9 && Math.abs(lifespanResult.scenarios[1].headroom - 151.5) < 1e-9, 'Reserve usable endurance or base headroom calculation failed');
+check(Math.abs(lifespanResult.ratedDwpd - (600 * 1000 / (1000 * 365 * 5))) < 1e-12, 'Rated DWPD calculation failed');
+check(calculateLifespan({...lifespanAudit, capacity:1, capacityUnit:'TB', rated:.6, enduranceUnit:'PBW', existing:0, existingUnit:'PB'}).result?.scenarios[1].headroom === lifespanResult.scenarios[1].headroom, 'Equivalent selected units changed lifespan result');
+check(calculateLifespan({...lifespanAudit, low:2, base:1.5, high:1.1}).errors?.base, 'WAF ordering validation failed');
+check(calculateLifespan({...lifespanAudit, existing:600}).errors?.existing, 'Exhausted endurance validation failed');
+check(calculateLifespan({...lifespanAudit, reserve:81}).errors?.reserve, 'Reserve upper-bound validation failed');
 for (const path of expected.filter((page) => /storage-needs\/(annual|creator|computer|small-office|media-library)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /nas-configuration\/(nas-bay|raid-capacity|raid-protection|nas-expansion|hdd-vs|cmr-vs)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /backup-planning\/(3-2-1|local-cloud|backup-retention|snapshot|offsite|backup-frequency|recovery-time|backup-verification)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
