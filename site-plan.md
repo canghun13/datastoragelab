@@ -492,3 +492,9 @@ The following are fixed for the next implementation task unless a documented rev
 - No framework, package/build system, external library, ad code, affiliate code, or infrastructure-setting change in the planning task
 
 Implementation may refine wording, form order, validation thresholds, and visual tokens. It must not silently add pages, publish thin variants, rename URLs, duplicate calculation logic, or broaden infrastructure scope. Any such change must update this document and `handover.md` with the reason.
+
+## 12. SSD endurance extension — 2026-08-05
+
+The completed 63-page baseline is extended to 71 public pages: 38 tools, 11 guides, four references, four comparisons, nine hubs, and five foundational pages. The extension adds H09 **SSD Endurance & Write Workload Planning** (`/tools/ssd-endurance/`); T34 **SSD Endurance & Lifespan Calculator**; T35 **TBW & DWPD Converter**; T36 **NAS SSD Cache Endurance Planner**; T37 **VM & Container SSD Endurance Planner**; T38 **SSD Remaining Endurance Planner**; G11 **How to Size SSD Endurance for NAS, Cache, VMs & Backups**; and C04 **Consumer vs NAS vs Enterprise SSD Endurance**.
+
+Inputs are decimal capacity, TBW or PBW, warranty years, daily logical writes, WAF scenarios, existing writes, layout shares, and counter readings as appropriate. Shared functions normalize units, convert TBW/DWPD, calculate effective writes, required TBW, per-drive allocation, duration, margin, NVMe Data Units Written, and threshold dates. Ratings are planning and warranty metrics, not physical-failure forecasts. The extension keeps all product choices vendor-neutral, uses measured writes where available, and links to NAS configuration, backup planning, and replacement reserve decisions.

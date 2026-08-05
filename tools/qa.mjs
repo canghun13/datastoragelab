@@ -7,6 +7,7 @@ import { calculateNasTool } from '../assets/js/phase3-tools.mjs';
 import { calculateBackup } from '../assets/js/backup-tools.mjs';
 import { calculateNetwork } from '../assets/js/network-tools.mjs';
 import { calculateCost } from '../assets/js/cost-tools.mjs';
+import { calculateLifespan, calculateConverter, calculateCache, calculateVm, calculateRemaining } from '../assets/js/ssd-endurance-tools.mjs';
 
 const root = process.cwd();
 const baseUrl = 'https://datastoragelab.com';
@@ -17,8 +18,9 @@ const expected = [
   'tools/backup-planning/index.html', 'tools/backup-planning/3-2-1-backup-plan-generator/index.html', 'tools/backup-planning/local-cloud-hybrid-backup-selector/index.html', 'tools/backup-planning/backup-retention-calculator/index.html', 'tools/backup-planning/snapshot-storage-planner/index.html', 'tools/backup-planning/offsite-backup-capacity-planner/index.html', 'tools/backup-planning/backup-frequency-selector/index.html', 'tools/backup-planning/recovery-time-estimator/index.html', 'tools/backup-planning/backup-verification-schedule-planner/index.html',
   'tools/network-performance/index.html', 'tools/network-performance/cloud-backup-transfer-time-calculator/index.html', 'tools/network-performance/local-network-transfer-time-calculator/index.html', 'tools/network-performance/backup-window-calculator/index.html', 'tools/network-performance/network-tier-selector/index.html', 'tools/network-performance/concurrent-user-bandwidth-planner/index.html', 'tools/network-performance/video-editing-network-planner/index.html',
   'tools/cost-power/index.html', 'tools/cost-power/nas-vs-cloud-five-year-cost-calculator/index.html', 'tools/cost-power/das-vs-nas-cost-calculator/index.html', 'tools/cost-power/drive-cost-per-usable-tb-calculator/index.html', 'tools/cost-power/storage-electricity-cost-calculator/index.html', 'tools/cost-power/drive-replacement-reserve-calculator/index.html', 'tools/cost-power/ups-size-runtime-calculator/index.html', 'tools/cost-power/full-storage-system-budget-planner/index.html',
-  'guides/index.html', 'guides/how-much-nas-storage-do-i-need/index.html', 'guides/raid-is-not-a-backup/index.html', 'guides/cmr-vs-smr-for-nas/index.html', 'guides/nas-drive-replacement-planning/index.html', 'guides/hdd-vs-ssd-for-bulk-storage/index.html', 'guides/backup-retention-basics/index.html', 'guides/3-2-1-backup-explained/index.html', 'guides/local-backup-vs-offsite-backup/index.html', 'guides/snapshots-vs-backups/index.html', 'guides/how-to-size-a-ups-for-a-nas/index.html',
-  'reference/index.html', 'reference/tb-vs-tib/index.html', 'reference/storage-raid-capacity-formulas/index.html', 'reference/backup-transfer-time-bandwidth/index.html', 'reference/ups-watts-va-runtime/index.html', 'compare/index.html', 'compare/2-bay-vs-4-bay-nas/index.html', 'compare/nas-vs-cloud-for-family-photos/index.html', 'compare/2-5gbe-vs-10gbe-for-nas/index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html'
+  'tools/ssd-endurance/index.html', 'tools/ssd-endurance/ssd-endurance-lifespan-calculator/index.html', 'tools/ssd-endurance/tbw-dwpd-converter/index.html', 'tools/ssd-endurance/nas-ssd-cache-endurance-planner/index.html', 'tools/ssd-endurance/vm-container-ssd-endurance-planner/index.html', 'tools/ssd-endurance/ssd-remaining-endurance-planner/index.html',
+  'guides/index.html', 'guides/how-much-nas-storage-do-i-need/index.html', 'guides/raid-is-not-a-backup/index.html', 'guides/cmr-vs-smr-for-nas/index.html', 'guides/nas-drive-replacement-planning/index.html', 'guides/hdd-vs-ssd-for-bulk-storage/index.html', 'guides/backup-retention-basics/index.html', 'guides/3-2-1-backup-explained/index.html', 'guides/local-backup-vs-offsite-backup/index.html', 'guides/snapshots-vs-backups/index.html', 'guides/how-to-size-a-ups-for-a-nas/index.html', 'guides/ssd-endurance-for-nas-cache-vms-backups/index.html',
+  'reference/index.html', 'reference/tb-vs-tib/index.html', 'reference/storage-raid-capacity-formulas/index.html', 'reference/backup-transfer-time-bandwidth/index.html', 'reference/ups-watts-va-runtime/index.html', 'compare/index.html', 'compare/2-bay-vs-4-bay-nas/index.html', 'compare/nas-vs-cloud-for-family-photos/index.html', 'compare/2-5gbe-vs-10gbe-for-nas/index.html', 'compare/consumer-vs-nas-vs-enterprise-ssd-endurance/index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html'
 ];
 const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
@@ -98,6 +100,21 @@ const costTools=[['nascloud',{a:900,b:1200,c:180,d:45,e:250}],['dasnas',{a:300,b
 for(const [kind,input] of costTools){for(const value of [input,{...input,a:1},{...input,a:10000}])check(calculateCost(kind,value).result,`${kind}: final cost calculation failed`);check(Object.keys(calculateCost(kind,{...input,a:-1}).errors).length,`${kind}: invalid cost input was accepted`);}
 const zeroCostInputs={nascloud:{a:0,b:1200,c:180,d:45,e:250},dasnas:{a:300,b:700,c:1400,d:0,e:250},drive:{a:220,b:0,c:4,d:1,e:10},electricity:{a:0,b:0,c:8,d:.18,e:5},reserve:{a:4,b:220,c:2,d:0,e:20},ups:{a:120,b:30,c:0,d:15,e:80},budget:{a:0,b:0,c:0,d:0,e:240}};
 for(const [kind,input] of Object.entries(zeroCostInputs))check(Object.keys(calculateCost(kind,input).errors).length,`${kind}: required zero cost input was accepted`);
+const enduranceCases = [
+  ['lifespan', calculateLifespan, {capacity:1000,capacityUnit:'GB',rated:600,enduranceUnit:'TBW',warranty:5,writes:120,existing:0,low:1.1,base:1.5,high:2,horizon:5,reserve:20}, 'result'],
+  ['converter', calculateConverter, {capacity:1000,capacityUnit:'GB',years:5,metric:'TBW',value:600,waf:1.5}, 'result'],
+  ['cache', calculateCache, {mode:'measured',measured:200,ingest:0,cachePercent:0,layout:'mirror',drives:2,shares:'50,50',capacity:1000,rated:1200,existing:0,waf:1.5,years:5,reserve:20}, 'result'],
+  ['vm', calculateVm, {vms:4,perVm:20,containers:30,logs:40,snapshots:25,copies:2,shares:'50,50',capacity:1000,rated:1200,existing:0,waf:1.7,years:5}, 'result'],
+  ['remaining', calculateRemaining, {rated:600,capacity:1000,unit:'tb',previous:100,current:115,days:30,smart:20,threshold:80,growth:10,lead:60}, 'result']
+];
+for (const [name, fn, input, expectedKey] of enduranceCases) {
+  check(fn(input)[expectedKey], `${name}: normal calculation failed`);
+  const invalidInput = name === 'converter' ? {...input, value:-1} : {...input, rated:-1};
+  check(fn(invalidInput).errors, `${name}: negative rating validation failed`);
+  check(fn({...input, capacity:500}).errors || fn({...input, capacity:500})[expectedKey], `${name}: capacity variation failed`);
+  check(fn({...input, existing:0, waf:2}).errors || fn({...input, existing:0, waf:2})[expectedKey], `${name}: sensitivity variation failed`);
+  check(fn({...input, years:1, days:1}).errors || fn({...input, years:1, days:1})[expectedKey], `${name}: boundary variation failed`);
+}
 for (const path of expected.filter((page) => /storage-needs\/(annual|creator|computer|small-office|media-library)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /nas-configuration\/(nas-bay|raid-capacity|raid-protection|nas-expansion|hdd-vs|cmr-vs)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /backup-planning\/(3-2-1|local-cloud|backup-retention|snapshot|offsite|backup-frequency|recovery-time|backup-verification)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }

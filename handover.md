@@ -748,3 +748,11 @@ The next task must:
 - The live RAID Capacity Calculator returned **36.0 TB usable (32.7 TiB) from 48.0 TB raw**. Copy Results completed with its success status and matching clipboard text; Start Over hid the result; the Print control remained enabled; desktop and mobile navigation opened and closed with Escape.
 - `https://datastoragelab.com/assets/favicon.svg` loaded as a standalone SVG with `viewBox="0 0 64 64"`, and the final production browser console contained no warnings or errors.
 - Final deployment-record commit and local/remote synchronization follow this entry.
+
+### 2026-08-05 — SSD endurance planning extension
+
+- Started from live GitHub `main` `72d374ec9a3471fa79c2e05e3aff23178764e646`; local `origin/main` was refreshed and fast-forwarded from the stale `2c529f8` cache with a clean working tree.
+- Added H09, T34–T38, G11, and C04, increasing the inventory to 71 public pages: 38 tools, 11 guides, four references, four comparisons, nine hubs, and five basics.
+- Added `assets/js/ssd-endurance-tools.mjs` for decimal TBW/DWPD conversions, WAF scenarios, cache and VM write allocation, NVMe data-unit conversion, validation, result copy, print, and reset behavior.
+- SSD ratings are described as endurance and warranty-planning metrics, never as physical-failure dates. Cache and VM pages distinguish per-drive distributions; remaining endurance handles counter resets, zero write evidence, and SMART as optional vendor-dependent context.
+- Updated sitemap, llms inventory, README, tool QA, content QA, and the planning baseline. No DNS, Pages, Cloudflare, HTTPS, GA4 property, Search Console, contact, or Home user-managed badge area was changed.
