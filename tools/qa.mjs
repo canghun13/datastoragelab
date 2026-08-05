@@ -51,6 +51,16 @@ const sitemapUrls = [...file('sitemap.xml').matchAll(/<loc>([^<]+)<\/loc>/g)].ma
 const expectedUrls = expected.map((path) => `${baseUrl}/${path === 'index.html' ? '' : path.replace(/index\.html$/, '')}`);
 check(JSON.stringify([...sitemapUrls].sort()) === JSON.stringify([...expectedUrls].sort()), 'Sitemap URLs do not match public pages');
 check(file('robots.txt').includes('Sitemap: https://datastoragelab.com/sitemap.xml'), 'robots.txt sitemap URL is incorrect'); check(file('CNAME').trim() === 'datastoragelab.com', 'CNAME must be datastoragelab.com');
+const ssdHub = '/tools/ssd-endurance/';
+const ssdTools = ['ssd-endurance-lifespan-calculator','tbw-dwpd-converter','nas-ssd-cache-endurance-planner','vm-container-ssd-endurance-planner','ssd-remaining-endurance-planner'];
+check(file('partials/header.html').includes(`href="${ssdHub}"`), 'Header Tools menu is missing SSD Endurance');
+check(file('tools/index.html').includes(`href="${ssdHub}"`), 'Tools directory is missing SSD Endurance');
+check(file('guides/index.html').includes('/guides/ssd-endurance-for-nas-cache-vms-backups/'), 'Guides index is missing G11');
+check(file('compare/index.html').includes('/compare/consumer-vs-nas-vs-enterprise-ssd-endurance/'), 'Comparisons index is missing C04');
+const h09 = file('tools/ssd-endurance/index.html');
+for (const slug of ssdTools) check(h09.includes(`/tools/ssd-endurance/${slug}/`), `H09 is missing ${slug}`);
+check(h09.includes('/guides/ssd-endurance-for-nas-cache-vms-backups/') && h09.includes('/compare/consumer-vs-nas-vs-enterprise-ssd-endurance/'), 'H09 is missing its guide or comparison');
+for (const slug of ssdTools) { const page = file(`tools/ssd-endurance/${slug}/index.html`); check(page.includes('data-ssd-form') && page.includes('data-ssd-results') && page.includes('data-copy-results') && page.includes('data-print-results') && page.includes('data-reset-tool'), `${slug}: SSD calculator shell or actions missing`); check(page.includes(ssdHub), `${slug}: return link to H09 missing`); }
 for (const jsPath of allFiles(join(root, 'assets', 'js')).filter((path) => /\.m?js$/.test(path))) { const result = spawnSync(process.execPath, ['--check', jsPath], { encoding: 'utf8' }); check(result.status === 0, `JavaScript syntax error in ${relative(root, jsPath)}: ${result.stderr}`); }
 const baseInput = { dataSize: 4, growthRate: 20, years: 5, devices: 3, users: 2, importantData: 85, retention: 'balanced', localCopies: '1', offsite: 'yes', tolerance: 'single', budget: 'balanced', uploadMbps: 20, lanMbps: '1000', headroom: 25 };
 check(calculatePlan(baseInput).plan?.usableTb > 4, 'Phase 1 normal household calculation failed'); check(calculatePlan({ ...baseInput, dataSize: -1 }).errors.dataSize, 'Phase 1 invalid input validation failed');

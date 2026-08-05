@@ -758,3 +758,11 @@ The next task must:
 - Updated sitemap, llms inventory, README, tool QA, content QA, and the planning baseline. No DNS, Pages, Cloudflare, HTTPS, GA4 property, Search Console, contact, or Home user-managed badge area was changed.
 - Validation passed with the bundled Node runtime: `tools/qa.mjs` reports 71 public pages and prior regression cases; `tools/content-qa.mjs` reports 38 tools with a 503-word minimum and 727.5-word average. `git diff --check` passed.
 - Representative browser QA passed locally: the lifespan calculator produced its default Pass result, Reset hid results, no console warnings or errors were recorded, and the hub, guide, and comparison had one H1 and no horizontal overflow at 390 px. GitHub Pages served the live H09 URL with HTTP 200 and the expected title after push.
+
+### 2026-08-05 — SSD endurance information-architecture integration
+
+- Starting branch and live main: `main` at `d4d3548d33ea2b82a11a60a2dadd22506852d876`, clean and `0/0` ahead/behind.
+- Corrected the initial SSD extension’s discovery gaps without adding pages or changing calculator logic: Header Tools menu now has all six tool hubs including H09; Tools, Guides, and Comparisons indexes link to H09, G11, and C04; Home exposes H09 in its existing current-tools card grid.
+- Added contextual continuation links for NAS configuration, Cost & Power, HDD vs SSD, Drive Replacement Reserve, and the HDD vs SSD guide through the existing shared UI flow. Learn remains index-only and Reference remains unchanged.
+- Extended `tools/qa.mjs` to enforce Header, directory, hub, tool-shell, and supporting-content structure. `tools/qa.mjs`, `tools/content-qa.mjs`, and `git diff --check` passed. Browser checks confirmed desktop navigation, all index entry points, H09/T34 responsive rendering at 390px, zero overflow, and no console warnings or errors.
+- No DNS, Cloudflare, GitHub Pages settings, HTTPS, GA4, Search Console, contact address, protected Home badge area, page inventory, URL, or SSD calculation logic changed.
