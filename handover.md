@@ -388,6 +388,12 @@ Add new entries at the top.
 - Browser QA covered T34–T38 at 1440, 1280, 1024, 768, and 390px: 25 page/width checks had zero horizontal overflow, result-panel clipping, unit-control wrapping, select-width failures, and console errors. A 390px visual check confirmed the compact cache form and 108px suffix/select treatment.
 - T34 produced the reference 240.9/328.5/438 TB low/base/high rows, retained the same result after GB→TB, TBW→PBW, and TB→PB changes, and reset to 1000 GB, 600 TBW, and 0 TB. T36 toggled measured/estimated mode correctly, disabling the inactive fields. All five calculators produced results, copied successfully, printed through their visible action, and reset cleanly.
 
+**Git and deployment**
+
+- Implementation commit `53635ecc42d62f43903e000ea0d17dbb9495b47b` (`Fix SSD endurance calculator form regression`) was pushed to `origin/main`.
+- After push and fetch, local `HEAD`, `origin/main`, and live `git ls-remote origin refs/heads/main` all matched that commit; ahead/behind was `0 0` and the working tree was clean.
+- GitHub Pages verification served the cache planner and SSD module with HTTP 200 and the actual new compact-group, mode-field, unit-normalization, and mode-logic markers. This complements—not replaces—the local browser interaction QA above.
+
 **Next safe task**
 
 - The verified SSD form-regression repair is committed as `Fix SSD endurance calculator form regression`; push it and verify local `HEAD`, `origin/main`, and live GitHub `main` match before considering the task complete. Do not alter URLs, sitemap, header, footer, GA4, CNAME, or non-SSD calculator behavior.
