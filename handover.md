@@ -809,3 +809,8 @@ The next task must:
 - Added Low ≤ Base ≤ High WAF validation, reserve range 0–80%, and an exhausted state when existing writes meet or exceed rated endurance. No page count, URL, sitemap, or non-SSD calculator logic changed.
 - Added compact responsive input groups and unit suffixes for capacity, rating, existing writes, daily logical writes, years, reserve, and WAF. At 390px the unit groups remained single-line with no horizontal overflow; calculation, conversion, Reset, and console checks passed.
 - Extended automated QA with equivalent-unit, independent arithmetic, WAF-ordering, reserve-bound, and exhausted-endurance cases. `tools/qa.mjs`, `tools/content-qa.mjs`, JavaScript syntax, and `git diff --check` passed.
+
+
+## 2026-08-06
+
+- 메인 페이지 푸터 아래의 디렉토리 뱃지 영역은 사용자가 직접 관리하는 영역이므로 수정·삭제·리팩터링하지 않는다.- https://boostdomainrating.com/ 에 등록 (내가 직접함)
