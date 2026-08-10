@@ -399,7 +399,10 @@ Add new entries at the top.
 
 **Git and deployment**
 
-- Implementation commit, push, production propagation, live result-state retest, and final synchronization are recorded below after publication.
+- Implementation commit `50f79d903c91c2e0f9f9f2ac5275178396824539` (`Fix narrow calculator result overflow`) was pushed to `origin/main`; local `HEAD`, `origin/main`, and live GitHub `main` matched with `0 0` ahead/behind before this deployment record.
+- GitHub Pages served the new `styles.css?v=20260810` marker and both containment rules with HTTP 200. Production retesting passed the 10 previously failing calculators at 430, 390, and 360px (30 checks), all 38 calculators after a real default calculation at 360px, and six cluster representatives at 1280 and 390px. Every check had visible results, `scrollWidth === clientWidth`, and no console warning or error.
+- The live SSD lifespan calculator at 390px passed initial calculation, changed-input recalculation, GB-to-TB conversion, Copy Results, enabled Print Results, Reset, invalid reserve feedback, the new CSS marker, zero document overflow, and zero console errors.
+- Deployment-record commit: this commit. It is pushed and the final local/origin/live synchronization is verified immediately after creation; the final task report records the resulting hash.
 
 **Known issues**
 
