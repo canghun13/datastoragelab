@@ -51,6 +51,8 @@ const sitemapUrls = [...file('sitemap.xml').matchAll(/<loc>([^<]+)<\/loc>/g)].ma
 const expectedUrls = expected.map((path) => `${baseUrl}/${path === 'index.html' ? '' : path.replace(/index\.html$/, '')}`);
 check(JSON.stringify([...sitemapUrls].sort()) === JSON.stringify([...expectedUrls].sort()), 'Sitemap URLs do not match public pages');
 check(file('robots.txt').includes('Sitemap: https://datastoragelab.com/sitemap.xml'), 'robots.txt sitemap URL is incorrect'); check(file('CNAME').trim() === 'datastoragelab.com', 'CNAME must be datastoragelab.com');
+check(/\.tool-layout\s*>\s*\*\s*\{[^}]*min-width\s*:\s*0/.test(file('assets/css/styles.css')), 'Tool layout children must allow narrow result grids');
+check(/\.results\s*\{[^}]*grid-template-columns\s*:\s*minmax\(0,\s*1fr\)/.test(file('assets/css/styles.css')), 'Result grids must contain wide result content on narrow screens');
 const ssdHub = '/tools/ssd-endurance/';
 const ssdTools = ['ssd-endurance-lifespan-calculator','tbw-dwpd-converter','nas-ssd-cache-endurance-planner','vm-container-ssd-endurance-planner','ssd-remaining-endurance-planner'];
 check(file('partials/header.html').includes(`href="${ssdHub}"`), 'Header Tools menu is missing SSD Endurance');

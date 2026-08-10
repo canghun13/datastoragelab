@@ -105,6 +105,7 @@ h3 { margin: 0 0 .35rem; font-size: 1.12rem; }
 .prose ul, .prose ol { padding-left: 1.2rem; }
 .prose li + li { margin-top: .45rem; }
 .tool-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(380px, 1.1fr); gap: 1.1rem; align-items: start; }
+.tool-layout > * { min-width: 0; }
 .form-card { padding: clamp(1.1rem, 3vw, 1.7rem); }
 .form-card h2, .results h2 { font-size: 1.35rem; }
 .form-intro { margin-top: -.25rem; color: var(--slate); font-size: .92rem; }
@@ -133,7 +134,7 @@ input, select { width: 100%; border: 1px solid #bcccdc; border-radius: 8px; colo
 input[aria-invalid="true"] { border-color: var(--danger); background: var(--danger-soft); }
 .error { min-height: 1.15rem; margin: .2rem 0 0; color: var(--danger); font-size: .78rem; font-weight: 650; }
 .form-actions { margin-top: 1rem; }
-.results { display: grid; gap: 1rem; }
+.results { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
 .results[hidden] { display: none; }
 .result-card { padding: 1.15rem; }
 .result-card.primary { border: 2px solid var(--teal); background: linear-gradient(135deg, #fff 0%, var(--teal-soft) 100%); }

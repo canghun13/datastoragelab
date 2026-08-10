@@ -364,6 +364,47 @@ Record durable architectural, product, infrastructure, or operational decisions 
 
 Add new entries at the top.
 
+### 2026-08-10 — Contain calculator result grids on narrow screens
+
+**Starting state**
+
+- Repository: existing working clone confirmed with `git rev-parse --show-toplevel`; the machine-specific absolute path is intentionally not stored in this portable handover.
+- Branch: `main`; initial local `HEAD` was `72d374ec9a3471fa79c2e05e3aff23178764e646`, clean and nine commits behind the live GitHub `main`.
+- Live `main` and refreshed `origin/main`: `b8bf768eac471e3304a75933427150c975482c5e`. The clean local branch was fast-forwarded to that commit, leaving `0 0` ahead/behind before the audit and implementation.
+- Inventory recalculated from files and sitemap: 71 public pages, 38 tools, nine hubs, 11 guides, four references, four comparisons, and five foundational pages.
+
+**Audit and selection**
+
+- Baseline `node tools/qa.mjs` passed all 71 pages and 96 calculation cases; `node tools/content-qa.mjs` passed with a 503-word tool minimum and 727.5-word average; `git diff --check` passed.
+- Production initial-state browser QA passed all 71 sitemap URLs at 390px for one H1, shared header/footer, canonical, favicon, no document overflow, and no console warning or error.
+- Production successful-result QA exposed the material regression that initial-state checks missed: at 360px, 10 of 38 calculators widened the document after calculation; at 390px, HDD vs SSD, CMR vs SMR, and SSD Endurance & Lifespan still overflowed; the SSD lifespan result also failed at 430px. The largest measured excesses were 96px for HDD vs SSD and 79px for SSD lifespan at 360px.
+- Selected work: contain shared tool and result grids so wide tables and decision content scroll inside their intended wrappers instead of increasing page width. This had direct mobile usability impact, affected multiple established clusters, had a small shared fix, and could be objectively verified across every calculator.
+- Other candidates: calculator validation errors are not consistently associated with inputs for assistive technology and remain a separate accessibility work package; cost defaults are editable, explicitly user-supplied assumptions rather than hidden live prices; search/title work had no accessible GSC or GA4 evidence; previously rejected new clusters had no new evidence and remained NO-GO.
+- GSC and GA4 reporting access was unavailable in this environment. No analytics or Search Console setting was changed.
+
+**Implementation**
+
+- `assets/css/styles.css` now permits direct tool-layout children to shrink and defines the result grid track as `minmax(0, 1fr)`. Tables keep their existing controlled horizontal region; no `overflow-x:hidden`, clipping, or calculation change was introduced.
+- `tools/qa.mjs` now enforces both narrow-grid containment invariants.
+- All 71 public pages use `styles.css?v=20260810` so the shared fix is not masked by an older cached stylesheet.
+- No calculation logic, formula, default, content, title/meta, canonical, JSON-LD, URL, sitemap, internal-link graph, contact, GA4, CNAME, Home directory badge, DNS, Cloudflare, or GitHub Pages setting changed.
+
+**Local validation**
+
+- Automated QA passed after implementation: JavaScript syntax, `tools/qa.mjs` (71 pages and 96 calculations), `tools/content-qa.mjs`, CSS-version coverage on all 71 pages, and `git diff --check`.
+- All 38 calculators passed a real default calculation at 360px with visible results, `scrollWidth === clientWidth`, and no console warning or error.
+- The 10 calculators that failed the production baseline passed 30 focused result-state checks at 430, 390, and 360px.
+- Six representative calculators spanning Storage Needs, NAS Configuration, Backup Planning, Network & Performance, Cost & Power, and SSD Endurance passed 42 result-state checks at 1440, 1280, 1024, 768, 430, 390, and 360px.
+- SSD lifespan at 390px passed initial calculation, changed-input recalculation, GB-to-TB conversion (`1000 GB` to `1 TB`), Copy Results, enabled Print Results, Reset, bounded validation, zero document overflow, and zero console errors. Desktop Tools and mobile Menu open/Escape-close behavior also passed.
+
+**Git and deployment**
+
+- Implementation commit, push, production propagation, live result-state retest, and final synchronization are recorded below after publication.
+
+**Known issues**
+
+- Many calculator validation messages still lack consistent `aria-describedby`/`aria-invalid` association and first-invalid-field focus. This was confirmed during the audit but intentionally not mixed into the responsive runtime work package.
+
 ### 2026-08-05 — Repair SSD endurance calculator form regression
 
 **Starting state**
