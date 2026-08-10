@@ -60,6 +60,8 @@ check(hddSsdPlanner.includes('data-tool="media"') && hddSsdPlanner.includes('<th
 check(/\.form-card\[data-tool="media"\]\s*\+\s*\.results\s+table\s*\{[^}]*width\s*:\s*max\(100%,\s*42rem\)[^}]*table-layout\s*:\s*fixed/.test(nasToolCss), 'HDD vs SSD mobile table must reserve readable table-wide width');
 check(/data-tool="media"[^\n]*nth-child\(1\)[^}]*width\s*:\s*23%/.test(nasToolCss) && /data-tool="media"[^\n]*nth-child\(2\)[^}]*width\s*:\s*27%/.test(nasToolCss) && /data-tool="media"[^\n]*nth-child\(3\)[^}]*width\s*:\s*50%/.test(nasToolCss), 'HDD vs SSD mobile columns must retain factor, recommendation, and reason allocation');
 check(cmrSmrChecker.includes('data-tool="cmr"') && /\.form-card\[data-tool="cmr"\]\s+\.field-grid\s*\{[^}]*align-items\s*:\s*end/.test(nasToolCss), 'CMR vs SMR controls must bottom-align within each two-column row');
+check(/\.form-card\[data-tool="cmr"\]\s*\+\s*\.results\s+table\s*\{[^}]*width\s*:\s*max\(100%,\s*42rem\)[^}]*table-layout\s*:\s*fixed/.test(nasToolCss), 'CMR vs SMR mobile table must reserve readable table-wide width');
+check(/data-tool="cmr"[^\n]*nth-child\(1\)[^}]*width\s*:\s*22%/.test(nasToolCss) && /data-tool="cmr"[^\n]*nth-child\(2\)[^}]*width\s*:\s*30%/.test(nasToolCss) && /data-tool="cmr"[^\n]*nth-child\(3\)[^}]*width\s*:\s*48%/.test(nasToolCss), 'CMR vs SMR mobile columns must retain area, requirement, and why allocation');
 const ssdHub = '/tools/ssd-endurance/';
 const ssdTools = ['ssd-endurance-lifespan-calculator','tbw-dwpd-converter','nas-ssd-cache-endurance-planner','vm-container-ssd-endurance-planner','ssd-remaining-endurance-planner'];
 check(file('partials/header.html').includes(`href="${ssdHub}"`), 'Header Tools menu is missing SSD Endurance');

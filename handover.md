@@ -364,6 +364,28 @@ Record durable architectural, product, infrastructure, or operational decisions 
 
 Add new entries at the top.
 
+### 2026-08-10 — Fix CMR result table mobile readability
+
+**Starting state and production reproduction**
+
+- Branch `main` started clean at local, `origin/main`, and live GitHub `main` commit `cb4d6fdc02ff4a7b3fa12def7add173dd7d79bff` with `0 0` ahead/behind.
+- Production CMR/SMR at 390px and 360px kept document overflow at zero and correctly started the table wrapper at `scrollLeft: 0`, with no table transform, negative margin, clipping, or first-column crop. The usability failure was instead the 357.7px auto-layout table: `AREA / REQUIREMENT / WHY` rendered at 140px / 125px / 93px, creating 6-, 9-, and 7-line rows and a 657px Purchase brief checks card.
+- The existing wrapper is intentionally responsible for horizontal scrolling. The shared narrow-grid containment remained correct and was not reverted.
+- Success-state comparison at 390px covered HDD vs SSD, NAS Bay, and 3-2-1 Backup tables. HDD vs SSD already uses a 42rem fixed table and readable 155px / 181px / 336px columns for its long final text; NAS Bay and 3-2-1 did not expose the same CMR-style allocation failure, so no unrelated table changed.
+
+**Implementation and local validation**
+
+- Under 600px, only `data-tool="cmr"` now gives the Purchase brief checks table `width: max(100%, 42rem)` and `table-layout: fixed`, with `AREA / REQUIREMENT / WHY = 22% / 30% / 48%`. At mobile width that produces about 148px / 202px / 323px: all current rows use three lines without clipping while the existing wrapper owns the 672px internal scroll region.
+- The earlier CMR field-grid `align-items: end` rule remains unchanged. At the two-column 1440px and 1024px widths both first-row and second-row select tops matched; 768px and below retain the existing one-column form with zero document overflow.
+- `tools/qa.mjs` now enforces the CMR table-wide readable width and all three mobile column allocations without weakening prior HDD/SSD or containment assertions. All 71 pages use `styles.css?v=20260810-3` for cache-safe delivery.
+- Browser QA passed at 1440, 1024, 768, 430, 390, and 360px: initial and success states had zero document/result-card overflow, no clipped cells, wrapper `scrollLeft: 0` at first display, and no console warning/error. At 390px the wrapper was explicitly scrolled horizontally to 300px while document overflow remained zero.
+- Default and changed-select calculations, resulting recommendation/table text, Check suitability, and Start over passed; changed inputs produced `SMR may be conditionally suitable`. Calculation logic and result copy remain unchanged.
+- `node tools/qa.mjs`, `node tools/content-qa.mjs`, and `git diff --check` passed.
+
+**Deployment**
+
+- Implementation commit, production 390px/360px result-table screenshots, and final local/origin/live synchronization are recorded after deployment.
+
 ### 2026-08-10 — Fix NAS tool mobile table and field alignment
 
 **Starting state and audit**
