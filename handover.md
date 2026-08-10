@@ -384,7 +384,10 @@ Add new entries at the top.
 
 **Deployment**
 
-- Implementation commit, production 390px/360px result-table screenshots, and final local/origin/live synchronization are recorded after deployment.
+- Implementation commit `213bea7712112d13f943c9ea822404b9ee5c9378` (`Fix CMR result table mobile readability`) was pushed to `origin/main`.
+- GitHub Pages serves `styles.css?v=20260810-3`. Production success-state QA at 390px and 360px passed with a 672px fixed table, 314px/284px wrapper clients, initial `scrollLeft: 0`, zero document/result-card overflow, no clipped cells, and `WHY` at 323px in three lines. The visible first columns, internal scrollbar, summary, limit, and actions were visually checked by screenshot.
+- Production changed-select QA returned `SMR may be conditionally suitable` with the expected Purchase brief rows, and Start over hid results. Console warnings/errors were zero.
+- Deployment-record commit: this commit. After it is pushed, final local `HEAD`, `origin/main`, and live GitHub `main` synchronization is verified and reported with the exact hash.
 
 ### 2026-08-10 — Fix NAS tool mobile table and field alignment
 
