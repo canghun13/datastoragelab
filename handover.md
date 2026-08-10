@@ -389,7 +389,9 @@ Add new entries at the top.
 
 **Deployment**
 
-- Implementation commit, production browser recheck at 390px and 360px, and final local/origin/live synchronization are recorded after deployment.
+- Implementation commit `9b4b1b13b1ae25cfa777e64ef8f0217ffc3db820` (`Fix NAS tool mobile table and field alignment`) was pushed to `origin/main`.
+- GitHub Pages now serves `styles.css?v=20260810-2`. Production browser QA at 390px and 360px passed both targets with zero document overflow and zero warning/error console entries. HDD/SSD kept its 672px table inside the 314px/284px wrapper, allocated 155px / 181px / 336px to the three columns, showed every Reason in three lines, and had no clipped cell. CMR/SMR retained its existing one-column mobile form with complete labels and controls.
+- Deployment-record commit: this commit. After it is pushed, final local `HEAD`, `origin/main`, and live GitHub `main` synchronization is verified and reported with the exact hash.
 
 ### 2026-08-10 — Contain calculator result grids on narrow screens
 
