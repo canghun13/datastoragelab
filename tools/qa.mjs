@@ -53,6 +53,13 @@ check(JSON.stringify([...sitemapUrls].sort()) === JSON.stringify([...expectedUrl
 check(file('robots.txt').includes('Sitemap: https://datastoragelab.com/sitemap.xml'), 'robots.txt sitemap URL is incorrect'); check(file('CNAME').trim() === 'datastoragelab.com', 'CNAME must be datastoragelab.com');
 check(/\.tool-layout\s*>\s*\*\s*\{[^}]*min-width\s*:\s*0/.test(file('assets/css/styles.css')), 'Tool layout children must allow narrow result grids');
 check(/\.results\s*\{[^}]*grid-template-columns\s*:\s*minmax\(0,\s*1fr\)/.test(file('assets/css/styles.css')), 'Result grids must contain wide result content on narrow screens');
+const hddSsdPlanner = file('tools/nas-configuration/hdd-vs-ssd-storage-planner/index.html');
+const cmrSmrChecker = file('tools/nas-configuration/cmr-vs-smr-suitability-checker/index.html');
+const nasToolCss = file('assets/css/styles.css');
+check(hddSsdPlanner.includes('data-tool="media"') && hddSsdPlanner.includes('<th>Factor</th><th>Recommendation</th><th>Reason</th>'), 'HDD vs SSD specification table shell is incomplete');
+check(/\.form-card\[data-tool="media"\]\s*\+\s*\.results\s+table\s*\{[^}]*width\s*:\s*max\(100%,\s*42rem\)[^}]*table-layout\s*:\s*fixed/.test(nasToolCss), 'HDD vs SSD mobile table must reserve readable table-wide width');
+check(/data-tool="media"[^\n]*nth-child\(1\)[^}]*width\s*:\s*23%/.test(nasToolCss) && /data-tool="media"[^\n]*nth-child\(2\)[^}]*width\s*:\s*27%/.test(nasToolCss) && /data-tool="media"[^\n]*nth-child\(3\)[^}]*width\s*:\s*50%/.test(nasToolCss), 'HDD vs SSD mobile columns must retain factor, recommendation, and reason allocation');
+check(cmrSmrChecker.includes('data-tool="cmr"') && /\.form-card\[data-tool="cmr"\]\s+\.field-grid\s*\{[^}]*align-items\s*:\s*end/.test(nasToolCss), 'CMR vs SMR controls must bottom-align within each two-column row');
 const ssdHub = '/tools/ssd-endurance/';
 const ssdTools = ['ssd-endurance-lifespan-calculator','tbw-dwpd-converter','nas-ssd-cache-endurance-planner','vm-container-ssd-endurance-planner','ssd-remaining-endurance-planner'];
 check(file('partials/header.html').includes(`href="${ssdHub}"`), 'Header Tools menu is missing SSD Endurance');

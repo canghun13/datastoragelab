@@ -364,6 +364,33 @@ Record durable architectural, product, infrastructure, or operational decisions 
 
 Add new entries at the top.
 
+### 2026-08-10 — Fix NAS tool mobile table and field alignment
+
+**Starting state and audit**
+
+- Branch `main` started clean at local, `origin/main`, and live GitHub `main` commit `b29a3cc578e975a42ee223af14ab2465ad742861` with `0 0` ahead/behind.
+- Production HDD vs SSD at 390px kept document overflow at zero but gave the `Factor / Recommendation / Reason` columns 137px / 155px / 98px. The three reason sentences then occupied 9, 8, and 10 lines, so the fault was allocation and readability, not the permitted table-wrapper scroll.
+- Production CMR vs SMR at 1024px retained its two-column form. A one-line label's select began at 500.8px while the adjacent two-line label's select began at 523.4px: a 22.5px same-row control misalignment caused by the shared grid's default stretch behavior.
+- Comparison at 390px covered the existing RAID Capacity, NAS Bay, and 3-2-1 Backup result tables. Their final explanatory columns were 138px, 154px, and 109px for materially shorter copy; the HDD/SSD `Reason` text is 60–75 characters and needs a wider table-level allocation. Two-column form comparison covered NAS Bay, RAID Capacity, and Expansion Headroom; only the scoped CMR/SMR form was changed.
+
+**Implementation**
+
+- `assets/css/styles.css` keeps common table and field-grid behavior unchanged. Under 600px, only `data-tool="media"` gives its three-column result table a 42rem readable table width and a `23% / 27% / 50%` Factor/Recommendation/Reason split. Its existing `.table-wrap` remains the only horizontal scroll region.
+- Only `data-tool="cmr"` applies `align-items: end` to its field grid. This bottom-aligns the fields in each existing two-column row, making their fixed-height selects begin together without changing breakpoints, labels, control heights, or unrelated forms.
+- `tools/qa.mjs` now protects both targeted CSS hooks and the HDD/SSD column allocation. All 71 public pages use `styles.css?v=20260810-2` so production loads the scoped fix instead of a cached prior stylesheet.
+- No calculator logic, defaults, content, metadata, URL, sitemap, header, footer, GA4, CNAME, Cloudflare, or GitHub Pages setting changed.
+
+**Local validation**
+
+- `node tools/qa.mjs` passed all 71 pages and 96 calculation cases; `node tools/content-qa.mjs` passed 71 pages with 503-word minimum and 726.4-word average tool content. The final diff check is recorded after the deployment record.
+- Browser QA at 1440, 1024, 768, 430, 390, and 360px found zero document horizontal overflow and zero warning/error console entries for both target tools. HDD/SSD showed no clipping; at 430/390/360px the table was 672px within its 342px/314px/284px wrapper and each Reason row used three lines rather than one-to-two-word wrapping. At 1440/1024/768 it retained normal unscrolled presentation.
+- CMR/SMR retained two columns at 1440 and 1024 with equal first-row and second-row select top coordinates; it preserved the existing one-column layout at 768px and below with zero overflow.
+- HDD/SSD default calculation, changed-data recalculation, result rendering, Copy Results, Print Results action, Start over, and bounded capacity validation passed. CMR/SMR select changes produced `SMR may be conditionally suitable`, then Start over hid results; the select-only form has no invalid free-form value state to validate.
+
+**Deployment**
+
+- Implementation commit, production browser recheck at 390px and 360px, and final local/origin/live synchronization are recorded after deployment.
+
 ### 2026-08-10 — Contain calculator result grids on narrow screens
 
 **Starting state**
