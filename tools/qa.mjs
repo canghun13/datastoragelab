@@ -198,6 +198,25 @@ const driveAudit = calculateDriveKit(fieldCases[2][2]).result;
 check(driveAudit.drivesPerCopy === 2 && driveAudit.assignedDrives === 4 && driveAudit.totalDrives === 5, 'Field drive discrete allocation failed');
 const rotationAudit = calculateRotation(fieldCases[3][2]).result;
 check(rotationAudit.cardsPerDay === 4 && rotationAudit.rotationDays === 3 && rotationAudit.requiredCards === 12 && rotationAudit.status === 'Ready', 'Memory card rotation backlog calculation failed');
+const fieldVariationCases = [
+  ['cards boundary', calculateCards, {cameras:1,photos:1,photoMB:.1,videoMinutes:0,bitrate:1,slots:1,cardGB:1,usable:100,reserve:0,spares:0}],
+  ['cards high mixed workload', calculateCards, {cameras:20,photos:1000000,photoMB:200,videoMinutes:1000,bitrate:2000,slots:2,cardGB:4000,usable:90,reserve:20,spares:5}],
+  ['cards bitrate conversion', calculateCards, {cameras:1,photos:0,photoMB:1,videoMinutes:1,bitrate:8,slots:1,cardGB:1,usable:100,reserve:0,spares:0}],
+  ['offload boundary', calculateOffload, {dataGB:.1,cards:1,readers:1,readerSpeed:.1,destinations:1,destinationSpeed:.1,verify:'none',verifySpeed:.1,efficiency:100}],
+  ['offload inline hash', calculateOffload, {dataGB:10,cards:4,readers:2,readerSpeed:100,destinations:2,destinationSpeed:300,verify:'inline',verifySpeed:250,efficiency:75}],
+  ['offload destination limit', calculateOffload, {dataGB:100000,cards:64,readers:64,readerSpeed:1000,destinations:3,destinationSpeed:100,verify:'reread',verifySpeed:80,efficiency:50}],
+  ['drive boundary', calculateDriveKit, {dailyGB:.1,days:1,copies:2,driveTB:.1,usable:100,reserve:0,spares:0}],
+  ['drive three-copy plan', calculateDriveKit, {dailyGB:1000,days:30,copies:3,driveTB:4,usable:90,reserve:20,spares:2}],
+  ['drive high workload', calculateDriveKit, {dailyGB:100000,days:3650,copies:3,driveTB:1000,usable:50,reserve:50,spares:8}],
+  ['rotation boundary', calculateRotation, {dailyGB:.1,cardGB:1,usable:100,reserve:0,verifiedHours:.01,windowHours:24,holdDays:0,ownedCards:1}],
+  ['rotation ready surplus', calculateRotation, {dailyGB:100,cardGB:100,usable:100,reserve:0,verifiedHours:1,windowHours:8,holdDays:0,ownedCards:5}],
+  ['rotation backlog failure', calculateRotation, {dailyGB:1000,cardGB:64,usable:90,reserve:20,verifiedHours:240,windowHours:.5,holdDays:60,ownedCards:0}]
+];
+for (const [name, fn, input] of fieldVariationCases) check(fn(input).result, `${name}: calculation failed`);
+check(Math.abs(calculateCards(fieldVariationCases[2][2]).result.perCameraGB - .06) < 1e-12, 'Card planner Mbps-to-GB conversion failed');
+check(Math.abs(calculateOffload({dataGB:1,cards:1,readers:1,readerSpeed:8,destinations:1,destinationSpeed:8,verify:'none',verifySpeed:8,efficiency:100}).result.copySeconds - 125) < 1e-12, 'Offload decimal GB/MBps duration conversion failed');
+check(Math.abs(calculateDriveKit({dailyGB:1,days:1,copies:2,driveTB:1,usable:100,reserve:0,spares:0}).result.safeDriveGB - 1000) < 1e-12, 'Drive planner TB-to-GB conversion failed');
+check(Math.abs(calculateRotation({dailyGB:1,cardGB:100,usable:100,reserve:0,verifiedHours:1,windowHours:1,holdDays:0,ownedCards:1}).result.safeCardGB - 100) < 1e-12, 'Rotation planner card-capacity conversion failed');
 for (const path of expected.filter((page) => /storage-needs\/(annual|creator|computer|small-office|media-library)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /nas-configuration\/(nas-bay|raid-capacity|raid-protection|nas-expansion|hdd-vs|cmr-vs)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /backup-planning\/(3-2-1|local-cloud|backup-retention|snapshot|offsite|backup-frequency|recovery-time|backup-verification)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
