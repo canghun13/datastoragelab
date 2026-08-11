@@ -364,6 +364,37 @@ Record durable architectural, product, infrastructure, or operational decisions 
 
 Add new entries at the top.
 
+### 2026-08-11 — Research and build Field Media Offload Planning
+
+#### Remote preflight
+
+- Started from clean `main` at `d2d62a113ec583781034209222e21b271b7f1478`; local `HEAD`, `origin/main`, and live `refs/heads/main` matched with ahead/behind `0/0`, so no pull was required.
+- The source-of-truth inventory contained 71 public pages: 38 tools, 11 guides, four references, four comparisons, nine hubs, and five foundational pages.
+
+#### Deep long-tail review
+
+- Screened ten intent families that were not part of the previously excluded surveillance, LTO, VM, ZFS, RAID migration, scrub, digitization, IOPS, or database-sizing set: field media ingest/offload; offline removable-drive rotation; replication backlog/RPO; cache working-set tiering; spare-drive fleet operations; microscopy/scientific acquisition; game recording/replay; multitrack audio; system-image deployment repositories; and AI dataset/checkpoint storage.
+- Rejected replication backlog, game recording, and AI checkpoint storage after exact mature calculators surfaced; rejected cache/tiering, spare-drive fleet, and physical transfer after the long tails failed to support four coherent tools; held system-image deployment and multitrack audio below the final three because search breadth or exact head-tool competition was weaker.
+- Final scorecard using Gates A–G (demand, four-tool depth, SERP gap, existing-site separation, commercial fit, cluster cohesion, and publish readiness): Field Media Offload **88/100 — GO** (14/15, 18/20, 15/20, 14/15, 13/15, 9/10, 5/5); Microscopy Data Acquisition **78/100 — HOLD** (12/15, 18/20, 17/20, 14/15, 7/15, 7/10, 3/5); Offline Backup Drive Rotation **64/100 — HOLD** (13/15, 13/20, 7/20, 7/15, 10/15, 9/10, 5/5). Only the field-media candidate cleared the 80-point GO threshold without a weak gate.
+- Field-media SERP decomposition covered capture format (photo/video, file size/bitrate, cameras and slots), offload topology (cards, parallel readers, one or more destinations, checksum mode), trip logistics (daily ingest, shoot days, drive sets, custody), and release policy (verified duration, nightly window, backlog, hold days). Photo Tools Plus accepts card capacity, file type/size, and optional camera resolution and returns files or video time plus usable capacity, but omits multi-camera/slot allocation and spares (`https://phototoolsplus.com/tools/memory-card.php`). GearAtlas accepts bitrate/camera/codec/shoot inputs and backup copies for video capacity, but does not schedule reader waves or card release (`https://www.mygearatlas.com/tools/video-storage-calculator`). AutoOffload executes multi-card, two-destination, BLAKE3-verified copies and emits manifests/reports, but it is workflow software rather than a pre-shoot time and hardware planner (`https://autooffload.com/`). Tools for Film accepts total TB, growth, media selections, retention, and returns 3-2-1 compliance/cost projections, but it does not discretely allocate trip drives or control source-card reuse (`https://www.toolsforfilm.com/tools/backup-strategy`).
+- Microscopy showed a real integrated-tool gap: Huisken Lab publishes Z-stack/time-lapse examples, UCSF derives channel/Z/time/position sizes, and NI explains instantaneous and average acquisition bandwidth, yet no reviewed result joined experiment volume, sustained acquisition, analysis scratch, and lab retention. It remains a future research candidate because the buyer/advertiser layer is substantially narrower (`https://huiskenlab.com/data-storage/`, `https://calm.ucsf.edu/dealing-imaging-data`, `https://knowledge.ni.com/KnowledgeArticleDetails?id=kA03q000000YI5bCAG&l=en-US`).
+- Offline rotation has recurring operational questions, but Simplified Tools already provides an exact rotation planner and BackupAssist documents removable-drive pools/GFS. Data Storage Lab also already owns 3-2-1 topology, retention, frequency, recovery, verification, and offsite capacity, so the proposed tools would overlap more than they extend (`https://www.simplified.tools/plan_backup_rotation`, `https://www.backupassist.com/HTMLHelp/V6/content/html/basics/modifyjobs/destination/exthdd/basics_modify_nt_dest_exthdd_2nohdd.html`).
+- Existing T03 Creator Media Storage Planner starts from known GB per project/day and forecasts working/archive/copy capacity over years. The new cluster ends earlier and owns discrete card packing, the multi-reader copy window, portable drive-set allocation, and the evidence-based card-release schedule. Monetizable categories are SD/CFexpress media, readers and hubs, rugged portable SSD/HDD devices, cases, cables, and portable power; no affiliate code was added.
+
+#### Implemented scope
+
+- Added H10 `/tools/field-media/` with T39 Memory Card Quantity Planner, T40 Media Offload Time Planner, T41 Field Backup Drive Planner, and T42 Memory Card Rotation Planner.
+- Added G12 `/guides/field-media-offload-verification-workflow/` and R05 `/reference/field-media-copy-verification-checklist/`.
+- Added `assets/js/field-media-tools.mjs` with exported, testable calculation functions, discrete upward allocation, validation, live result updates, Copy, Print, and Reset actions.
+- Integrated Header Tools, Tools, Guides, Reference, Home, Creator Media, Video Editing Network, and 3-2-1 guide entry points; updated sitemap, `llms.txt`, `site-plan.md`, README, and automated inventory/calculation checks.
+- The public inventory is now 78 pages: 42 tools, 12 guides, five references, four comparisons, ten hubs, and five foundational pages.
+
+#### Verification
+
+- `tools/qa.mjs`: PASS for all 78 public pages, metadata, canonicals, links, sitemap, GA4, JSON-LD, JavaScript syntax, and calculation regressions.
+- `tools/content-qa.mjs`: PASS; 42 tool guides retain a 503-word minimum and 709.2-word average with all required sections, no duplicate paragraphs, and no repeated 12-word sequences.
+- Browser QA at 390 px and 1280 px: PASS. Default outputs matched automated audits (10 cards, 1.05-hour verified offload, five physical drives, 12-card rotation); invalid inputs hid results and displayed field errors; changing the owned pool to ten produced a two-card shortfall; there was no horizontal overflow or console warning/error; Header and Home field-media entry points rendered correctly.
+
 ### 2026-08-10 — Fix CMR result table mobile readability
 
 **Starting state and production reproduction**

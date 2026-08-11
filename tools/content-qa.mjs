@@ -26,14 +26,15 @@ const hubPages = [
   'reference/index.html',
   'compare/index.html',
   'tools/ssd-endurance/index.html',
+  'tools/field-media/index.html',
 ];
 const basicPages = ['index.html', 'tools/index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html'];
-const expectedCounts = { public: 71, tool: 38, guide: 11, reference: 4, comparison: 4, hub: 9, basic: 5 };
+const expectedCounts = { public: 78, tool: 42, guide: 12, reference: 5, comparison: 4, hub: 10, basic: 5 };
 
-check(publicPages.length === expectedCounts.public, `Expected 71 public pages, found ${publicPages.length}`);
-check(toolPages.length === expectedCounts.tool, `Expected 38 tools, found ${toolPages.length}`);
-check(guidePages.length === expectedCounts.guide, `Expected 11 guides, found ${guidePages.length}`);
-check(referencePages.length === expectedCounts.reference, `Expected 4 references, found ${referencePages.length}`);
+check(publicPages.length === expectedCounts.public, `Expected 78 public pages, found ${publicPages.length}`);
+check(toolPages.length === expectedCounts.tool, `Expected 42 tools, found ${toolPages.length}`);
+check(guidePages.length === expectedCounts.guide, `Expected 12 guides, found ${guidePages.length}`);
+check(referencePages.length === expectedCounts.reference, `Expected 5 references, found ${referencePages.length}`);
 check(comparisonPages.length === expectedCounts.comparison, `Expected 4 comparisons, found ${comparisonPages.length}`);
 check(hubPages.every((path) => publicPages.includes(path)), 'One or more expected hubs are missing');
 check(basicPages.every((path) => publicPages.includes(path)), 'One or more expected basic pages are missing');

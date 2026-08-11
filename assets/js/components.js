@@ -78,6 +78,26 @@ function integrateSsdEntryPoints() {
   if (item && main && !main.querySelector('[data-ssd-related]')) main.insertAdjacentHTML('beforeend', `<section class="section tint" data-ssd-related><div class="container prose"><h2>Continue SSD planning</h2><p>${item[2]} <a href="${item[1]}">${item[0]}</a>.</p></div></section>`);
 }
 
+function integrateFieldMediaEntryPoints() {
+  const path = location.pathname;
+  if (path === '/') {
+    const grid = document.querySelector('.scenario-grid');
+    if (grid && !grid.querySelector('[data-field-media-home-card]')) {
+      grid.insertAdjacentHTML('beforeend', '<article class="scenario" data-field-media-home-card><strong>Field production</strong><p>Camera cards, verified offloads, portable copies, and release timing need one capture-to-copy plan. <a href="/tools/field-media/">Plan field media</a>.</p></article>');
+    }
+  }
+  const related = {
+    '/tools/storage-needs/creator-media-storage-planner/': ['Field Media Offload Planning', '/tools/field-media/', 'Before archive ingest, plan the camera cards, portable copies, verification window, and safe source release.'],
+    '/tools/network-performance/video-editing-network-planner/': ['Media Offload Time Planner', '/tools/field-media/media-offload-time-planner/', 'Model the capture-to-portable-drive path separately from the post-production editing network.'],
+    '/guides/3-2-1-backup-explained/': ['Field Media Offload Workflow', '/guides/field-media-offload-verification-workflow/', 'Apply independent-copy thinking to camera media before it reaches the studio archive.']
+  };
+  const item = related[path];
+  const main = document.querySelector('main');
+  if (item && main && !main.querySelector('[data-field-media-related]')) {
+    main.insertAdjacentHTML('beforeend', `<section class="section tint" data-field-media-related><div class="container prose"><h2>Continue field media planning</h2><p>${item[2]} <a href="${item[1]}">${item[0]}</a>.</p></div></section>`);
+  }
+}
+
 async function start() {
   await Promise.all([replaceWithPartial('[data-header]', headerTemplate), replaceWithPartial('[data-footer]', footerTemplate)]);
   document.querySelectorAll('[data-current-year]').forEach((node) => { node.textContent = new Date().getFullYear(); });
@@ -85,6 +105,7 @@ async function start() {
   enableNavigation();
   normalizeBreadcrumbs();
   integrateSsdEntryPoints();
+  integrateFieldMediaEntryPoints();
 }
 
 start();

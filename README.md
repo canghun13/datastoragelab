@@ -2,7 +2,7 @@
 
 Static GitHub Pages site for vendor-neutral home and small-team storage planning.
 
-The published inventory has 71 public pages: 38 tools, 11 guides, four references, four comparisons, nine hubs, and five foundational pages. It covers storage needs, NAS configuration, backup planning, network performance, lifecycle cost, power protection, and SSD endurance planning.
+The published inventory has 78 public pages: 42 tools, 12 guides, five references, four comparisons, ten hubs, and five foundational pages. It covers storage needs, NAS configuration, backup planning, network performance, lifecycle cost, power protection, SSD endurance, and field media offload planning.
 
 Run automated QA with the bundled Node runtime when Node is not on PATH:
 
@@ -11,11 +11,11 @@ Run automated QA with the bundled Node runtime when Node is not on PATH:
 & 'C:\Users\song\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' tools\content-qa.mjs
 ```
 
-`tools/content-qa.mjs` enforces the 71-page inventory, the 38 tool and nine
+`tools/content-qa.mjs` enforces the 78-page inventory, the 42 tool and ten
 hub content structures, a 400-word minimum and 550-word average across tool
 guides, canonical SVG favicon declarations, internal next-step links, and
 checks for placeholders, duplicate paragraphs, and repeated 12-word passages.
-The completed tool guidance currently has a 701-word minimum and a 758.1-word
+The completed tool guidance currently has a 503-word minimum and a 709.2-word
 average.
 
 Canonical site: https://datastoragelab.com/

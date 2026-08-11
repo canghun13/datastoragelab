@@ -502,3 +502,13 @@ Inputs are decimal capacity, TBW or PBW, warranty years, daily logical writes, W
 ### Post-launch information-architecture integration
 
 H09 is the sixth tool-cluster hub, not a guide or a single tool. It appears after Cost & Power in the Header Tools menu and in the Tools directory; the Learn menu remains limited to Guides, Reference, and Comparisons indexes. G11 is discoverable through Guides and C04 through Comparisons. Home exposes H09 in the existing Current tools card treatment. Existing NAS, cost, media, replacement, and HDD/SSD journeys expose contextual SSD continuity links without changing their calculations or replacing their established layout patterns.
+
+## 13. Field media offload extension — 2026-08-11
+
+The completed 71-page inventory is extended to 78 public pages: 42 tools, 12 guides, five references, four comparisons, ten hubs, and five foundational pages. The extension adds H10 **Field Media Offload Planning** (`/tools/field-media/`); T39 **Memory Card Quantity Planner**; T40 **Media Offload Time Planner**; T41 **Field Backup Drive Planner**; T42 **Memory Card Rotation Planner**; G12 **Field Media Offload and Verification Workflow**; and R05 **Field Media Copy and Verification Checklist**.
+
+This cluster owns the workflow between camera capture and studio ingest. T39 derives discrete card quantities from photo size, video bitrate, camera count, recorded slot copies, formatted capacity, reserve, and spares. T40 models active readers, source and destination limits, workflow efficiency, destination count, and verification time. T41 assigns trip payload to independent physical drive sets. T42 converts verified-processing delay and card hold policy into a reusable-media pool. These inputs and outputs are distinct from T03, which begins with known GB per production period and forecasts working, archive, and backup capacity over years.
+
+### Post-launch information-architecture integration
+
+H10 appears after SSD Endurance in the Header Tools menu and Tools directory. G12 and R05 are listed in their existing Learn indexes. Home exposes a field-production scenario, while the Creator Media Storage Planner, Video Editing Network Planner, and 3-2-1 guide provide contextual continuity links. H10 routes users through card planning, offload timing, portable copy allocation, and card release, then hands finished field payload to T03 for post-production and archive planning.

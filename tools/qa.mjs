@@ -8,6 +8,7 @@ import { calculateBackup } from '../assets/js/backup-tools.mjs';
 import { calculateNetwork } from '../assets/js/network-tools.mjs';
 import { calculateCost } from '../assets/js/cost-tools.mjs';
 import { calculateLifespan, calculateConverter, calculateCache, calculateVm, calculateRemaining, normalizeCapacityToGB, normalizeEnduranceToTBW, normalizeExistingWritesToTBW } from '../assets/js/ssd-endurance-tools.mjs';
+import { calculateCards, calculateOffload, calculateDriveKit, calculateRotation } from '../assets/js/field-media-tools.mjs';
 
 const root = process.cwd();
 const baseUrl = 'https://datastoragelab.com';
@@ -19,8 +20,9 @@ const expected = [
   'tools/network-performance/index.html', 'tools/network-performance/cloud-backup-transfer-time-calculator/index.html', 'tools/network-performance/local-network-transfer-time-calculator/index.html', 'tools/network-performance/backup-window-calculator/index.html', 'tools/network-performance/network-tier-selector/index.html', 'tools/network-performance/concurrent-user-bandwidth-planner/index.html', 'tools/network-performance/video-editing-network-planner/index.html',
   'tools/cost-power/index.html', 'tools/cost-power/nas-vs-cloud-five-year-cost-calculator/index.html', 'tools/cost-power/das-vs-nas-cost-calculator/index.html', 'tools/cost-power/drive-cost-per-usable-tb-calculator/index.html', 'tools/cost-power/storage-electricity-cost-calculator/index.html', 'tools/cost-power/drive-replacement-reserve-calculator/index.html', 'tools/cost-power/ups-size-runtime-calculator/index.html', 'tools/cost-power/full-storage-system-budget-planner/index.html',
   'tools/ssd-endurance/index.html', 'tools/ssd-endurance/ssd-endurance-lifespan-calculator/index.html', 'tools/ssd-endurance/tbw-dwpd-converter/index.html', 'tools/ssd-endurance/nas-ssd-cache-endurance-planner/index.html', 'tools/ssd-endurance/vm-container-ssd-endurance-planner/index.html', 'tools/ssd-endurance/ssd-remaining-endurance-planner/index.html',
-  'guides/index.html', 'guides/how-much-nas-storage-do-i-need/index.html', 'guides/raid-is-not-a-backup/index.html', 'guides/cmr-vs-smr-for-nas/index.html', 'guides/nas-drive-replacement-planning/index.html', 'guides/hdd-vs-ssd-for-bulk-storage/index.html', 'guides/backup-retention-basics/index.html', 'guides/3-2-1-backup-explained/index.html', 'guides/local-backup-vs-offsite-backup/index.html', 'guides/snapshots-vs-backups/index.html', 'guides/how-to-size-a-ups-for-a-nas/index.html', 'guides/ssd-endurance-for-nas-cache-vms-backups/index.html',
-  'reference/index.html', 'reference/tb-vs-tib/index.html', 'reference/storage-raid-capacity-formulas/index.html', 'reference/backup-transfer-time-bandwidth/index.html', 'reference/ups-watts-va-runtime/index.html', 'compare/index.html', 'compare/2-bay-vs-4-bay-nas/index.html', 'compare/nas-vs-cloud-for-family-photos/index.html', 'compare/2-5gbe-vs-10gbe-for-nas/index.html', 'compare/consumer-vs-nas-vs-enterprise-ssd-endurance/index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html'
+  'tools/field-media/index.html', 'tools/field-media/memory-card-quantity-planner/index.html', 'tools/field-media/media-offload-time-planner/index.html', 'tools/field-media/field-backup-drive-planner/index.html', 'tools/field-media/memory-card-rotation-planner/index.html',
+  'guides/index.html', 'guides/how-much-nas-storage-do-i-need/index.html', 'guides/raid-is-not-a-backup/index.html', 'guides/cmr-vs-smr-for-nas/index.html', 'guides/nas-drive-replacement-planning/index.html', 'guides/hdd-vs-ssd-for-bulk-storage/index.html', 'guides/backup-retention-basics/index.html', 'guides/3-2-1-backup-explained/index.html', 'guides/local-backup-vs-offsite-backup/index.html', 'guides/snapshots-vs-backups/index.html', 'guides/how-to-size-a-ups-for-a-nas/index.html', 'guides/ssd-endurance-for-nas-cache-vms-backups/index.html', 'guides/field-media-offload-verification-workflow/index.html',
+  'reference/index.html', 'reference/tb-vs-tib/index.html', 'reference/storage-raid-capacity-formulas/index.html', 'reference/backup-transfer-time-bandwidth/index.html', 'reference/ups-watts-va-runtime/index.html', 'reference/field-media-copy-verification-checklist/index.html', 'compare/index.html', 'compare/2-bay-vs-4-bay-nas/index.html', 'compare/nas-vs-cloud-for-family-photos/index.html', 'compare/2-5gbe-vs-10gbe-for-nas/index.html', 'compare/consumer-vs-nas-vs-enterprise-ssd-endurance/index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html'
 ];
 const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
@@ -78,6 +80,21 @@ for (const slug of ssdTools) {
   check(!/years\s*<\/span>\s*<\/div>\s*<p[^>]*>\s*years/i.test(page), `${slug}: duplicate years suffix found`);
   check(!/>\s*(?:GB\/day|Days|Percent of rated TBW|Decimal GB)\.\s*</i.test(page), `${slug}: standalone unit helper found`);
 }
+const fieldHub = '/tools/field-media/';
+const fieldTools = ['memory-card-quantity-planner', 'media-offload-time-planner', 'field-backup-drive-planner', 'memory-card-rotation-planner'];
+check(file('partials/header.html').includes(`href="${fieldHub}"`), 'Header Tools menu is missing Field Media');
+check(file('tools/index.html').includes(`href="${fieldHub}"`), 'Tools directory is missing Field Media');
+check(file('guides/index.html').includes('/guides/field-media-offload-verification-workflow/'), 'Guides index is missing G12');
+check(file('reference/index.html').includes('/reference/field-media-copy-verification-checklist/'), 'Reference index is missing R05');
+const h10 = file('tools/field-media/index.html');
+for (const slug of fieldTools) {
+  check(h10.includes(`/tools/field-media/${slug}/`), `H10 is missing ${slug}`);
+  const page = file(`tools/field-media/${slug}/index.html`);
+  check(page.includes('data-field-media-form') && page.includes('data-field-media-results') && page.includes('data-copy-results') && page.includes('data-print-results') && page.includes('data-reset-tool'), `${slug}: field media calculator shell or actions missing`);
+  check(page.includes(fieldHub), `${slug}: return link to H10 missing`);
+}
+check(h10.includes('/guides/field-media-offload-verification-workflow/') && h10.includes('/reference/field-media-copy-verification-checklist/'), 'H10 is missing its guide or reference');
+check(file('assets/js/components.js').includes('data-field-media-home-card'), 'Home integration is missing the field-production entry point');
 const cachePage = file('tools/ssd-endurance/nas-ssd-cache-endurance-planner/index.html');
 check(cachePage.includes('data-mode-field="measured"') && cachePage.includes('data-mode-field="estimated"') && cachePage.includes('Measured cache host writes') && cachePage.includes('Estimated NAS ingest'), 'Cache planner mode controls are incomplete');
 for (const jsPath of allFiles(join(root, 'assets', 'js')).filter((path) => /\.m?js$/.test(path))) { const result = spawnSync(process.execPath, ['--check', jsPath], { encoding: 'utf8' }); check(result.status === 0, `JavaScript syntax error in ${relative(root, jsPath)}: ${result.stderr}`); }
@@ -162,6 +179,25 @@ const vmUnitAudit = { vms:4, perVm:20, containers:30, logs:40, snapshots:25, cop
 check(Math.abs(calculateVm(vmUnitAudit).result.margin - calculateVm({...vmUnitAudit, capacity:1, capacityUnit:'TB', rated:1.2, enduranceUnit:'PBW', existing:0, existingUnit:'PB'}).result.margin) < 1e-12, 'VM planner selectable unit equivalence failed');
 const remainingUnitAudit = { rated:600, enduranceUnit:'TBW', capacity:1000, capacityUnit:'GB', unit:'tb', previous:100, current:115, days:30, smart:20, threshold:80, growth:10, lead:60 };
 check(Math.abs(calculateRemaining(remainingUnitAudit).result.usage - calculateRemaining({...remainingUnitAudit, rated:.6, enduranceUnit:'PBW', capacity:1, capacityUnit:'TB'}).result.usage) < 1e-12, 'Remaining planner selectable unit equivalence failed');
+const fieldCases = [
+  ['cards', calculateCards, { cameras:2, photos:2500, photoMB:48, videoMinutes:30, bitrate:400, slots:2, cardGB:128, usable:93, reserve:10, spares:1 }],
+  ['offload', calculateOffload, { dataGB:420, cards:8, readers:2, readerSpeed:180, destinations:2, destinationSpeed:500, verify:'reread', verifySpeed:450, efficiency:80 }],
+  ['drive', calculateDriveKit, { dailyGB:420, days:5, copies:2, driveTB:2, usable:93, reserve:15, spares:1 }],
+  ['rotation', calculateRotation, { dailyGB:420, cardGB:128, usable:93, reserve:10, verifiedHours:6, windowHours:4, holdDays:1, ownedCards:12 }]
+];
+for (const [name, fn, input] of fieldCases) {
+  check(fn(input).result, `${name}: field media normal calculation failed`);
+  const invalid = name === 'cards' ? {...input, cameras:0} : name === 'offload' ? {...input, readers:0} : {...input, dailyGB:0};
+  check(fn(invalid).errors, `${name}: field media invalid input was accepted`);
+}
+const cardAudit = calculateCards(fieldCases[0][2]).result;
+check(cardAudit.cardsPerSlot === 2 && cardAudit.workingCards === 8 && cardAudit.totalCards === 10, 'Memory card discrete allocation failed');
+const offloadAudit = calculateOffload(fieldCases[1][2]).result;
+check(Math.abs(offloadAudit.copyRate - 288) < 1e-9 && offloadAudit.waves === 4 && offloadAudit.bottleneck === 'Card readers', 'Offload parallel-path calculation failed');
+const driveAudit = calculateDriveKit(fieldCases[2][2]).result;
+check(driveAudit.drivesPerCopy === 2 && driveAudit.assignedDrives === 4 && driveAudit.totalDrives === 5, 'Field drive discrete allocation failed');
+const rotationAudit = calculateRotation(fieldCases[3][2]).result;
+check(rotationAudit.cardsPerDay === 4 && rotationAudit.rotationDays === 3 && rotationAudit.requiredCards === 12 && rotationAudit.status === 'Ready', 'Memory card rotation backlog calculation failed');
 for (const path of expected.filter((page) => /storage-needs\/(annual|creator|computer|small-office|media-library)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /nas-configuration\/(nas-bay|raid-capacity|raid-protection|nas-expansion|hdd-vs|cmr-vs)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /backup-planning\/(3-2-1|local-cloud|backup-retention|snapshot|offsite|backup-frequency|recovery-time|backup-verification)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
@@ -170,4 +206,4 @@ for (const path of expected.filter((page) => /cost-power\/(nas-vs|das-vs|drive-c
 check(!/Reserved for future user-managed badge|footer-slot/.test(file('partials/footer.html')+file('index.html')), 'Common badge placeholder remains');
 for (const path of ['contact/index.html','privacy/index.html']) check(/mailto:canghun13@naver\.com/.test(file(path)), `${path}: confirmed contact email missing`);
 if (failures.length) { console.error(`QA FAILED (${failures.length})`); failures.forEach((failure) => console.error(`- ${failure}`)); process.exit(1); }
-console.log(`QA PASSED: ${expected.length} public HTML pages; metadata, links, sitemap, GA4, JSON-LD, JavaScript, 96 calculation cases, Phase 1 regression, badge, and contact checks passed.`);
+console.log(`QA PASSED: ${expected.length} public HTML pages; metadata, links, sitemap, GA4, JSON-LD, JavaScript, calculation cases, Phase 1 regression, badge, and contact checks passed.`);
