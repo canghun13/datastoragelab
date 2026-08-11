@@ -58,10 +58,17 @@ check(/\.results\s*\{[^}]*grid-template-columns\s*:\s*minmax\(0,\s*1fr\)/.test(f
 const hddSsdPlanner = file('tools/nas-configuration/hdd-vs-ssd-storage-planner/index.html');
 const cmrSmrChecker = file('tools/nas-configuration/cmr-vs-smr-suitability-checker/index.html');
 const nasToolCss = file('assets/css/styles.css');
+const calculatorPages = expected.filter((path) => /^tools\/[^/]+\/[^/]+\/index\.html$/.test(path));
+const staticFormPages = calculatorPages.filter((path) => file(path).includes('<form'));
 check(hddSsdPlanner.includes('data-tool="media"') && hddSsdPlanner.includes('<th>Factor</th><th>Recommendation</th><th>Reason</th>'), 'HDD vs SSD specification table shell is incomplete');
 check(/\.form-card\[data-tool="media"\]\s*\+\s*\.results\s+table\s*\{[^}]*width\s*:\s*max\(100%,\s*42rem\)[^}]*table-layout\s*:\s*fixed/.test(nasToolCss), 'HDD vs SSD mobile table must reserve readable table-wide width');
 check(/data-tool="media"[^\n]*nth-child\(1\)[^}]*width\s*:\s*23%/.test(nasToolCss) && /data-tool="media"[^\n]*nth-child\(2\)[^}]*width\s*:\s*27%/.test(nasToolCss) && /data-tool="media"[^\n]*nth-child\(3\)[^}]*width\s*:\s*50%/.test(nasToolCss), 'HDD vs SSD mobile columns must retain factor, recommendation, and reason allocation');
-check(cmrSmrChecker.includes('data-tool="cmr"') && /\.form-card\[data-tool="cmr"\]\s+\.field-grid\s*\{[^}]*align-items\s*:\s*end/.test(nasToolCss), 'CMR vs SMR controls must bottom-align within each two-column row');
+check(/@media\s*\(min-width:\s*901px\)\s*\{[\s\S]*?\.field-grid\s*\{[^}]*align-items\s*:\s*stretch/.test(nasToolCss), 'Two-column field grids must use shared row tracks above the single-column breakpoint');
+check(/\.field-grid\s*>\s*\.field\s*\{[^}]*display\s*:\s*grid[^}]*grid-template-rows\s*:\s*subgrid[^}]*grid-row\s*:\s*span\s*4/.test(nasToolCss), 'Two-column fields must span the shared label, control, helper, and error tracks');
+check(/\.field-grid\s*>\s*\.field\s*>\s*:is\([^}]*\)\s*\{[^}]*grid-row\s*:\s*2/.test(nasToolCss) && /\.field-grid\s*>\s*\.field\s*>\s*\.error\s*\{[^}]*grid-row\s*:\s*4/.test(nasToolCss), 'Field controls and errors must retain their shared grid tracks');
+check(staticFormPages.length === 35 && staticFormPages.every((path) => file(path).includes('class="field-grid"')), 'Every static calculator form must use the shared field-grid alignment pattern');
+check(calculatorPages.length === 42 && file('assets/js/cost-tools.mjs').includes('class="field-grid"'), 'Every calculator, including runtime cost forms, must use the shared alignment pattern');
+check(cmrSmrChecker.includes('data-tool="cmr"'), 'CMR vs SMR checker shell is incomplete');
 check(/\.form-card\[data-tool="cmr"\]\s*\+\s*\.results\s+table\s*\{[^}]*width\s*:\s*max\(100%,\s*42rem\)[^}]*table-layout\s*:\s*fixed/.test(nasToolCss), 'CMR vs SMR mobile table must reserve readable table-wide width');
 check(/data-tool="cmr"[^\n]*nth-child\(1\)[^}]*width\s*:\s*22%/.test(nasToolCss) && /data-tool="cmr"[^\n]*nth-child\(2\)[^}]*width\s*:\s*30%/.test(nasToolCss) && /data-tool="cmr"[^\n]*nth-child\(3\)[^}]*width\s*:\s*48%/.test(nasToolCss), 'CMR vs SMR mobile columns must retain area, requirement, and why allocation');
 const ssdHub = '/tools/ssd-endurance/';

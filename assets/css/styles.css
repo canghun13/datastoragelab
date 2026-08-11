@@ -163,7 +163,19 @@ table { width: 100%; border-collapse: collapse; font-size: .9rem; }
 th, td { padding: .8rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 th { color: var(--ink); background: #f7fafc; font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; }
 tr:last-child td { border-bottom: 0; }
-.form-card[data-tool="cmr"] .field-grid { align-items: end; }
+/*
+  Keep every part of a two-column field row on shared grid tracks.  A field
+  can have a longer label or an optional helper, but its control still starts
+  on the row-wide control track rather than following its own label height.
+*/
+@media (min-width: 901px) {
+  .field-grid { align-items: stretch; }
+  .field-grid > .field { display: grid; grid-template-rows: subgrid; grid-row: span 4; }
+  .field-grid > .field > label { grid-row: 1; }
+  .field-grid > .field > :is(.input-wrap, .ssd-unit-group, input:not([type="hidden"]), select) { grid-row: 2; }
+  .field-grid > .field > :is(.help, .helper) { grid-row: 3; }
+  .field-grid > .field > .error { grid-row: 4; }
+}
 @media (max-width: 600px) {
   .form-card[data-tool="media"] + .results table { width: max(100%, 42rem); table-layout: fixed; }
   .form-card[data-tool="media"] + .results th:nth-child(1), .form-card[data-tool="media"] + .results td:nth-child(1) { width: 23%; }

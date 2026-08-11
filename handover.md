@@ -364,6 +364,33 @@ Record durable architectural, product, infrastructure, or operational decisions 
 
 Add new entries at the top.
 
+### 2026-08-11 — Fix calculator two-column field alignment
+
+#### Safe preflight and audit scope
+
+- Started clean on `main` at local, `origin/main`, and live GitHub `main` commit `2f048b40e7836cea3e97bb684345da360e3e558f`; `git ls-remote`, `git fetch --prune origin main`, and ahead/behind checks all returned `0 0`, so no pull, merge, or rebase was needed.
+- Built the inventory from the rendered repository forms rather than the README: 42 calculator/planner/checker pages, 42 forms, and 49 `.field-grid` containers. This includes all four Field Media tools, CMR/SMR, all five SSD endurance tools (T34–T38), and the runtime-rendered Cost & Power forms. Non-form hub and editorial pages were excluded from the coordinate audit.
+- At 1024px before the repair, 26 pages and 40 same-row pairs failed. The repeated defect was a 22.5px control-top difference whenever adjacent labels occupied different numbers of lines. Home Storage & Backup and SSD Remaining also demonstrated that the issue coexisted with normal helper text; helpers were not removed or compressed.
+
+#### Implementation
+
+- Replaced the old CMR-only bottom-alignment exception with one shared desktop/tablet field-grid pattern. Above the existing 900px single-column breakpoint, each `.field` spans shared `label / control / helper / error` subgrid tracks. This aligns controls by their actual grid row while retaining label wrapping, optional helper text, error space, existing form widths, and the current responsive breakpoints.
+- Extended `tools/qa.mjs` with generic safeguards for all 42 calculator pages: shared subgrid tracks, control/error track placement, all 35 static form shells, and the seven runtime Cost & Power forms. The CMR result-table regression guard remains intact; only its obsolete one-page alignment implementation assertion was replaced.
+- Updated all 78 public HTML stylesheet references to `styles.css?v=20260811-1` so the common CSS repair is cache-safe in production. No formula, default, content, URL, SEO, navigation, header, footer, analytics, sitemap, or infrastructure setting changed.
+
+#### Local browser and runtime verification
+
+- Actual rendered coordinate audit used visible grid geometry, label/control rectangles, helper heights, and a 0.75px tolerance. At 1440px, 1280px, and 1024px it inspected 114 two-column pairs per width with **0** control-top mismatches. At 900px and 768px all 49 grids correctly became one column (0 two-column pairs to compare).
+- Principal dynamic states were exercised on all 42 tools: 14 forms had a visible alternate select state (including growth method, RAID layout, CMR/SMR, SSD cache measured/estimated mode, SSD metric/unit, and Field Media verification/copy choices); all had 0 alignment failures and 0 overflow. The remaining forms have numeric-only principal states and were measured at their defaults.
+- At 430px, 390px, and 360px, all 42 tools retained one-column grids with 0 document, control, suffix, select, helper, and button overflow failures.
+- All 42 default calculations rendered results. Changed-value recalculation and Copy Results passed for all 42 (21 direct bounded-input/select cases plus 21 unrestricted-number cases); bounded invalid-input validation passed for 20 applicable forms, while 22 select-only or unconstrained forms have no comparable bounded-invalid state. Reset hid results for all 42. Print actions were clicked successfully on representative Home, CMR/SMR, SSD Cache, and Field Media tools; all 42 pages expose the Print Results action. Browser warning/error logs were empty.
+- `node tools/qa.mjs`, `node tools/content-qa.mjs`, and `git diff --check` passed. The post-fix browser pass also confirmed zero result-state overflow at 1024px.
+
+#### Deployment follow-up
+
+- Commit the completed repair as `Fix calculator two-column field alignment`, push `main`, then verify local `HEAD`, `origin/main`, and `git ls-remote origin refs/heads/main` match with `0 0` ahead/behind and a clean worktree.
+- After GitHub Pages deploys, repeat real production form-coordinate and successful-calculation checks at 1440px, 1024px, 900px, 768px, and 390px. Select known one-line/two-line pairs from Field Media, CMR/SMR, SSD Endurance, and at least one affected shared-form cluster; confirm the `20260811-1` stylesheet marker, zero control-top mismatch, one-column mobile forms, result visibility, and no browser errors.
+
 ### 2026-08-11 — Research and build Field Media Offload Planning
 
 #### Remote preflight
