@@ -386,10 +386,11 @@ Add new entries at the top.
 - All 42 default calculations rendered results. Changed-value recalculation and Copy Results passed for all 42 (21 direct bounded-input/select cases plus 21 unrestricted-number cases); bounded invalid-input validation passed for 20 applicable forms, while 22 select-only or unconstrained forms have no comparable bounded-invalid state. Reset hid results for all 42. Print actions were clicked successfully on representative Home, CMR/SMR, SSD Cache, and Field Media tools; all 42 pages expose the Print Results action. Browser warning/error logs were empty.
 - `node tools/qa.mjs`, `node tools/content-qa.mjs`, and `git diff --check` passed. The post-fix browser pass also confirmed zero result-state overflow at 1024px.
 
-#### Deployment follow-up
+#### Deployment
 
-- Commit the completed repair as `Fix calculator two-column field alignment`, push `main`, then verify local `HEAD`, `origin/main`, and `git ls-remote origin refs/heads/main` match with `0 0` ahead/behind and a clean worktree.
-- After GitHub Pages deploys, repeat real production form-coordinate and successful-calculation checks at 1440px, 1024px, 900px, 768px, and 390px. Select known one-line/two-line pairs from Field Media, CMR/SMR, SSD Endurance, and at least one affected shared-form cluster; confirm the `20260811-1` stylesheet marker, zero control-top mismatch, one-column mobile forms, result visibility, and no browser errors.
+- Implementation commit `d573889098669fdb43eb35c26f2dc1ed26f8d028` (`Fix calculator two-column field alignment`) was pushed to `origin/main`.
+- GitHub Pages now serves `styles.css?v=20260811-1`. Real production browser testing covered Field Media Offload, CMR/SMR, VM/Container SSD Endurance, and Home Storage & Backup at 1440px, 1024px, 900px, 768px, and 390px. The 1440px/1024px run measured 18 representative two-column pairs per width with 0 control-top mismatches; 900px, 768px, and 390px correctly used single-column forms.
+- All 20 production success-state checks rendered visible results with zero document overflow. The exact new stylesheet marker appeared on every page, and browser warning/error logs were empty. Final local/origin/live commit synchronization and a clean worktree are verified after this deployment-record commit.
 
 ### 2026-08-11 — Research and build Field Media Offload Planning
 
