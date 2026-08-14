@@ -51,6 +51,12 @@
   <url><loc>https://datastoragelab.com/tools/field-media/media-offload-time-planner/</loc></url>
   <url><loc>https://datastoragelab.com/tools/field-media/field-backup-drive-planner/</loc></url>
   <url><loc>https://datastoragelab.com/tools/field-media/memory-card-rotation-planner/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/external-storage/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/external-storage/drive-enclosure-compatibility-checker/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/external-storage/connection-bottleneck-planner/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/external-storage/usb-power-budget-checker/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/external-storage/port-topology-planner/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/external-storage/performance-troubleshooter/</loc></url>
   <url><loc>https://datastoragelab.com/guides/how-much-nas-storage-do-i-need/</loc></url>
   <url><loc>https://datastoragelab.com/guides/raid-is-not-a-backup/</loc></url>
   <url><loc>https://datastoragelab.com/guides/cmr-vs-smr-for-nas/</loc></url>
@@ -63,12 +69,14 @@
   <url><loc>https://datastoragelab.com/guides/how-to-size-a-ups-for-a-nas/</loc></url>
   <url><loc>https://datastoragelab.com/guides/ssd-endurance-for-nas-cache-vms-backups/</loc></url>
   <url><loc>https://datastoragelab.com/guides/field-media-offload-verification-workflow/</loc></url>
+  <url><loc>https://datastoragelab.com/guides/how-to-plan-an-external-storage-connection/</loc></url>
   <url><loc>https://datastoragelab.com/guides/</loc></url>
   <url><loc>https://datastoragelab.com/reference/tb-vs-tib/</loc></url>
   <url><loc>https://datastoragelab.com/reference/storage-raid-capacity-formulas/</loc></url>
   <url><loc>https://datastoragelab.com/reference/backup-transfer-time-bandwidth/</loc></url>
   <url><loc>https://datastoragelab.com/reference/ups-watts-va-runtime/</loc></url>
   <url><loc>https://datastoragelab.com/reference/field-media-copy-verification-checklist/</loc></url>
+  <url><loc>https://datastoragelab.com/reference/usb-thunderbolt-storage-path-reference/</loc></url>
   <url><loc>https://datastoragelab.com/reference/</loc></url>
   <url><loc>https://datastoragelab.com/compare/2-bay-vs-4-bay-nas/</loc></url>
   <url><loc>https://datastoragelab.com/compare/nas-vs-cloud-for-family-photos/</loc></url>

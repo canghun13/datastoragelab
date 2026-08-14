@@ -98,6 +98,26 @@ function integrateFieldMediaEntryPoints() {
   }
 }
 
+function integrateExternalStorageEntryPoints() {
+  const path = location.pathname;
+  if (path === '/') {
+    const grid = document.querySelector('.scenario-grid');
+    if (grid && !grid.querySelector('[data-external-storage-home-card]')) {
+      grid.insertAdjacentHTML('beforeend', '<article class="scenario" data-external-storage-home-card><strong>External storage setup</strong><p>Match a drive and enclosure, check cable and port limits, reserve USB power, and preserve a direct benchmark. <a href="/tools/external-storage/">Plan the connection</a>.</p></article>');
+    }
+  }
+  const related = {
+    '/tools/field-media/media-offload-time-planner/': ['External Storage Bottleneck Planner', '/tools/external-storage/connection-bottleneck-planner/', 'Turn the measured reader and destination path into a component-by-component enclosure, cable, port, and hub ceiling.'],
+    '/tools/cost-power/das-vs-nas-cost-calculator/': ['External Storage Connection Planning', '/tools/external-storage/', 'Before pricing DAS, confirm enclosure fit, host ports, shared power, and the expected direct-path rate.'],
+    '/tools/network-performance/local-network-transfer-time-calculator/': ['External Storage Performance Troubleshooter', '/tools/external-storage/performance-troubleshooter/', 'Isolate a slow USB or Thunderbolt endpoint before attributing the complete transfer result to the network.']
+  };
+  const item = related[path];
+  const main = document.querySelector('main');
+  if (item && main && !main.querySelector('[data-external-storage-related]')) {
+    main.insertAdjacentHTML('beforeend', `<section class="section tint" data-external-storage-related><div class="container prose"><h2>Continue external storage planning</h2><p>${item[2]} <a href="${item[1]}">${item[0]}</a>.</p></div></section>`);
+  }
+}
+
 async function start() {
   await Promise.all([replaceWithPartial('[data-header]', headerTemplate), replaceWithPartial('[data-footer]', footerTemplate)]);
   document.querySelectorAll('[data-current-year]').forEach((node) => { node.textContent = new Date().getFullYear(); });
@@ -106,6 +126,7 @@ async function start() {
   normalizeBreadcrumbs();
   integrateSsdEntryPoints();
   integrateFieldMediaEntryPoints();
+  integrateExternalStorageEntryPoints();
 }
 
 start();

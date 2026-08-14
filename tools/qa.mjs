@@ -9,6 +9,7 @@ import { calculateNetwork } from '../assets/js/network-tools.mjs';
 import { calculateCost } from '../assets/js/cost-tools.mjs';
 import { calculateLifespan, calculateConverter, calculateCache, calculateVm, calculateRemaining, normalizeCapacityToGB, normalizeEnduranceToTBW, normalizeExistingWritesToTBW } from '../assets/js/ssd-endurance-tools.mjs';
 import { calculateCards, calculateOffload, calculateDriveKit, calculateRotation } from '../assets/js/field-media-tools.mjs';
+import { calculateCompatibility, calculateBottleneck, calculatePower, calculateTopology, calculateTroubleshooter } from '../assets/js/external-storage-tools.mjs';
 
 const root = process.cwd();
 const baseUrl = 'https://datastoragelab.com';
@@ -21,8 +22,9 @@ const expected = [
   'tools/cost-power/index.html', 'tools/cost-power/nas-vs-cloud-five-year-cost-calculator/index.html', 'tools/cost-power/das-vs-nas-cost-calculator/index.html', 'tools/cost-power/drive-cost-per-usable-tb-calculator/index.html', 'tools/cost-power/storage-electricity-cost-calculator/index.html', 'tools/cost-power/drive-replacement-reserve-calculator/index.html', 'tools/cost-power/ups-size-runtime-calculator/index.html', 'tools/cost-power/full-storage-system-budget-planner/index.html',
   'tools/ssd-endurance/index.html', 'tools/ssd-endurance/ssd-endurance-lifespan-calculator/index.html', 'tools/ssd-endurance/tbw-dwpd-converter/index.html', 'tools/ssd-endurance/nas-ssd-cache-endurance-planner/index.html', 'tools/ssd-endurance/vm-container-ssd-endurance-planner/index.html', 'tools/ssd-endurance/ssd-remaining-endurance-planner/index.html',
   'tools/field-media/index.html', 'tools/field-media/memory-card-quantity-planner/index.html', 'tools/field-media/media-offload-time-planner/index.html', 'tools/field-media/field-backup-drive-planner/index.html', 'tools/field-media/memory-card-rotation-planner/index.html',
-  'guides/index.html', 'guides/how-much-nas-storage-do-i-need/index.html', 'guides/raid-is-not-a-backup/index.html', 'guides/cmr-vs-smr-for-nas/index.html', 'guides/nas-drive-replacement-planning/index.html', 'guides/hdd-vs-ssd-for-bulk-storage/index.html', 'guides/backup-retention-basics/index.html', 'guides/3-2-1-backup-explained/index.html', 'guides/local-backup-vs-offsite-backup/index.html', 'guides/snapshots-vs-backups/index.html', 'guides/how-to-size-a-ups-for-a-nas/index.html', 'guides/ssd-endurance-for-nas-cache-vms-backups/index.html', 'guides/field-media-offload-verification-workflow/index.html',
-  'reference/index.html', 'reference/tb-vs-tib/index.html', 'reference/storage-raid-capacity-formulas/index.html', 'reference/backup-transfer-time-bandwidth/index.html', 'reference/ups-watts-va-runtime/index.html', 'reference/field-media-copy-verification-checklist/index.html', 'compare/index.html', 'compare/2-bay-vs-4-bay-nas/index.html', 'compare/nas-vs-cloud-for-family-photos/index.html', 'compare/2-5gbe-vs-10gbe-for-nas/index.html', 'compare/consumer-vs-nas-vs-enterprise-ssd-endurance/index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html'
+  'tools/external-storage/index.html', 'tools/external-storage/drive-enclosure-compatibility-checker/index.html', 'tools/external-storage/connection-bottleneck-planner/index.html', 'tools/external-storage/usb-power-budget-checker/index.html', 'tools/external-storage/port-topology-planner/index.html', 'tools/external-storage/performance-troubleshooter/index.html',
+  'guides/index.html', 'guides/how-much-nas-storage-do-i-need/index.html', 'guides/raid-is-not-a-backup/index.html', 'guides/cmr-vs-smr-for-nas/index.html', 'guides/nas-drive-replacement-planning/index.html', 'guides/hdd-vs-ssd-for-bulk-storage/index.html', 'guides/backup-retention-basics/index.html', 'guides/3-2-1-backup-explained/index.html', 'guides/local-backup-vs-offsite-backup/index.html', 'guides/snapshots-vs-backups/index.html', 'guides/how-to-size-a-ups-for-a-nas/index.html', 'guides/ssd-endurance-for-nas-cache-vms-backups/index.html', 'guides/field-media-offload-verification-workflow/index.html', 'guides/how-to-plan-an-external-storage-connection/index.html',
+  'reference/index.html', 'reference/tb-vs-tib/index.html', 'reference/storage-raid-capacity-formulas/index.html', 'reference/backup-transfer-time-bandwidth/index.html', 'reference/ups-watts-va-runtime/index.html', 'reference/field-media-copy-verification-checklist/index.html', 'reference/usb-thunderbolt-storage-path-reference/index.html', 'compare/index.html', 'compare/2-bay-vs-4-bay-nas/index.html', 'compare/nas-vs-cloud-for-family-photos/index.html', 'compare/2-5gbe-vs-10gbe-for-nas/index.html', 'compare/consumer-vs-nas-vs-enterprise-ssd-endurance/index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html'
 ];
 const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
@@ -66,8 +68,8 @@ check(/data-tool="media"[^\n]*nth-child\(1\)[^}]*width\s*:\s*23%/.test(nasToolCs
 check(/@media\s*\(min-width:\s*901px\)\s*\{[\s\S]*?\.field-grid\s*\{[^}]*align-items\s*:\s*stretch/.test(nasToolCss), 'Two-column field grids must use shared row tracks above the single-column breakpoint');
 check(/\.field-grid\s*>\s*\.field\s*\{[^}]*display\s*:\s*grid[^}]*grid-template-rows\s*:\s*subgrid[^}]*grid-row\s*:\s*span\s*4/.test(nasToolCss), 'Two-column fields must span the shared label, control, helper, and error tracks');
 check(/\.field-grid\s*>\s*\.field\s*>\s*:is\([^}]*\)\s*\{[^}]*grid-row\s*:\s*2/.test(nasToolCss) && /\.field-grid\s*>\s*\.field\s*>\s*\.error\s*\{[^}]*grid-row\s*:\s*4/.test(nasToolCss), 'Field controls and errors must retain their shared grid tracks');
-check(staticFormPages.length === 35 && staticFormPages.every((path) => file(path).includes('class="field-grid"')), 'Every static calculator form must use the shared field-grid alignment pattern');
-check(calculatorPages.length === 42 && file('assets/js/cost-tools.mjs').includes('class="field-grid"'), 'Every calculator, including runtime cost forms, must use the shared alignment pattern');
+check(staticFormPages.length === 40 && staticFormPages.every((path) => file(path).includes('class="field-grid"')), 'Every static calculator form must use the shared field-grid alignment pattern');
+check(calculatorPages.length === 47 && file('assets/js/cost-tools.mjs').includes('class="field-grid"'), 'Every calculator, including runtime cost forms, must use the shared alignment pattern');
 check(cmrSmrChecker.includes('data-tool="cmr"'), 'CMR vs SMR checker shell is incomplete');
 check(/\.form-card\[data-tool="cmr"\]\s*\+\s*\.results\s+table\s*\{[^}]*width\s*:\s*max\(100%,\s*42rem\)[^}]*table-layout\s*:\s*fixed/.test(nasToolCss), 'CMR vs SMR mobile table must reserve readable table-wide width');
 check(/data-tool="cmr"[^\n]*nth-child\(1\)[^}]*width\s*:\s*22%/.test(nasToolCss) && /data-tool="cmr"[^\n]*nth-child\(2\)[^}]*width\s*:\s*30%/.test(nasToolCss) && /data-tool="cmr"[^\n]*nth-child\(3\)[^}]*width\s*:\s*48%/.test(nasToolCss), 'CMR vs SMR mobile columns must retain area, requirement, and why allocation');
@@ -102,6 +104,22 @@ for (const slug of fieldTools) {
 }
 check(h10.includes('/guides/field-media-offload-verification-workflow/') && h10.includes('/reference/field-media-copy-verification-checklist/'), 'H10 is missing its guide or reference');
 check(file('assets/js/components.js').includes('data-field-media-home-card'), 'Home integration is missing the field-production entry point');
+const externalHub = '/tools/external-storage/';
+const externalTools = ['drive-enclosure-compatibility-checker', 'connection-bottleneck-planner', 'usb-power-budget-checker', 'port-topology-planner', 'performance-troubleshooter'];
+check(file('partials/header.html').includes(`href="${externalHub}"`), 'Header Tools menu is missing External Storage');
+check(file('tools/index.html').includes(`href="${externalHub}"`), 'Tools directory is missing External Storage');
+check(file('guides/index.html').includes('/guides/how-to-plan-an-external-storage-connection/'), 'Guides index is missing G13');
+check(file('reference/index.html').includes('/reference/usb-thunderbolt-storage-path-reference/'), 'Reference index is missing R06');
+const h11 = file('tools/external-storage/index.html');
+for (const slug of externalTools) {
+  check(h11.includes(`/tools/external-storage/${slug}/`), `H11 is missing ${slug}`);
+  const page = file(`tools/external-storage/${slug}/index.html`);
+  check(page.includes('data-external-storage-form') && page.includes('data-external-storage-results') && page.includes('data-copy-results') && page.includes('data-print-results') && page.includes('data-reset-tool'), `${slug}: external storage tool shell or actions missing`);
+  check(page.includes(externalHub), `${slug}: return link to H11 missing`);
+}
+check(h11.includes('/guides/how-to-plan-an-external-storage-connection/') && h11.includes('/reference/usb-thunderbolt-storage-path-reference/'), 'H11 is missing its guide or reference');
+check(file('assets/js/components.js').includes('data-external-storage-home-card'), 'Home integration is missing the external-storage entry point');
+for (const path of ['index.html', 'tools/field-media/media-offload-time-planner/index.html', 'tools/cost-power/das-vs-nas-cost-calculator/index.html', 'tools/network-performance/local-network-transfer-time-calculator/index.html']) check(file(path).includes('components.js?v=20260814'), `${path}: external-storage discovery cache marker missing`);
 const cachePage = file('tools/ssd-endurance/nas-ssd-cache-endurance-planner/index.html');
 check(cachePage.includes('data-mode-field="measured"') && cachePage.includes('data-mode-field="estimated"') && cachePage.includes('Measured cache host writes') && cachePage.includes('Estimated NAS ingest'), 'Cache planner mode controls are incomplete');
 for (const jsPath of allFiles(join(root, 'assets', 'js')).filter((path) => /\.m?js$/.test(path))) { const result = spawnSync(process.execPath, ['--check', jsPath], { encoding: 'utf8' }); check(result.status === 0, `JavaScript syntax error in ${relative(root, jsPath)}: ${result.stderr}`); }
@@ -224,10 +242,56 @@ check(Math.abs(calculateCards(fieldVariationCases[2][2]).result.perCameraGB - .0
 check(Math.abs(calculateOffload({dataGB:1,cards:1,readers:1,readerSpeed:8,destinations:1,destinationSpeed:8,verify:'none',verifySpeed:8,efficiency:100}).result.copySeconds - 125) < 1e-12, 'Offload decimal GB/MBps duration conversion failed');
 check(Math.abs(calculateDriveKit({dailyGB:1,days:1,copies:2,driveTB:1,usable:100,reserve:0,spares:0}).result.safeDriveGB - 1000) < 1e-12, 'Drive planner TB-to-GB conversion failed');
 check(Math.abs(calculateRotation({dailyGB:1,cardGB:100,usable:100,reserve:0,verifiedHours:1,windowHours:1,holdDays:0,ownedCards:1}).result.safeCardGB - 100) < 1e-12, 'Rotation planner card-capacity conversion failed');
+const compatibilityAudits = [
+  [{driveType:'m2nvme',driveLength:2280,enclosureType:'m2nvme',maxLength:2280,externalPower:'no'}, (r) => r.compatible],
+  [{driveType:'m2sata',driveLength:2280,enclosureType:'m2nvme',maxLength:2280,externalPower:'no'}, (r) => !r.protocolFit && !r.compatible],
+  [{driveType:'m2nvme',driveLength:22110,enclosureType:'m2dual',maxLength:2280,externalPower:'no'}, (r) => !r.mechanicalFit && !r.compatible],
+  [{driveType:'sata35',driveLength:2280,enclosureType:'sata35',maxLength:2280,externalPower:'no'}, (r) => !r.powerReady && !r.compatible],
+  [{driveType:'sata25',driveLength:2280,enclosureType:'sata35',maxLength:2280,externalPower:'yes'}, (r) => r.compatible]
+];
+for (const [input, expectedResult] of compatibilityAudits) check(expectedResult(calculateCompatibility(input).result), 'External enclosure compatibility audit failed');
+check(calculateCompatibility({driveType:'unknown',driveLength:2280,enclosureType:'m2nvme',maxLength:2280,externalPower:'no'}).errors, 'External enclosure invalid type was accepted');
+const bottleneckAudits = [
+  [{driveRead:3500,driveWrite:3000,enclosureGbps:40,portGbps:40,cableGbps:40,hubGbps:0,efficiency:80}, 4000, 3500, 3000],
+  [{driveRead:3500,driveWrite:3000,enclosureGbps:40,portGbps:40,cableGbps:10,hubGbps:0,efficiency:80}, 1000, 1000, 1000],
+  [{driveRead:3500,driveWrite:3000,enclosureGbps:40,portGbps:40,cableGbps:40,hubGbps:5,efficiency:80}, 500, 500, 500],
+  [{driveRead:500,driveWrite:400,enclosureGbps:10,portGbps:10,cableGbps:10,hubGbps:0,efficiency:100}, 1250, 500, 400],
+  [{driveRead:1000,driveWrite:1000,enclosureGbps:10,portGbps:.48,cableGbps:10,hubGbps:0,efficiency:80}, 48, 48, 48]
+];
+for (const [input, payload, read, write] of bottleneckAudits) { const result = calculateBottleneck(input).result; check(Math.abs(result.payloadCeilingMBps-payload)<1e-9 && Math.abs(result.readCeilingMBps-read)<1e-9 && Math.abs(result.writeCeilingMBps-write)<1e-9, 'External bottleneck independent arithmetic failed'); }
+check(calculateBottleneck({driveRead:1,driveWrite:1,enclosureGbps:10,portGbps:0,cableGbps:10,hubGbps:0,efficiency:80}).errors, 'External bottleneck invalid port was accepted');
+const powerAudits = [
+  [{availableW:24,reserve:20,devices:3,steadyW:3,startupW:5,otherW:2,ports:4}, 19.2, 17, true],
+  [{availableW:24,reserve:20,devices:4,steadyW:3,startupW:5,otherW:2,ports:4}, 19.2, 22, false],
+  [{availableW:24,reserve:20,devices:3,steadyW:3,startupW:5,otherW:2,ports:2}, 19.2, 17, false],
+  [{availableW:10,reserve:0,devices:2,steadyW:3,startupW:4,otherW:2,ports:2}, 10, 10, true],
+  [{availableW:10,reserve:20,devices:1,steadyW:1,startupW:2,otherW:9,ports:4}, 8, 11, false]
+];
+for (const [input, usable, peak, ready] of powerAudits) { const result = calculatePower(input).result; check(Math.abs(result.usableW-usable)<1e-9 && Math.abs(result.peakLoadW-peak)<1e-9 && result.ready===ready, 'USB power budget independent arithmetic failed'); }
+check(calculatePower({availableW:10,reserve:0,devices:1,steadyW:1,startupW:0,otherW:0,ports:1}).errors, 'USB power invalid peak was accepted');
+const topologyAudits = [
+  [{directPorts:2,highDevices:3,highMBps:900,lowDevices:2,lowMBps:120,hubPorts:4,hubLinks:1,hubGbps:10,efficiency:80}, 9.12, 2, false],
+  [{directPorts:2,highDevices:3,highMBps:900,lowDevices:2,lowMBps:120,hubPorts:4,hubLinks:2,hubGbps:10,efficiency:80}, 9.12, 2, true],
+  [{directPorts:2,highDevices:2,highMBps:900,lowDevices:0,lowMBps:120,hubPorts:4,hubLinks:0,hubGbps:10,efficiency:80}, 0, 0, true],
+  [{directPorts:0,highDevices:0,highMBps:900,lowDevices:5,lowMBps:100,hubPorts:4,hubLinks:1,hubGbps:10,efficiency:80}, 4, 2, false],
+  [{directPorts:0,highDevices:4,highMBps:1000,lowDevices:0,lowMBps:100,hubPorts:4,hubLinks:2,hubGbps:10,efficiency:80}, 32, 4, false]
+];
+for (const [input, demand, links, ready] of topologyAudits) { const result=calculateTopology(input).result; check(Math.abs(result.sharedDemandGbps-demand)<1e-9 && result.requiredHubLinks===links && result.ready===ready, 'External port topology independent arithmetic failed'); }
+check(calculateTopology({directPorts:0,highDevices:0,highMBps:100,lowDevices:0,lowMBps:10,hubPorts:4,hubLinks:1,hubGbps:10,efficiency:80}).errors, 'External topology accepted an empty device set');
+const troubleshootAudits = [
+  [{expectedMBps:1000,measuredMBps:420,negotiatedGbps:5,efficiency:80,path:'shared',cable:'unknown',workload:'sequential',thermal:'no',busy:'no'}, 500, 84, 3],
+  [{expectedMBps:1000,measuredMBps:200,negotiatedGbps:2,efficiency:80,path:'direct',cable:'documented',workload:'sequential',thermal:'no',busy:'no'}, 200, 100, 1],
+  [{expectedMBps:500,measuredMBps:100,negotiatedGbps:10,efficiency:80,path:'direct',cable:'documented',workload:'small',thermal:'no',busy:'no'}, 500, 20, 1],
+  [{expectedMBps:500,measuredMBps:100,negotiatedGbps:10,efficiency:80,path:'direct',cable:'documented',workload:'sequential',thermal:'yes',busy:'yes'}, 500, 20, 2],
+  [{expectedMBps:500,measuredMBps:450,negotiatedGbps:10,efficiency:80,path:'direct',cable:'documented',workload:'sequential',thermal:'no',busy:'no'}, 500, 90, 1]
+];
+for (const [input, ceiling, achieved, actions] of troubleshootAudits) { const result=calculateTroubleshooter(input).result; check(Math.abs(result.planningCeilingMBps-ceiling)<1e-9 && Math.abs(result.achievedPercent-achieved)<1e-9 && result.measuredMBps===input.measuredMBps && result.actions.length===actions, 'External performance troubleshooter expected decision failed'); }
+check(calculateTroubleshooter({expectedMBps:500,measuredMBps:0,negotiatedGbps:10,efficiency:80,path:'direct',cable:'documented',workload:'sequential',thermal:'no',busy:'no'}).errors, 'External troubleshooter accepted zero throughput');
 for (const path of expected.filter((page) => /storage-needs\/(annual|creator|computer|small-office|media-library)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /nas-configuration\/(nas-bay|raid-capacity|raid-protection|nas-expansion|hdd-vs|cmr-vs)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /backup-planning\/(3-2-1|local-cloud|backup-retention|snapshot|offsite|backup-frequency|recovery-time|backup-verification)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /network-performance\/(cloud-backup|local-network|backup-window|network-tier|concurrent-user|video-editing)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
+for (const path of expected.filter((page) => /external-storage\/(drive-enclosure|connection-bottleneck|usb-power|port-topology|performance-troubleshooter)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /cost-power\/(nas-vs|das-vs|drive-cost|storage-electricity|drive-replacement|ups-size|full-storage)/.test(page))) check(/data-cost-shell/.test(file(path)), `${path}: cost workbench shell missing`);
 check(!/Reserved for future user-managed badge|footer-slot/.test(file('partials/footer.html')+file('index.html')), 'Common badge placeholder remains');
 for (const path of ['contact/index.html','privacy/index.html']) check(/mailto:canghun13@naver\.com/.test(file(path)), `${path}: confirmed contact email missing`);

@@ -512,3 +512,13 @@ This cluster owns the workflow between camera capture and studio ingest. T39 der
 ### Post-launch information-architecture integration
 
 H10 appears after SSD Endurance in the Header Tools menu and Tools directory. G12 and R05 are listed in their existing Learn indexes. Home exposes a field-production scenario, while the Creator Media Storage Planner, Video Editing Network Planner, and 3-2-1 guide provide contextual continuity links. H10 routes users through card planning, offload timing, portable copy allocation, and card release, then hands finished field payload to T03 for post-production and archive planning.
+
+## 14. External storage connection extension — 2026-08-14
+
+The completed 78-page inventory is extended to 86 public pages: 47 tools, 13 guides, six references, four comparisons, 11 hubs, and five foundational pages. The extension adds H11 **External Storage Connection Planning** (`/tools/external-storage/`); T43 **Drive & Enclosure Compatibility Checker**; T44 **External Storage Bottleneck Planner**; T45 **USB Storage Power Budget Checker**; T46 **External Storage Port Topology Planner**; T47 **External Storage Performance Troubleshooter**; G13 **How to Plan an External Storage Connection**; and R06 **USB and Thunderbolt External Storage Path Reference**.
+
+This cluster owns the physical and logical path between a bare or packaged drive and the host. T43 separates drive form factor, M.2 length, SATA/NVMe bridge support, and external power. T44 calculates the lowest documented data rate and directional payload ceiling. T45 checks peak downstream watts and powered data ports. T46 allocates high-throughput devices to direct ports and tests shared-link ports and aggregate demand. T47 converts negotiated mode and one controlled measurement into an ordered isolation sequence. These decisions differ from T22, which times a network transfer after endpoint rates are known, and T40, which schedules a camera-media copy workflow using measured reader and destination speeds.
+
+### Post-launch information-architecture integration
+
+H11 follows Field Media in the Header Tools menu and Tools directory. G13 and R06 appear in the existing Learn indexes. Home exposes an external-storage setup scenario without changing the user-managed badge area. Contextual links connect T40, the DAS vs NAS cost tool, and the local network transfer calculator to the appropriate connection-planning step. The cluster uses current shared form, result, copy, print, reset, responsive, and accessibility patterns without adding a framework, product database, API, or infrastructure dependency.

@@ -25,6 +25,14 @@ Current public areas:
 - Memory Card Rotation Planner: https://datastoragelab.com/tools/field-media/memory-card-rotation-planner/
 - Field media offload guide: https://datastoragelab.com/guides/field-media-offload-verification-workflow/
 - Field media copy checklist: https://datastoragelab.com/reference/field-media-copy-verification-checklist/
+- External storage connection planning: https://datastoragelab.com/tools/external-storage/
+- Drive and Enclosure Compatibility Checker: https://datastoragelab.com/tools/external-storage/drive-enclosure-compatibility-checker/
+- External Storage Bottleneck Planner: https://datastoragelab.com/tools/external-storage/connection-bottleneck-planner/
+- USB Storage Power Budget Checker: https://datastoragelab.com/tools/external-storage/usb-power-budget-checker/
+- External Storage Port Topology Planner: https://datastoragelab.com/tools/external-storage/port-topology-planner/
+- External Storage Performance Troubleshooter: https://datastoragelab.com/tools/external-storage/performance-troubleshooter/
+- External storage connection guide: https://datastoragelab.com/guides/how-to-plan-an-external-storage-connection/
+- USB and Thunderbolt storage path reference: https://datastoragelab.com/reference/usb-thunderbolt-storage-path-reference/
 - NAS vs Cloud 5-Year Cost Calculator: https://datastoragelab.com/tools/cost-power/nas-vs-cloud-five-year-cost-calculator/
 - DAS vs NAS Cost Calculator: https://datastoragelab.com/tools/cost-power/das-vs-nas-cost-calculator/
 - Drive Cost per Usable TB Calculator: https://datastoragelab.com/tools/cost-power/drive-cost-per-usable-tb-calculator/
