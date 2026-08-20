@@ -30,8 +30,8 @@
 <p class="breadcrumb">
 <a href="/">Home</a> / <a href="/tools/">Tools</a> / <a href="/tools/ssd-endurance/">SSD endurance</a> / TBW converter</p>
 <p class="eyebrow">Specification translation</p>
-<h1>TBW &amp; DWPD Converter</h1>
-<p>Translate a warranty endurance rating into the write budget that matches your SSD capacity and warranty period.</p>
+<h1>TBW to DWPD Calculator &amp; Converter</h1>
+<p>Convert TBW to DWPD—or DWPD back to TBW—using SSD capacity and warranty years. A 600 TBW rating on a 1,000 GB drive over five years equals about 0.329 DWPD and 329 GB/day.</p>
 </div>
 </section>
 <section class="section">
@@ -55,7 +55,10 @@
 </div>
 <div class="field">
 <label for="years">Warranty period</label>
-<div class="ssd-unit-group"><input id="years" name="years" type="number" min=".1" value="5"><span class="ssd-unit-addon">years</span></div>
+<div class="ssd-unit-group">
+<input id="years" name="years" type="number" min=".1" value="5">
+<span class="ssd-unit-addon">years</span>
+</div>
 <p class="error" data-error="years">
 </p>
 </div>
@@ -70,14 +73,20 @@
 </div>
 <div class="field">
 <label for="value">Source value</label>
-<div class="ssd-unit-group"><input id="value" name="value" type="number" min=".001" value="600"><span class="ssd-unit-addon" data-source-unit>TBW</span></div>
+<div class="ssd-unit-group">
+<input id="value" name="value" type="number" min=".001" value="600">
+<span class="ssd-unit-addon" data-source-unit>TBW</span>
+</div>
 <p class="help" data-source-help>Enter the published rating in the selected source metric.</p>
 <p class="error" data-error="value">
 </p>
 </div>
 <div class="field">
 <label for="waf">Optional WAF</label>
-<div class="ssd-unit-group"><input id="waf" name="waf" type="number" min="1" step=".1" value="1"><span class="ssd-unit-addon">WAF</span></div>
+<div class="ssd-unit-group">
+<input id="waf" name="waf" type="number" min="1" step=".1" value="1">
+<span class="ssd-unit-addon">WAF</span>
+</div>
 <p class="help">Use only to show the implied logical write budget.</p>
 <p class="error" data-error="waf">
 </p>

@@ -364,6 +364,32 @@ Record durable architectural, product, infrastructure, or operational decisions 
 
 Add new entries at the top.
 
+### 2026-08-20 — Search-led upgrade of existing TBW and backup pages
+
+#### Safe synchronization and evidence boundary
+
+- Started on `main` at `7707631e1fc659aa6fbcd0fa6778ce3003a0c07c` with a clean worktree and `origin` exactly `https://github.com/canghun13/datastoragelab`. Live GitHub `main` was `972a8a2278c60aa953ac4ba1ea32210ae8fdbbc9`; `git fetch --prune origin main` made `origin/main` match live, and `git pull --ff-only origin main` safely fast-forwarded the clean clone. Local/origin/live were equal with ahead/behind `0/0` before editing.
+- No current GSC or GA4 export exists in the repository or supplied attachments. The available in-app Search Console session required a new Google sign-in, so no login was attempted. This review therefore used the latest supplied 2026-08-20 weekly snapshot as its query/page source of truth: about 417 GSC impressions and zero clicks, with Local Backup vs Offsite Backup about 124 impressions, CMR vs SMR about 70, TBW to DWPD and RAID Is Not a Backup about 25 each, and Local Network Transfer and TB vs TiB about 17 each. Exact-query clues included `tbw to dwpd` (about four impressions, average position about 7.25), `1gbe` (about three, 11.67), `cmr vs smr for nas` (about one, 10), and `das comparison` (about one, 12). GA4 was not used for ranking because the supplied context identified likely QA/datacenter traffic.
+- Current SERPs were reviewed for the six required candidates plus the existing DAS vs NAS cost page. The comparison focused on exact intent, direct-answer depth, tool-versus-guide role, and whether a conservative same-URL improvement could add value without a new page, cluster, or technical SEO change.
+
+#### Selection and implementation
+
+- **TBW to DWPD Converter — IMPLEMENT:** exact SERPs are calculator/formula-led, and the current calculator/formula content was already strong, but the H1 and hero did not immediately mirror the exact query or expose the representative answer. Changed only the existing H1 and hero copy to `TBW to DWPD Calculator & Converter` and the direct result that 600 TBW on 1,000 GB over five years is about 0.329 DWPD / 329 GB per day. URL, canonical, title, meta description, form, defaults, formulas, JavaScript, and result rendering remain unchanged.
+- **Local Backup vs Offsite Backup — IMPLEMENT:** this had the largest supplied page-level signal and a material content gap. Expanded the existing guide in place with a short answer, definitions, a decision table, failure-domain scenarios, 3-2-1 relationship, restore-time and capacity planning, common mistakes, and a practical decision path. Added one contextual inbound link from the existing 3-2-1 guide. Existing URLs, metadata, canonical, site structure, and tool/guide role boundaries remain unchanged.
+- **CMR vs SMR for NAS — HOLD:** the existing guide already provides decision rules, workload conditions, mistakes, limitations, and a reciprocal suitability-checker path. The single exact-query impression did not justify speculative model lists or content churn.
+- **Local Network Transfer Time — HOLD:** the existing tool already answers line rate versus payload throughput, slowest-path constraints, efficiency, disk bottlenecks, and transfer time. The broad `1gbe` signal was too small and ambiguous for a rewrite.
+- **RAID Is Not a Backup — HOLD:** the page already gives the direct distinction, uncovered failure modes, a practical copy pattern, scenario, limitations, and connected RAID/backup tools. Competitive informational SERPs plus the modest page signal did not reveal a precise low-risk gap.
+- **TB vs TiB — HOLD:** the reference already covers decimal/binary definitions, formulas, the 1 TB versus roughly 931 GiB example, common mistakes, and calculator links. It already meets the dominant SERP intent.
+- **DAS vs NAS Cost Calculator — HOLD:** the observed `das comparison` query is broad definition/product-comparison intent, while this page intentionally compares five-year cost for equivalent protected configurations. With no URL-level evidence that the query belongs to this tool, changing its intent would be risky.
+
+#### Verification and scope
+
+- Public inventory remains exactly 86 pages: 47 tools, 13 guides, six references, four comparisons, 11 hubs, and five foundational pages. No new page, redirect, sitemap entry, `llms.txt` item, CSS, JavaScript, analytics, infrastructure, contact information, or protected Home badge content was changed.
+- Baseline and post-change `tools/qa.mjs` passed all 86 public pages, metadata, links, sitemap, GA4, JSON-LD, JavaScript, calculation cases, Phase 1 regression, badge, and contact checks. `tools/content-qa.mjs` passed the 47/13/6/4/11/5 inventory and all content safeguards. `git diff --check` passed.
+- Browser QA exercised the TBW converter's default calculation, `1000 GB = 1 TB`, `600 TBW = 0.6 PBW`, input-change recalculation, zero-value validation, Reset, Copy Results, and Print Results. The default result remained 600 TBW, 0.6 PBW, about 0.33 DWPD, and 328.77 GB/day; unit changes preserved the represented quantity and Reset restored 1000 GB / 600 TBW / five years / WAF 1.
+- The TBW tool and expanded backup guide passed responsive checks at 1440, 1024, 768, 390, and 360 px with zero document-level horizontal overflow. Direct tool, backup-guide, and 3-2-1-guide loads had zero console errors; the new contextual link was present exactly once. No calculation logic change or new calculation test was required.
+- Final commit, push, live-SHA equality, clean status, and production verification are recorded in the task result or a follow-up deployment record because this entry cannot contain its own final commit hash.
+
 ### 2026-08-20 — Review new workflow clusters; NO-GO
 
 #### Safe remote preflight and review boundary

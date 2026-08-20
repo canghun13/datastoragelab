@@ -1,2 +1,90 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local Backup vs Offsite Backup | Data Storage Lab</title><meta name="description" content="Assign different recovery jobs to local and offsite backups, then combine them into a practical plan."><link rel="canonical" href="https://datastoragelab.com/guides/local-backup-vs-offsite-backup/"><meta property="og:title" content="Local Backup vs Offsite Backup | Data Storage Lab"><meta property="og:description" content="Fast local recovery and resilient offsite recovery are complementary."><meta property="og:type" content="article"><meta property="og:url" content="https://datastoragelab.com/guides/local-backup-vs-offsite-backup/"><link rel="stylesheet" href="/assets/css/styles.css?v=20260811-1"><script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7QV39WJ35"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Z7QV39WJ35');</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Local Backup vs Offsite Backup","mainEntityOfPage":"https://datastoragelab.com/guides/local-backup-vs-offsite-backup/"}</script><script defer src="/assets/js/components.js?v=20260730"></script>  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-</head><body><div data-header></div><main id="main-content"><section class="page-hero"><div class="container"><p class="breadcrumb"><a href="/">Home</a> / Guides / Local vs offsite</p><h1>Local Backup vs Offsite Backup</h1><p>Local and offsite copies solve different recovery problems; most important data benefits from both.</p></div></section><article class="section"><div class="container prose"><h2>Different jobs</h2><p>Local copies can restore large amounts of data quickly. Offsite copies can remain available after theft, fire, or a site-wide event. Neither is automatically enough alone.</p><h2>Choose a combined pattern</h2><p>Keep a separately stored local recovery target and an offsite copy of the data that needs site resilience. Check whether upload and restore time are acceptable.</p><p>Use <a href="/tools/backup-planning/local-cloud-hybrid-backup-selector/">Local vs Cloud vs Hybrid Backup Selector</a>, <a href="/tools/backup-planning/offsite-backup-capacity-planner/">Offsite Backup Capacity Planner</a>, and <a href="/tools/backup-planning/recovery-time-estimator/">Recovery Time Estimator</a>.</p></div></article></main><div data-footer></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Local Backup vs Offsite Backup | Data Storage Lab</title>
+<meta name="description" content="Assign different recovery jobs to local and offsite backups, then combine them into a practical plan.">
+<link rel="canonical" href="https://datastoragelab.com/guides/local-backup-vs-offsite-backup/">
+<meta property="og:title" content="Local Backup vs Offsite Backup | Data Storage Lab">
+<meta property="og:description" content="Fast local recovery and resilient offsite recovery are complementary.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://datastoragelab.com/guides/local-backup-vs-offsite-backup/">
+<link rel="stylesheet" href="/assets/css/styles.css?v=20260811-1">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z7QV39WJ35">
+</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-Z7QV39WJ35');</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Local Backup vs Offsite Backup","mainEntityOfPage":"https://datastoragelab.com/guides/local-backup-vs-offsite-backup/"}</script>
+<script defer src="/assets/js/components.js?v=20260730">
+</script>  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<div data-header>
+</div>
+<main id="main-content">
+<section class="page-hero">
+<div class="container">
+<p class="breadcrumb">
+<a href="/">Home</a> / Guides / Local vs offsite</p>
+<h1>Local Backup vs Offsite Backup</h1>
+<p>Use local backup for fast, routine restores and offsite backup for theft, fire, and other site-wide failures. Important data usually benefits from both.</p>
+</div>
+</section>
+<article class="section">
+<div class="container prose">
+<h2>Short answer: give each copy a different recovery job</h2>
+<p>A local backup is stored close enough for direct access, such as on another drive, a NAS, or a backup server at the same site. It is usually the quickest path for restoring an accidentally deleted folder or rebuilding a system. An offsite backup is stored in a separate location, such as a cloud service, a remote NAS, or a rotated drive kept elsewhere. Its job is to remain recoverable when the original site is unavailable.</p>
+<p>Cloud backup is one way to keep an offsite copy, but the terms are not interchangeable. An offsite copy can be self-managed, and a cloud file-sync folder is not automatically a versioned backup.</p>
+<h2>Local backup vs offsite backup at a glance</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th scope="col">Decision factor</th><th scope="col">Local backup</th><th scope="col">Offsite backup</th></tr>
+</thead>
+<tbody>
+<tr><th scope="row">Best recovery job</th><td>Fast restores of files, systems, and large datasets</td><td>Recovery after theft, fire, flood, or loss of the primary site</td></tr>
+<tr><th scope="row">Connection</th><td>Usually local network, USB, or direct storage</td><td>Usually internet transfer, a remote network, or physical drive rotation</td></tr>
+<tr><th scope="row">Main dependency</th><td>The local hardware and site must remain available</td><td>The remote service, credentials, and restore path must remain available</td></tr>
+<tr><th scope="row">Typical cost shape</th><td>Hardware purchase, maintenance, power, and replacement</td><td>Subscription or second-site hardware, transfer, and possible restore fees</td></tr>
+<tr><th scope="row">Control and privacy</th><td>Direct physical control, with local security duties</td><td>Requires deliberate encryption, key, account, and provider planning</td></tr>
+</tbody>
+</table>
+</div>
+<h2>Choose by the failure you need to survive</h2>
+<p>Local and offsite backups overlap, but they do not cover the same failure domains. Map the copy to the event before choosing a product:</p>
+<ul>
+<li><strong>Accidental deletion or a failed device:</strong> a versioned local backup can provide the shortest restore path.</li>
+<li><strong>Ransomware or a compromised administrator account:</strong> use retention, immutability, offline media, or separate credentials so the backup cannot be altered with the production data.</li>
+<li><strong>Theft, fire, flood, or site loss:</strong> a same-room NAS or USB drive shares the event. At least one recoverable copy must be elsewhere.</li>
+<li><strong>Several terabytes needed urgently:</strong> verify the full restore path. Internet bandwidth, provider restore options, disk speed, and destination capacity can matter more than the backup upload rate.</li>
+</ul>
+<h2>How local and offsite fit the 3-2-1 principle</h2>
+<p>The <a href="/guides/3-2-1-backup-explained/">3-2-1 backup principle</a> is a resilience pattern, not a device shopping list. A common implementation combines production data, a separate local recovery copy, and an offsite copy. The copies should not all depend on the same enclosure, power supply, site, administrator account, or always-connected write access.</p>
+<p>Not every byte needs the same treatment. Critical documents, photos, configuration exports, and business records may justify multiple independent copies. Large replaceable media may use a lower-cost plan. Classify data by recovery priority before paying to protect everything identically.</p>
+<h2>Plan restore time before choosing</h2>
+<p>A backup is useful only if its restore path meets the recovery need. Measure or conservatively estimate the usable local transfer rate, remote download rate, provider limits, and time to obtain replacement storage. Test both a small file restore and a larger recovery sample; a successful status message does not prove that permissions, application data, or encryption keys will restore correctly.</p>
+<p>Use the <a href="/tools/backup-planning/recovery-time-estimator/">Recovery Time Estimator</a> to compare paths. For a remote copy, the <a href="/tools/backup-planning/offsite-backup-capacity-planner/">Offsite Backup Capacity Planner</a> helps estimate protected capacity, retention growth, and transfer demand without assuming that advertised line rate is sustained.</p>
+<h2>Common mistakes</h2>
+<ul>
+<li>Treating RAID as backup: RAID can improve availability after some drive failures, but it does not create an independent historical copy. See <a href="/guides/raid-is-not-a-backup/">Why RAID Is Not a Backup</a>.</li>
+<li>Calling a second device offsite when it is in the same room or building.</li>
+<li>Using sync without version history and assuming deletions or encrypted files cannot propagate.</li>
+<li>Keeping every copy permanently writable through the same credentials.</li>
+<li>Planning upload time but never timing a restore or checking available destination capacity.</li>
+</ul>
+<h2>A practical decision path</h2>
+<ol>
+<li>List the data that must be recoverable and set a realistic recovery deadline.</li>
+<li>Choose a separate local target for frequent backups and fast restores.</li>
+<li>Add an offsite path for the data that must survive a site-wide event.</li>
+<li>Separate access where practical, define retention, and schedule restore tests.</li>
+<li>Record who owns the account, encryption keys, replacement media, and recovery steps.</li>
+</ol>
+<p>Compare the overall pattern with the <a href="/tools/backup-planning/local-cloud-hybrid-backup-selector/">Local vs Cloud vs Hybrid Backup Selector</a>, turn it into an implementation sequence with the <a href="/tools/backup-planning/3-2-1-backup-plan-generator/">3-2-1 Backup Plan Generator</a>, and set recurring checks in the <a href="/tools/backup-planning/backup-verification-schedule-planner/">Backup Verification Schedule Planner</a>.</p>
+</div>
+</article>
+</main>
+<div data-footer>
+</div>
+</body>
+</html>
