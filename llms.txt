@@ -32,6 +32,14 @@ Current public areas:
 - External Storage Port Topology Planner: https://datastoragelab.com/tools/external-storage/port-topology-planner/
 - External Storage Performance Troubleshooter: https://datastoragelab.com/tools/external-storage/performance-troubleshooter/
 - External storage connection guide: https://datastoragelab.com/guides/how-to-plan-an-external-storage-connection/
+- Developer build storage planning: https://datastoragelab.com/tools/developer-storage/
+- Git LFS Storage and Bandwidth Planner: https://datastoragelab.com/tools/developer-storage/git-lfs-storage-bandwidth-planner/
+- CI Artifact Retention Planner: https://datastoragelab.com/tools/developer-storage/ci-artifact-retention-planner/
+- Build Cache Capacity and Churn Planner: https://datastoragelab.com/tools/developer-storage/build-cache-capacity-planner/
+- Container Registry Retention Planner: https://datastoragelab.com/tools/developer-storage/container-registry-retention-planner/
+- Self-hosted Runner Disk Capacity Checker: https://datastoragelab.com/tools/developer-storage/runner-disk-capacity-checker/
+- Developer build storage guide: https://datastoragelab.com/guides/how-to-plan-storage-for-git-lfs-ci-builds/
+- Developer build storage formulas: https://datastoragelab.com/reference/developer-build-storage-formulas/
 - USB and Thunderbolt storage path reference: https://datastoragelab.com/reference/usb-thunderbolt-storage-path-reference/
 - NAS vs Cloud 5-Year Cost Calculator: https://datastoragelab.com/tools/cost-power/nas-vs-cloud-five-year-cost-calculator/
 - DAS vs NAS Cost Calculator: https://datastoragelab.com/tools/cost-power/das-vs-nas-cost-calculator/

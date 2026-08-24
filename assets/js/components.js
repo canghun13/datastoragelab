@@ -118,6 +118,26 @@ function integrateExternalStorageEntryPoints() {
   }
 }
 
+function integrateDeveloperStorageEntryPoints() {
+  const path = location.pathname;
+  if (path === '/') {
+    const grid = document.querySelector('.scenario-grid');
+    if (grid && !grid.querySelector('[data-developer-storage-home-card]')) {
+      grid.insertAdjacentHTML('beforeend', '<article class="scenario" data-developer-storage-home-card><strong>Developer build storage</strong><p>Forecast Git LFS, CI artifacts, build caches, registry layers, and self-hosted runner workspace. <a href="/tools/developer-storage/">Plan build storage</a>.</p></article>');
+    }
+  }
+  const related = {
+    '/tools/ssd-endurance/vm-container-ssd-endurance-planner/': ['Self-hosted Runner Disk Capacity Checker', '/tools/developer-storage/runner-disk-capacity-checker/', 'Check peak workspace and concurrency before translating measured runner writes into endurance demand.'],
+    '/tools/backup-planning/backup-retention-calculator/': ['CI Artifact Retention Planner', '/tools/developer-storage/ci-artifact-retention-planner/', 'Build artifacts use a separate production-rate and expiry model from backup versions.'],
+    '/tools/cost-power/full-storage-system-budget-planner/': ['Developer Build Storage Planning', '/tools/developer-storage/', 'Add source binaries, CI retention, registry layers, and runner workspace as explicit developer infrastructure requirements.']
+  };
+  const item = related[path];
+  const main = document.querySelector('main');
+  if (item && main && !main.querySelector('[data-developer-storage-related]')) {
+    main.insertAdjacentHTML('beforeend', `<section class="section tint" data-developer-storage-related><div class="container prose"><h2>Continue developer build storage planning</h2><p>${item[2]} <a href="${item[1]}">${item[0]}</a>.</p></div></section>`);
+  }
+}
+
 async function start() {
   await Promise.all([replaceWithPartial('[data-header]', headerTemplate), replaceWithPartial('[data-footer]', footerTemplate)]);
   document.querySelectorAll('[data-current-year]').forEach((node) => { node.textContent = new Date().getFullYear(); });
@@ -127,6 +147,7 @@ async function start() {
   integrateSsdEntryPoints();
   integrateFieldMediaEntryPoints();
   integrateExternalStorageEntryPoints();
+  integrateDeveloperStorageEntryPoints();
 }
 
 start();

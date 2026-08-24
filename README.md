@@ -2,7 +2,7 @@
 
 Static GitHub Pages site for vendor-neutral home and small-team storage planning.
 
-The published inventory has 86 public pages: 47 tools, 13 guides, six references, four comparisons, 11 hubs, and five foundational pages. It covers storage needs, NAS configuration, backup planning, network performance, lifecycle cost, power protection, SSD endurance, field media offload, and external storage connection planning.
+The published inventory has 94 public pages: 52 tools, 14 guides, seven references, four comparisons, 12 hubs, and five foundational pages. It covers storage needs, NAS configuration, backup planning, network performance, lifecycle cost, power protection, SSD endurance, field media offload, external storage connection planning, and developer build storage.
 
 Run automated QA with the bundled Node runtime when Node is not on PATH:
 
@@ -11,7 +11,7 @@ Run automated QA with the bundled Node runtime when Node is not on PATH:
 & 'C:\Users\song\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' tools\content-qa.mjs
 ```
 
-`tools/content-qa.mjs` enforces the 86-page inventory, the 47 tool and 11
+`tools/content-qa.mjs` enforces the 94-page inventory, the 52 tool and 12
 hub content structures, a 400-word minimum and 550-word average across tool
 guides, canonical SVG favicon declarations, internal next-step links, and
 checks for placeholders, duplicate paragraphs, and repeated 12-word passages.
