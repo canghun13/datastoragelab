@@ -38,6 +38,13 @@ Current public areas:
 - Build Cache Capacity and Churn Planner: https://datastoragelab.com/tools/developer-storage/build-cache-capacity-planner/
 - Container Registry Retention Planner: https://datastoragelab.com/tools/developer-storage/container-registry-retention-planner/
 - Self-hosted Runner Disk Capacity Checker: https://datastoragelab.com/tools/developer-storage/runner-disk-capacity-checker/
+- PostgreSQL maintenance storage planning: https://datastoragelab.com/tools/postgresql-storage/
+- PostgreSQL VACUUM FULL Disk Space Checker: https://datastoragelab.com/tools/postgresql-storage/vacuum-full-disk-space-checker/
+- PostgreSQL Index Build and Reindex Space Planner: https://datastoragelab.com/tools/postgresql-storage/index-build-reindex-space-planner/
+- PostgreSQL WAL Retention and Replication Slot Planner: https://datastoragelab.com/tools/postgresql-storage/wal-retention-replication-slot-planner/
+- PostgreSQL Base Backup Storage and Transfer Planner: https://datastoragelab.com/tools/postgresql-storage/base-backup-storage-transfer-planner/
+- PostgreSQL maintenance storage guide: https://datastoragelab.com/guides/how-to-plan-postgresql-maintenance-storage/
+- PostgreSQL maintenance storage formulas: https://datastoragelab.com/reference/postgresql-maintenance-storage-formulas/
 - Developer build storage guide: https://datastoragelab.com/guides/how-to-plan-storage-for-git-lfs-ci-builds/
 - Developer build storage formulas: https://datastoragelab.com/reference/developer-build-storage-formulas/
 - USB and Thunderbolt storage path reference: https://datastoragelab.com/reference/usb-thunderbolt-storage-path-reference/

@@ -138,6 +138,26 @@ function integrateDeveloperStorageEntryPoints() {
   }
 }
 
+function integratePostgresqlStorageEntryPoints() {
+  const path = location.pathname;
+  if (path === '/') {
+    const grid = document.querySelector('.scenario-grid');
+    if (grid && !grid.querySelector('[data-postgresql-storage-home-card]')) {
+      grid.insertAdjacentHTML('beforeend', '<article class="scenario" data-postgresql-storage-home-card><strong>PostgreSQL maintenance</strong><p>Preflight table rewrites, index builds, retained WAL, and physical backup streams against real disk boundaries. <a href="/tools/postgresql-storage/">Plan database maintenance storage</a>.</p></article>');
+    }
+  }
+  const related = {
+    '/tools/backup-planning/backup-verification-schedule-planner/': ['PostgreSQL Base Backup Storage & Transfer Planner', '/tools/postgresql-storage/base-backup-storage-transfer-planner/', 'Size the physical PostgreSQL copy and WAL generated during its stream before scheduling restore evidence.'],
+    '/tools/network-performance/backup-window-calculator/': ['PostgreSQL Base Backup Storage & Transfer Planner', '/tools/postgresql-storage/base-backup-storage-transfer-planner/', 'Model a PostgreSQL physical backup separately when source WAL continues to grow during the transfer.'],
+    '/tools/ssd-endurance/vm-container-ssd-endurance-planner/': ['PostgreSQL Maintenance Storage Planning', '/tools/postgresql-storage/', 'Check temporary rewrite, index, WAL, and backup capacity before translating measured database writes into SSD endurance.']
+  };
+  const item = related[path];
+  const main = document.querySelector('main');
+  if (item && main && !main.querySelector('[data-postgresql-storage-related]')) {
+    main.insertAdjacentHTML('beforeend', `<section class="section tint" data-postgresql-storage-related><div class="container prose"><h2>Continue PostgreSQL storage planning</h2><p>${item[2]} <a href="${item[1]}">${item[0]}</a>.</p></div></section>`);
+  }
+}
+
 async function start() {
   await Promise.all([replaceWithPartial('[data-header]', headerTemplate), replaceWithPartial('[data-footer]', footerTemplate)]);
   document.querySelectorAll('[data-current-year]').forEach((node) => { node.textContent = new Date().getFullYear(); });
@@ -148,6 +168,7 @@ async function start() {
   integrateFieldMediaEntryPoints();
   integrateExternalStorageEntryPoints();
   integrateDeveloperStorageEntryPoints();
+  integratePostgresqlStorageEntryPoints();
 }
 
 start();

@@ -1220,3 +1220,105 @@ The next task must:
 ## 2026-08-19
 
 - 메인 페이지 푸터 아래의 디렉토리 뱃지 영역은 사용자가 직접 관리하는 영역이므로 수정·삭제·리팩터링하지 않는다.- https://findly.tools/ 에 등록 (내가 직접함)
+
+---
+
+### 2026-08-31 — Aggressive new-workflow discovery and PostgreSQL maintenance storage cluster
+
+- Start state: repository and live remote were verified as `https://github.com/canghun13/datastoragelab`; branch `main`, local HEAD, refreshed `origin/main`, and `git ls-remote origin refs/heads/main` all matched `ae2e3b5f0936f04427ff3189978729ba4395f9e9`; ahead/behind was `0 0`; the working tree was clean. No pre-existing work was stashed, reset, or overwritten.
+- Baseline inventory was 94 public pages: 52 tools, 14 guides, seven references, four comparisons, 12 hubs, and five basics. The Home user-managed badge area and all infrastructure/analytics settings were preserved.
+- This discovery excluded every implemented cluster and every earlier screened family recorded in this handover, including surveillance/NVR, tape/cold archive, VM/Proxmox, ZFS, RAID rebuild/migration, scrub/bit rot, digitization, IOPS, database steady-state sizing, offline backup rotation, replication backlog, cache tiering, spare fleets, recording workflows, system-image repositories, AI datasets/checkpoints, drive recovery, filesystems, burn-in, sanitization, quotas, permissions, rack/SMART/encryption, media inventory, SSD migration, consolidation, forensic imaging, immutable/shared-cloud/NAS-remote backup, DMP, photogrammetry, object lifecycle, photo consolidation, eDiscovery, client handoff, GIS/package mirrors/SaaS offboarding/blockchain/observability/CAD cache/console storage/email exports/optical ingest, and other previously documented candidates.
+
+#### Wide discovery: 45 genuinely different workflow families
+
+| # | Family | Repeated storage decision | Difference and first screen |
+|---:|---|---|---|
+| 1 | PostgreSQL maintenance operations | Rewrite, reindex, WAL-retention, and base-backup peaks | Operation-boundary capacity, not steady-state DB sizing; advance |
+| 2 | Kubernetes node and volume storage | Ephemeral eviction, image/nodefs pressure, PV and local-volume placement | Orchestrator storage boundaries; advance |
+| 3 | Self-hosted media-server operations | Transcode, metadata/appdata, ingest staging, and migration room | Operational working set rather than media-library capacity; advance |
+| 4 | WSL2 and Docker Desktop disk lifecycle | VHDX growth, export/import, prune, and compact headroom | Developer workstation virtual-disk lifecycle; advance |
+| 5 | Raspberry Pi/SBC image fleet | Golden images, cloning, update rollback, and card endurance | Small-device fleet workflow; advance |
+| 6 | DJ performance USB preparation | Export size, duplicate media, analysis data, and spare media | Performance-media readiness; advance |
+| 7 | Multiboot USB toolkit | ISO payload, persistence, recovery partitions, and refresh room | Portable boot toolkit rather than system-image repository; advance |
+| 8 | Ceph recovery capacity | Backfill, rebalance, degraded placement, and recovery reserve | Distributed recovery boundary; advance |
+| 9 | Elasticsearch reindex and watermarks | Reindex duplicate data, merge overhead, and high/flood watermark | Search-cluster maintenance peak; advance |
+| 10 | FSLogix profile containers | User-container growth, differencing, compaction, and host reserve | Multi-user profile lifecycle; advance |
+| 11 | Nix store lifecycle | Generations, closures, GC roots, and rollback reserve | Content-addressed workstation/server store; advance |
+| 12 | Git LFS repository maintenance | Local object cache, clone growth, prune window, and migration | Repository binary-object workflow; screen: narrower tool family |
+| 13 | OCI/container registry maintenance | Blob retention, garbage collection, migration duplicate, and rollback | Registry operations rather than package mirrors; screen: platform variance |
+| 14 | Kafka partition operations | Retention, replication, reassignment, and broker replacement reserve | Log-broker movement peak; screen: needs topology depth |
+| 15 | ClickHouse merge operations | Parts, background merges, mutations, and free-space threshold | Column-store merge peak; screen: strong but expert/niche |
+| 16 | MySQL online DDL | Table copy, online-alter logs, temp space, and replica lag | MySQL maintenance rather than DB capacity; screen: single-engine cluster candidate |
+| 17 | SQL Server index maintenance | Rebuild workspace, sort-in-tempdb, log growth, and AG copies | SQL Server maintenance peak; screen: licensing/version nuance |
+| 18 | Oracle tablespace maintenance | Segment move, index rebuild, temp, archive log, and standby room | Oracle operation boundary; screen: high version/platform maintenance |
+| 19 | Redis persistence rewrite | RDB/AOF rewrite, fork memory/disk output, and replica sync | In-memory DB persistence disk boundary; screen: compact cluster |
+| 20 | MongoDB resync and compact | Oplog window, initial sync, compact/rewrite, and backup staging | Document-store recovery operations; screen: version behavior |
+| 21 | Cassandra repair and compaction | SSTable amplification, repair streams, snapshots, and node replace | Wide-column maintenance peak; screen: expert/niche |
+| 22 | HDFS decommission and rebalance | Replication movement, temporary skew, and node evacuation | Distributed filesystem transition; screen: enterprise-heavy |
+| 23 | Spark shuffle and spill | Executor local disk, concurrent stages, skew, and retry reserve | Compute scratch boundary; screen: job-specific volatility |
+| 24 | Slurm/HPC scratch allocation | Per-job scratch, node-local vs shared burst, purge, and quota | Scheduler scratch workflow; screen: niche audience |
+| 25 | CI runner artifact lifecycle | Workspace checkout, cache, artifact upload, and parallel-job peak | CI operational disk rather than package mirror; screen: vendor variance |
+| 26 | Artifact repository cleanup | Blob growth, soft delete, compaction, and migration duplicate | Nexus/Artifactory lifecycle; screen: overlaps registry family |
+| 27 | Restic/Borg repository maintenance | Pack rewrite, prune/compact, cache, and temporary free space | Deduplicating backup repository operation, not retention selection; screen: implementation variance |
+| 28 | Syncthing versioning lifecycle | Versioned copies, conflict files, rescan, and device rejoin | Peer-sync local workflow; screen: narrower demand |
+| 29 | Nextcloud operational storage | Preview cache, trash, versions, appdata, and migration room | Self-hosted collaboration internals; screen: app-specific knobs |
+| 30 | Immich operational storage | Thumbnails, encoded video, ML assets, database, and migration | Photo app operations rather than photo consolidation; screen: fast-changing app |
+| 31 | Home Assistant recorder lifecycle | History DB, purge/repack, backups, add-ons, and migration | Home-automation appliance storage; screen: modest monetary intent |
+| 32 | Local mobile-device backup fleet | Full/incremental device backups, encryption, rotation, and OS-update peaks | Device-fleet local backup rather than generic PC backup; screen: ecosystem split |
+| 33 | Print-production RIP and spool | Concurrent jobs, raster expansion, reruns, and archive handoff | Production print temporary workspace; screen: weak broad demand |
+| 34 | 3D-print farm job storage | Sliced files, timelapse, failure evidence, and printer copies | Fabrication operations; screen: storage problem often small |
+| 35 | VFX simulation and render cache | Simulation caches, renders, revisions, and cleanup checkpoints | High-throughput creative scratch; screen: overlaps creator capacity |
+| 36 | Animation render-farm scratch | Frames, intermediate passes, node-local cache, and retry reserve | Render execution boundary; screen: overlaps VFX family |
+| 37 | DCP cinema package preparation | Masters, image sequence, DCP output, QC copy, and transfer media | Cinema delivery workflow; screen: niche specialist |
+| 38 | NGS bioinformatics scratch | FASTQ/BAM/CRAM intermediates, parallel samples, and reruns | Genomics pipeline working set; screen: high expertise and data sensitivity |
+| 39 | Mass-spectrometry lab storage | Raw acquisitions, conversion output, processing cache, and retention | Instrument pipeline; screen: niche and vendor formats |
+| 40 | SDR IQ capture planning | Sample rate, bit depth, channels, ring buffer, and export | Radio-frequency raw capture; screen: good calculator, limited cluster breadth |
+| 41 | Packet-capture ring buffers | Link utilization, snap length, compression, rotation, and incident hold | Network evidence buffer, not general observability; screen: security sensitivity |
+| 42 | CAN-bus/vehicle logger retention | Signal rate, sample frequency, fleet days, and upload backlog | Vehicle telemetry capture; screen: niche and variable encoding |
+| 43 | OpenStack Cinder operations | Snapshot/clone, migration, image conversion, and backend reserve | Cloud block-storage maintenance; screen: platform complexity |
+| 44 | GlusterFS brick operations | Rebalance, add/remove brick, healing, and failure reserve | Distributed filesystem transition; screen: declining/bounded demand |
+| 45 | Lustre/parallel-filesystem scratch | OST balance, purge, job bursts, and maintenance drain | HPC filesystem operations; screen: enterprise niche |
+
+#### Mid-level shortlist and weighted screen
+
+Weights: demand 25, family breadth 20, SERP opportunity 20, decision depth 15, repeat use 10, static-site maintainability 5, site fit 5.
+
+| Candidate | Demand | Breadth | SERP | Depth | Repeat | Static | Fit | Total | Disposition |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| PostgreSQL maintenance storage | 23 | 18 | 18 | 15 | 9 | 5 | 5 | **93** | Finalist / GO |
+| Kubernetes node and volume storage | 23 | 18 | 17 | 13 | 9 | 3 | 5 | **88** | Finalist / HOLD |
+| Self-hosted media-server operations | 22 | 16 | 14 | 11 | 8 | 3 | 5 | **79** | Finalist / HOLD |
+| WSL2 and Docker Desktop disk lifecycle | 21 | 15 | 15 | 10 | 8 | 4 | 4 | **77** | Finalist / HOLD |
+| Raspberry Pi/SBC image fleet | 20 | 15 | 14 | 10 | 8 | 3 | 4 | **74** | Finalist / HOLD |
+| Ceph recovery capacity | 16 | 17 | 15 | 14 | 8 | 3 | 4 | 77 | Reserve |
+| Elasticsearch reindex/watermarks | 18 | 15 | 14 | 13 | 8 | 3 | 4 | 75 | Reserve |
+| FSLogix profile containers | 16 | 14 | 15 | 12 | 8 | 3 | 3 | 71 | Reserve |
+| Nix store lifecycle | 14 | 13 | 14 | 10 | 8 | 4 | 3 | 66 | Reserve |
+| DJ performance USB preparation | 17 | 13 | 13 | 9 | 7 | 4 | 4 | 67 | Reserve |
+| Multiboot USB toolkit | 18 | 12 | 12 | 9 | 7 | 4 | 4 | 66 | Reserve |
+
+The numeric score is a comparative editorial model, not a claim of measured search volume. It combines visible query diversity, repeated problem evidence, direct-result competition, depth of decisions, and implementation durability observed during live research.
+
+#### Deep finalist validation (A–I gate)
+
+| Finalist | A Demand | B Multi-tool | C SERP gap | D Depth | E Repeat | F Static fit | G Site fit | H Maintenance | I Safety | Decision |
+|---|---|---|---|---|---|---|---|---|---|---|
+| PostgreSQL maintenance | PASS: recurring rewrite, no-space, WAL-slot, and backup-duration questions | PASS: four independent operation boundaries | PASS: a direct WAL calculator exists, but no strong free cluster covered all four workflows | PASS: measured sizes/rates produce actionable pass/fail and headroom | PASS: rerun per table, index, lag event, or backup path | PASS: deterministic byte/rate arithmetic | PASS: extends storage planning without duplicating steady-state DB sizing | PASS: formulas stable; behavior caveats linked to current docs | PASS: explicit preflight, limitations, and no unattended command advice | **GO** |
+| Kubernetes storage | PASS | PASS | PASS | PASS | PASS | PASS | PASS | HOLD: `nodefs`/`imagefs`/`containerfs`, local PV, and eviction behavior are version-sensitive | PASS with strong disclaimers | HOLD |
+| Self-hosted media-server operations | PASS | PASS | MIXED: fragmented app-specific answers | PASS | PASS | PASS | MIXED: overlaps existing media, network, and backup lanes | HOLD: Plex/Jellyfin/Immich paths and cache behavior change | PASS | HOLD |
+| WSL2/Docker Desktop lifecycle | PASS | MIXED: outputs converge on one virtual-disk lifecycle | PASS | PASS | PASS | PASS | MIXED: overlaps developer-build storage discoveries | HOLD: host/version-specific reclaim semantics | PASS | HOLD |
+| Raspberry Pi/SBC image fleet | PASS | PASS | MIXED | PASS | PASS | PASS | MIXED: overlaps backup and SSD-endurance decisions | HOLD: image/runtime tooling and card behavior vary | PASS | HOLD |
+
+Live validation used current first-party PostgreSQL documentation for [`VACUUM`](https://www.postgresql.org/docs/current/sql-vacuum.html), [`REINDEX`](https://www.postgresql.org/docs/current/sql-reindex.html), [replication-slot WAL retention](https://www.postgresql.org/docs/current/warm-standby.html#STREAMING-REPLICATION-SLOTS), and [`pg_basebackup`](https://www.postgresql.org/docs/current/app-pgbasebackup.html), plus live SERP inspection of recurring community problem phrasing and available free calculators. The selected cluster deliberately avoids server inspection, command execution, exact version claims, and universal amplification factors.
+
+#### Implemented GO cluster
+
+- Added H13 **PostgreSQL Maintenance Storage Planning** at `/tools/postgresql-storage/`.
+- Added T53 **VACUUM FULL Disk Space Checker**, T54 **Index Build & Reindex Space Planner**, T55 **WAL Retention & Replication Slot Planner**, and T56 **Base Backup Storage & Transfer Planner** under the new hub.
+- Added G15 **How to Plan PostgreSQL Maintenance Storage** and R08 **PostgreSQL Maintenance Storage Formulas**.
+- Added `assets/js/postgresql-storage-tools.mjs` with bounded validation, deterministic exported calculators, operation-specific pass/fail states, live recalculation after the first result, copy, print, and reset behavior. The models distinguish relation rewrite space, index output/temp/growth, WAL retention/caps/disk time, and a base-backup stream whose net progress must remain positive while WAL is generated.
+- Integrated the cluster into the shared header, Home scenario routes, Tools/Guides/Reference indexes, contextual next steps, sitemap, `llms.txt`, README, `site-plan.md`, and both QA suites. The shared component marker is `components.js?v=20260831` on touched entry/continuation pages.
+- Inventory is now 101 public pages: 56 tools, 15 guides, eight references, four comparisons, 13 hubs, and five basics. No URL was renamed or removed.
+- Automated QA passed: `node tools/qa.mjs` reports 101 public pages and all metadata, links, sitemap, GA4, JSON-LD, JavaScript, calculation, regression, badge, and contact checks; `node tools/content-qa.mjs` reports the exact 56/15/8/4/13/5 inventory with a 490-word tool minimum and 666.6-word average; 20 independent PostgreSQL cases cover normal, boundary, fail/high, alternate, and invalid inputs; `git diff --check` passed.
+- Local responsive QA passed all seven new pages at 1440, 1280, 1024, 768, 430, 390, and 360 px (49 combinations): one H1/title, shared header/footer, zero horizontal overflow, and no clipped interactive controls. All four tools at 390 px passed default calculation, live changed-input recalculation, invalid-state hiding plus `aria-invalid`, recovery, clipboard copy, Print invocation, and Reset. Twenty-four representative regression combinations across Home, Tools, SSD Endurance, two existing calculators, Guides, Reference, and Comparisons passed at 1440/390/360 px. Browser console errors were empty. Desktop hub and mobile calculator visual inspection passed.
+- Implementation commit, push, production deployment verification, and final live SHA are recorded below after publication. No DNS, Cloudflare, GitHub Pages, HTTPS, GA4, Search Console, contact, or Home user-managed badge setting/markup was changed.

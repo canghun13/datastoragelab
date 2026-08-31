@@ -63,6 +63,11 @@
   <url><loc>https://datastoragelab.com/tools/developer-storage/build-cache-capacity-planner/</loc></url>
   <url><loc>https://datastoragelab.com/tools/developer-storage/container-registry-retention-planner/</loc></url>
   <url><loc>https://datastoragelab.com/tools/developer-storage/runner-disk-capacity-checker/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/postgresql-storage/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/postgresql-storage/vacuum-full-disk-space-checker/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/postgresql-storage/index-build-reindex-space-planner/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/postgresql-storage/wal-retention-replication-slot-planner/</loc></url>
+  <url><loc>https://datastoragelab.com/tools/postgresql-storage/base-backup-storage-transfer-planner/</loc></url>
   <url><loc>https://datastoragelab.com/guides/how-much-nas-storage-do-i-need/</loc></url>
   <url><loc>https://datastoragelab.com/guides/raid-is-not-a-backup/</loc></url>
   <url><loc>https://datastoragelab.com/guides/cmr-vs-smr-for-nas/</loc></url>
@@ -77,6 +82,7 @@
   <url><loc>https://datastoragelab.com/guides/field-media-offload-verification-workflow/</loc></url>
   <url><loc>https://datastoragelab.com/guides/how-to-plan-an-external-storage-connection/</loc></url>
   <url><loc>https://datastoragelab.com/guides/how-to-plan-storage-for-git-lfs-ci-builds/</loc></url>
+  <url><loc>https://datastoragelab.com/guides/how-to-plan-postgresql-maintenance-storage/</loc></url>
   <url><loc>https://datastoragelab.com/guides/</loc></url>
   <url><loc>https://datastoragelab.com/reference/tb-vs-tib/</loc></url>
   <url><loc>https://datastoragelab.com/reference/storage-raid-capacity-formulas/</loc></url>
@@ -85,6 +91,7 @@
   <url><loc>https://datastoragelab.com/reference/field-media-copy-verification-checklist/</loc></url>
   <url><loc>https://datastoragelab.com/reference/usb-thunderbolt-storage-path-reference/</loc></url>
   <url><loc>https://datastoragelab.com/reference/developer-build-storage-formulas/</loc></url>
+  <url><loc>https://datastoragelab.com/reference/postgresql-maintenance-storage-formulas/</loc></url>
   <url><loc>https://datastoragelab.com/reference/</loc></url>
   <url><loc>https://datastoragelab.com/compare/2-bay-vs-4-bay-nas/</loc></url>
   <url><loc>https://datastoragelab.com/compare/nas-vs-cloud-for-family-photos/</loc></url>

@@ -11,6 +11,7 @@ import { calculateLifespan, calculateConverter, calculateCache, calculateVm, cal
 import { calculateCards, calculateOffload, calculateDriveKit, calculateRotation } from '../assets/js/field-media-tools.mjs';
 import { calculateCompatibility, calculateBottleneck, calculatePower, calculateTopology, calculateTroubleshooter } from '../assets/js/external-storage-tools.mjs';
 import { calculateLfs, calculateArtifacts, calculateCache as calculateBuildCache, calculateRegistry, calculateRunner } from '../assets/js/developer-storage-tools.mjs';
+import { calculateVacuum, calculateIndex, calculateWal, calculateBaseBackup } from '../assets/js/postgresql-storage-tools.mjs';
 
 const root = process.cwd();
 const baseUrl = 'https://datastoragelab.com';
@@ -25,8 +26,9 @@ const expected = [
   'tools/field-media/index.html', 'tools/field-media/memory-card-quantity-planner/index.html', 'tools/field-media/media-offload-time-planner/index.html', 'tools/field-media/field-backup-drive-planner/index.html', 'tools/field-media/memory-card-rotation-planner/index.html',
   'tools/external-storage/index.html', 'tools/external-storage/drive-enclosure-compatibility-checker/index.html', 'tools/external-storage/connection-bottleneck-planner/index.html', 'tools/external-storage/usb-power-budget-checker/index.html', 'tools/external-storage/port-topology-planner/index.html', 'tools/external-storage/performance-troubleshooter/index.html',
   'tools/developer-storage/index.html', 'tools/developer-storage/git-lfs-storage-bandwidth-planner/index.html', 'tools/developer-storage/ci-artifact-retention-planner/index.html', 'tools/developer-storage/build-cache-capacity-planner/index.html', 'tools/developer-storage/container-registry-retention-planner/index.html', 'tools/developer-storage/runner-disk-capacity-checker/index.html',
-  'guides/index.html', 'guides/how-much-nas-storage-do-i-need/index.html', 'guides/raid-is-not-a-backup/index.html', 'guides/cmr-vs-smr-for-nas/index.html', 'guides/nas-drive-replacement-planning/index.html', 'guides/hdd-vs-ssd-for-bulk-storage/index.html', 'guides/backup-retention-basics/index.html', 'guides/3-2-1-backup-explained/index.html', 'guides/local-backup-vs-offsite-backup/index.html', 'guides/snapshots-vs-backups/index.html', 'guides/how-to-size-a-ups-for-a-nas/index.html', 'guides/ssd-endurance-for-nas-cache-vms-backups/index.html', 'guides/field-media-offload-verification-workflow/index.html', 'guides/how-to-plan-an-external-storage-connection/index.html', 'guides/how-to-plan-storage-for-git-lfs-ci-builds/index.html',
-  'reference/index.html', 'reference/tb-vs-tib/index.html', 'reference/storage-raid-capacity-formulas/index.html', 'reference/backup-transfer-time-bandwidth/index.html', 'reference/ups-watts-va-runtime/index.html', 'reference/field-media-copy-verification-checklist/index.html', 'reference/usb-thunderbolt-storage-path-reference/index.html', 'reference/developer-build-storage-formulas/index.html', 'compare/index.html', 'compare/2-bay-vs-4-bay-nas/index.html', 'compare/nas-vs-cloud-for-family-photos/index.html', 'compare/2-5gbe-vs-10gbe-for-nas/index.html', 'compare/consumer-vs-nas-vs-enterprise-ssd-endurance/index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html'
+  'tools/postgresql-storage/index.html', 'tools/postgresql-storage/vacuum-full-disk-space-checker/index.html', 'tools/postgresql-storage/index-build-reindex-space-planner/index.html', 'tools/postgresql-storage/wal-retention-replication-slot-planner/index.html', 'tools/postgresql-storage/base-backup-storage-transfer-planner/index.html',
+  'guides/index.html', 'guides/how-much-nas-storage-do-i-need/index.html', 'guides/raid-is-not-a-backup/index.html', 'guides/cmr-vs-smr-for-nas/index.html', 'guides/nas-drive-replacement-planning/index.html', 'guides/hdd-vs-ssd-for-bulk-storage/index.html', 'guides/backup-retention-basics/index.html', 'guides/3-2-1-backup-explained/index.html', 'guides/local-backup-vs-offsite-backup/index.html', 'guides/snapshots-vs-backups/index.html', 'guides/how-to-size-a-ups-for-a-nas/index.html', 'guides/ssd-endurance-for-nas-cache-vms-backups/index.html', 'guides/field-media-offload-verification-workflow/index.html', 'guides/how-to-plan-an-external-storage-connection/index.html', 'guides/how-to-plan-storage-for-git-lfs-ci-builds/index.html', 'guides/how-to-plan-postgresql-maintenance-storage/index.html',
+  'reference/index.html', 'reference/tb-vs-tib/index.html', 'reference/storage-raid-capacity-formulas/index.html', 'reference/backup-transfer-time-bandwidth/index.html', 'reference/ups-watts-va-runtime/index.html', 'reference/field-media-copy-verification-checklist/index.html', 'reference/usb-thunderbolt-storage-path-reference/index.html', 'reference/developer-build-storage-formulas/index.html', 'reference/postgresql-maintenance-storage-formulas/index.html', 'compare/index.html', 'compare/2-bay-vs-4-bay-nas/index.html', 'compare/nas-vs-cloud-for-family-photos/index.html', 'compare/2-5gbe-vs-10gbe-for-nas/index.html', 'compare/consumer-vs-nas-vs-enterprise-ssd-endurance/index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html'
 ];
 const failures = [];
 const check = (condition, message) => { if (!condition) failures.push(message); };
@@ -70,8 +72,8 @@ check(/data-tool="media"[^\n]*nth-child\(1\)[^}]*width\s*:\s*23%/.test(nasToolCs
 check(/@media\s*\(min-width:\s*901px\)\s*\{[\s\S]*?\.field-grid\s*\{[^}]*align-items\s*:\s*stretch/.test(nasToolCss), 'Two-column field grids must use shared row tracks above the single-column breakpoint');
 check(/\.field-grid\s*>\s*\.field\s*\{[^}]*display\s*:\s*grid[^}]*grid-template-rows\s*:\s*subgrid[^}]*grid-row\s*:\s*span\s*4/.test(nasToolCss), 'Two-column fields must span the shared label, control, helper, and error tracks');
 check(/\.field-grid\s*>\s*\.field\s*>\s*:is\([^}]*\)\s*\{[^}]*grid-row\s*:\s*2/.test(nasToolCss) && /\.field-grid\s*>\s*\.field\s*>\s*\.error\s*\{[^}]*grid-row\s*:\s*4/.test(nasToolCss), 'Field controls and errors must retain their shared grid tracks');
-check(staticFormPages.length === 45 && staticFormPages.every((path) => file(path).includes('class="field-grid"')), 'Every static calculator form must use the shared field-grid alignment pattern');
-check(calculatorPages.length === 52 && file('assets/js/cost-tools.mjs').includes('class="field-grid"'), 'Every calculator, including runtime cost forms, must use the shared alignment pattern');
+check(staticFormPages.length === 49 && staticFormPages.every((path) => file(path).includes('class="field-grid"')), 'Every static calculator form must use the shared field-grid alignment pattern');
+check(calculatorPages.length === 56 && file('assets/js/cost-tools.mjs').includes('class="field-grid"'), 'Every calculator, including runtime cost forms, must use the shared alignment pattern');
 check(cmrSmrChecker.includes('data-tool="cmr"'), 'CMR vs SMR checker shell is incomplete');
 check(/\.form-card\[data-tool="cmr"\]\s*\+\s*\.results\s+table\s*\{[^}]*width\s*:\s*max\(100%,\s*42rem\)[^}]*table-layout\s*:\s*fixed/.test(nasToolCss), 'CMR vs SMR mobile table must reserve readable table-wide width');
 check(/data-tool="cmr"[^\n]*nth-child\(1\)[^}]*width\s*:\s*22%/.test(nasToolCss) && /data-tool="cmr"[^\n]*nth-child\(2\)[^}]*width\s*:\s*30%/.test(nasToolCss) && /data-tool="cmr"[^\n]*nth-child\(3\)[^}]*width\s*:\s*48%/.test(nasToolCss), 'CMR vs SMR mobile columns must retain area, requirement, and why allocation');
@@ -122,7 +124,7 @@ for (const slug of externalTools) {
 check(h11.includes('/guides/how-to-plan-an-external-storage-connection/') && h11.includes('/reference/usb-thunderbolt-storage-path-reference/'), 'H11 is missing its guide or reference');
 check(file('assets/js/components.js').includes('data-external-storage-home-card'), 'Home integration is missing the external-storage entry point');
 for (const path of ['tools/field-media/media-offload-time-planner/index.html', 'tools/cost-power/das-vs-nas-cost-calculator/index.html', 'tools/network-performance/local-network-transfer-time-calculator/index.html']) check(file(path).includes('components.js?v=20260814'), `${path}: external-storage discovery cache marker missing`);
-check(file('index.html').includes('components.js?v=20260824'), 'Home shared-component cache marker is stale');
+check(file('index.html').includes('components.js?v=20260831'), 'Home shared-component cache marker is stale');
 const developerHub = '/tools/developer-storage/';
 const developerTools = ['git-lfs-storage-bandwidth-planner', 'ci-artifact-retention-planner', 'build-cache-capacity-planner', 'container-registry-retention-planner', 'runner-disk-capacity-checker'];
 check(file('partials/header.html').includes(`href="${developerHub}"`), 'Header Tools menu is missing Developer Build Storage');
@@ -138,7 +140,23 @@ for (const slug of developerTools) {
 }
 check(h12.includes('/guides/how-to-plan-storage-for-git-lfs-ci-builds/') && h12.includes('/reference/developer-build-storage-formulas/'), 'H12 is missing its guide or reference');
 check(file('assets/js/components.js').includes('data-developer-storage-home-card'), 'Home integration is missing the developer-storage entry point');
-for (const path of ['index.html', 'tools/ssd-endurance/vm-container-ssd-endurance-planner/index.html', 'tools/backup-planning/backup-retention-calculator/index.html', 'tools/cost-power/full-storage-system-budget-planner/index.html']) check(file(path).includes('components.js?v=20260824'), `${path}: developer-storage discovery cache marker missing`);
+for (const path of ['tools/backup-planning/backup-retention-calculator/index.html', 'tools/cost-power/full-storage-system-budget-planner/index.html']) check(file(path).includes('components.js?v=20260824'), `${path}: developer-storage discovery cache marker missing`);
+const postgresqlHub = '/tools/postgresql-storage/';
+const postgresqlTools = ['vacuum-full-disk-space-checker', 'index-build-reindex-space-planner', 'wal-retention-replication-slot-planner', 'base-backup-storage-transfer-planner'];
+check(file('partials/header.html').includes(`href="${postgresqlHub}"`), 'Header Tools menu is missing PostgreSQL Maintenance Storage');
+check(file('tools/index.html').includes(`href="${postgresqlHub}"`), 'Tools directory is missing PostgreSQL Maintenance Storage');
+check(file('guides/index.html').includes('/guides/how-to-plan-postgresql-maintenance-storage/'), 'Guides index is missing G15');
+check(file('reference/index.html').includes('/reference/postgresql-maintenance-storage-formulas/'), 'Reference index is missing R08');
+const h13 = file('tools/postgresql-storage/index.html');
+for (const slug of postgresqlTools) {
+  check(h13.includes(`/tools/postgresql-storage/${slug}/`), `H13 is missing ${slug}`);
+  const page = file(`tools/postgresql-storage/${slug}/index.html`);
+  check(page.includes('data-postgresql-storage-form') && page.includes('data-postgresql-storage-results') && page.includes('data-copy-results') && page.includes('data-print-results') && page.includes('data-reset-tool'), `${slug}: PostgreSQL tool shell or actions missing`);
+  check(page.includes(postgresqlHub), `${slug}: return link to H13 missing`);
+}
+check(h13.includes('/guides/how-to-plan-postgresql-maintenance-storage/') && h13.includes('/reference/postgresql-maintenance-storage-formulas/'), 'H13 is missing its guide or reference');
+check(file('assets/js/components.js').includes('data-postgresql-storage-home-card'), 'Home integration is missing the PostgreSQL entry point');
+for (const path of ['index.html', 'tools/backup-planning/backup-verification-schedule-planner/index.html', 'tools/network-performance/backup-window-calculator/index.html', 'tools/ssd-endurance/vm-container-ssd-endurance-planner/index.html', 'tools/index.html', 'guides/index.html', 'reference/index.html']) check(file(path).includes('components.js?v=20260831'), `${path}: PostgreSQL discovery cache marker missing`);
 const cachePage = file('tools/ssd-endurance/nas-ssd-cache-endurance-planner/index.html');
 check(cachePage.includes('data-mode-field="measured"') && cachePage.includes('data-mode-field="estimated"') && cachePage.includes('Measured cache host writes') && cachePage.includes('Estimated NAS ingest'), 'Cache planner mode controls are incomplete');
 for (const jsPath of allFiles(join(root, 'assets', 'js')).filter((path) => /\.m?js$/.test(path))) { const result = spawnSync(process.execPath, ['--check', jsPath], { encoding: 'utf8' }); check(result.status === 0, `JavaScript syntax error in ${relative(root, jsPath)}: ${result.stderr}`); }
@@ -356,12 +374,53 @@ check(!runnerAudit3.ready && runnerAudit3.maxConcurrency===1 && close(runnerAudi
 const runnerAudit4 = calculateRunner({checkoutGB:0,lfsGB:0,dependenciesGB:0,cacheGB:0,buildGB:0,tempGB:0,concurrency:1,totalDiskGB:100,occupiedGB:10,reservePercent:20}).result;
 check(runnerAudit4.ready && close(runnerAudit4.peakWorkspaceGB,0) && runnerAudit4.maxConcurrency===Infinity && close(runnerAudit4.minimumDiskGB,12.5), 'Runner zero-workspace boundary failed');
 check(calculateRunner({checkoutGB:1,lfsGB:0,dependenciesGB:0,cacheGB:0,buildGB:0,tempGB:0,concurrency:1,totalDiskGB:100,occupiedGB:100,reservePercent:0}).errors?.occupiedGB, 'Runner accepted exhausted persistent usage');
+
+const vacuumAudit1 = calculateVacuum({currentHeapGB:800,currentIndexGB:240,rewrittenHeapGB:560,rebuiltIndexGB:210,concurrentGrowthGB:30,freeDiskGB:1000,reservePercent:15}).result;
+check(close(vacuumAudit1.currentFootprintGB,1040) && close(vacuumAudit1.operationNeedGB,800) && close(vacuumAudit1.usableFreeGB,850) && close(vacuumAudit1.headroomGB,50) && close(vacuumAudit1.potentialReclaimGB,270), 'VACUUM FULL normal rewrite preflight failed');
+const vacuumAudit2 = calculateVacuum({currentHeapGB:100,currentIndexGB:0,rewrittenHeapGB:80,rebuiltIndexGB:0,concurrentGrowthGB:0,freeDiskGB:100,reservePercent:20}).result;
+check(vacuumAudit2.ready && close(vacuumAudit2.headroomGB,0) && close(vacuumAudit2.minimumFreeDiskGB,100), 'VACUUM FULL exact reserve boundary failed');
+const vacuumAudit3 = calculateVacuum({currentHeapGB:200,currentIndexGB:50,rewrittenHeapGB:200,rebuiltIndexGB:50,concurrentGrowthGB:50,freeDiskGB:200,reservePercent:0}).result;
+check(!vacuumAudit3.ready && close(vacuumAudit3.operationNeedGB,300) && close(vacuumAudit3.headroomGB,-100), 'VACUUM FULL insufficient-space decision failed');
+const vacuumAudit4 = calculateVacuum({currentHeapGB:2000,currentIndexGB:500,rewrittenHeapGB:1500,rebuiltIndexGB:400,concurrentGrowthGB:100,freeDiskGB:2500,reservePercent:20}).result;
+check(vacuumAudit4.ready && close(vacuumAudit4.operationNeedGB,2000) && close(vacuumAudit4.usableFreeGB,2000), 'VACUUM FULL large exact-boundary case failed');
+check(calculateVacuum({currentHeapGB:-1,currentIndexGB:0,rewrittenHeapGB:1,rebuiltIndexGB:0,concurrentGrowthGB:0,freeDiskGB:1,reservePercent:0}).errors?.currentHeapGB, 'VACUUM FULL accepted a negative relation size');
+
+const indexAudit1 = calculateIndex({operation:'concurrent',newIndexGB:180,indexesAtOnce:1,tempWorkGB:60,writeGrowthGB:20,freeDiskGB:400,reservePercent:15}).result;
+check(close(indexAudit1.outputGB,180) && close(indexAudit1.operationNeedGB,260) && close(indexAudit1.usableFreeGB,340) && close(indexAudit1.headroomGB,80), 'Index build normal working-set preflight failed');
+const indexAudit2 = calculateIndex({operation:'create',newIndexGB:100,indexesAtOnce:2,tempWorkGB:0,writeGrowthGB:0,freeDiskGB:250,reservePercent:20}).result;
+check(indexAudit2.ready && close(indexAudit2.operationNeedGB,200) && close(indexAudit2.headroomGB,0), 'Index build simultaneous exact boundary failed');
+const indexAudit3 = calculateIndex({operation:'reindex',newIndexGB:250,indexesAtOnce:2,tempWorkGB:100,writeGrowthGB:50,freeDiskGB:500,reservePercent:10}).result;
+check(!indexAudit3.ready && close(indexAudit3.operationNeedGB,650) && close(indexAudit3.headroomGB,-200), 'Index build insufficient-space decision failed');
+const indexAudit4 = calculateIndex({operation:'create',newIndexGB:.5,indexesAtOnce:1,tempWorkGB:.25,writeGrowthGB:.25,freeDiskGB:1,reservePercent:0}).result;
+check(indexAudit4.ready && close(indexAudit4.headroomGB,0) && close(indexAudit4.minimumFreeDiskGB,1), 'Index build small exact boundary failed');
+check(calculateIndex({operation:'unknown',newIndexGB:1,indexesAtOnce:1,tempWorkGB:0,writeGrowthGB:0,freeDiskGB:10,reservePercent:0}).errors?.operation, 'Index build accepted an unknown operation');
+
+const walAudit1 = calculateWal({walRateGBHour:18,existingRetainedGB:40,lagHours:12,walDiskGB:500,slotCapGB:300,reservePercent:20}).result;
+check(close(walAudit1.generatedGB,216) && close(walAudit1.projectedRetainedGB,256) && close(walAudit1.diskHeadroomGB,144) && close(walAudit1.safeLagHours,260/18), 'WAL normal retention preflight failed');
+const walAudit2 = calculateWal({walRateGBHour:10,existingRetainedGB:20,lagHours:8,walDiskGB:125,slotCapGB:0,reservePercent:20}).result;
+check(walAudit2.ready && close(walAudit2.projectedRetainedGB,100) && close(walAudit2.diskHeadroomGB,0) && walAudit2.hoursToSlotCap===Infinity, 'WAL exact disk boundary failed');
+const walAudit3 = calculateWal({walRateGBHour:5,existingRetainedGB:0,lagHours:10,walDiskGB:100,slotCapGB:40,reservePercent:0}).result;
+check(!walAudit3.ready && close(walAudit3.slotHeadroomGB,-10) && close(walAudit3.safeLagHours,8), 'WAL slot-cap failure failed');
+const walAudit4 = calculateWal({walRateGBHour:100,existingRetainedGB:50,lagHours:10,walDiskGB:1000,slotCapGB:0,reservePercent:10}).result;
+check(!walAudit4.ready && close(walAudit4.projectedRetainedGB,1050) && close(walAudit4.hoursToReserve,8.5), 'WAL high-generation disk failure failed');
+check(calculateWal({walRateGBHour:1,existingRetainedGB:100,lagHours:1,walDiskGB:100,slotCapGB:0,reservePercent:0}).errors?.existingRetainedGB, 'WAL planner accepted exhausted disk allocation');
+
+const baseBackupAudit1 = calculateBaseBackup({basePayloadGB:1200,throughputMBs:180,walRateGBHour:24,copies:1,targetFreeGB:2000,reservePercent:15}).result;
+check(close(baseBackupAudit1.streamRateGBHour,648) && close(baseBackupAudit1.durationHours,1200/624) && close(baseBackupAudit1.walDuringBackupGB,24*(1200/624)) && baseBackupAudit1.ready, 'Base backup normal stream feedback failed');
+const baseBackupAudit2 = calculateBaseBackup({basePayloadGB:360,throughputMBs:100,walRateGBHour:0,copies:1,targetFreeGB:450,reservePercent:20}).result;
+check(baseBackupAudit2.ready && close(baseBackupAudit2.durationHours,1) && close(baseBackupAudit2.totalTargetGB,360) && close(baseBackupAudit2.headroomGB,0), 'Base backup exact target boundary failed');
+const baseBackupAudit3 = calculateBaseBackup({basePayloadGB:100,throughputMBs:10,walRateGBHour:36,copies:1,targetFreeGB:1000,reservePercent:0}).result;
+check(!baseBackupAudit3.converges && !baseBackupAudit3.ready && baseBackupAudit3.durationHours===Infinity, 'Base backup non-converging stream was not detected');
+const baseBackupAudit4 = calculateBaseBackup({basePayloadGB:100,throughputMBs:100,walRateGBHour:0,copies:2,targetFreeGB:250,reservePercent:20}).result;
+check(baseBackupAudit4.ready && close(baseBackupAudit4.totalTargetGB,200) && close(baseBackupAudit4.headroomGB,0), 'Base backup multi-copy exact boundary failed');
+check(calculateBaseBackup({basePayloadGB:1,throughputMBs:0,walRateGBHour:0,copies:1,targetFreeGB:1,reservePercent:0}).errors?.throughputMBs, 'Base backup accepted zero throughput');
 for (const path of expected.filter((page) => /storage-needs\/(annual|creator|computer|small-office|media-library)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /nas-configuration\/(nas-bay|raid-capacity|raid-protection|nas-expansion|hdd-vs|cmr-vs)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /backup-planning\/(3-2-1|local-cloud|backup-retention|snapshot|offsite|backup-frequency|recovery-time|backup-verification)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /network-performance\/(cloud-backup|local-network|backup-window|network-tier|concurrent-user|video-editing)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /external-storage\/(drive-enclosure|connection-bottleneck|usb-power|port-topology|performance-troubleshooter)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /developer-storage\/(git-lfs|ci-artifact|build-cache|container-registry|runner-disk)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
+for (const path of expected.filter((page) => /postgresql-storage\/(vacuum-full|index-build|wal-retention|base-backup)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /cost-power\/(nas-vs|das-vs|drive-cost|storage-electricity|drive-replacement|ups-size|full-storage)/.test(page))) check(/data-cost-shell/.test(file(path)), `${path}: cost workbench shell missing`);
 check(!/Reserved for future user-managed badge|footer-slot/.test(file('partials/footer.html')+file('index.html')), 'Common badge placeholder remains');
 for (const path of ['contact/index.html','privacy/index.html']) check(/mailto:canghun13@naver\.com/.test(file(path)), `${path}: confirmed contact email missing`);
