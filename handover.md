@@ -1325,3 +1325,67 @@ Live validation used current first-party PostgreSQL documentation for [`VACUUM`]
 - Production deployment verification passed after normal GitHub Pages propagation. All seven new HTTPS pages passed at 1440, 390, and 360 px (21 combinations) with their expected title/H1/canonical, loaded shared stylesheet and `components.js?v=20260831`, shared header/footer, no clipped interactive controls, and zero horizontal overflow. One async partial check initially ran before its header/footer fetch completed; an explicit visible-state wait passed immediately.
 - All four production calculators passed default calculation, changed-input live recalculation, invalid-state hiding plus `aria-invalid`, recovery, matching clipboard copy, Print invocation/return, and Reset at 390 px. Browser console errors were empty.
 - No DNS, Cloudflare, GitHub Pages, HTTPS, GA4, Search Console, contact, or Home user-managed badge setting/markup was changed. The final deployment-record commit and live SHA follow this entry.
+
+---
+
+### 2026-09-25 — 23 discovered-page indexability and static-discovery audit
+
+- Start state: repository `https://github.com/canghun13/datastoragelab`, branch `main`, clean working tree. Local HEAD, refreshed `origin/main`, and direct `git ls-remote origin refs/heads/main` all matched `67520f0f123a1a1a7dda45738f93c9be5f7f72b9`; ahead/behind was `0 0`. No user changes were present, stashed, reset, or overwritten.
+- GSC issue supplied by the user: **Discovered - currently not indexed**. Affected count remained exactly 23 from **2026-09-05 through 2026-09-21**. The latest export reports **last crawl = 1970-01-01 for all 23**, so the export contains no actual Google crawl record for these URLs.
+- Audit targets (exact supplied set):
+  1. `https://datastoragelab.com/compare/2-bay-vs-4-bay-nas/`
+  2. `https://datastoragelab.com/compare/consumer-vs-nas-vs-enterprise-ssd-endurance/`
+  3. `https://datastoragelab.com/compare/nas-vs-cloud-for-family-photos/`
+  4. `https://datastoragelab.com/guides/backup-retention-basics/`
+  5. `https://datastoragelab.com/guides/snapshots-vs-backups/`
+  6. `https://datastoragelab.com/guides/ssd-endurance-for-nas-cache-vms-backups/`
+  7. `https://datastoragelab.com/reference/field-media-copy-verification-checklist/`
+  8. `https://datastoragelab.com/tools/backup-planning/`
+  9. `https://datastoragelab.com/tools/backup-planning/3-2-1-backup-plan-generator/`
+  10. `https://datastoragelab.com/tools/backup-planning/backup-retention-calculator/`
+  11. `https://datastoragelab.com/tools/backup-planning/backup-verification-schedule-planner/`
+  12. `https://datastoragelab.com/tools/backup-planning/snapshot-storage-planner/`
+  13. `https://datastoragelab.com/tools/cost-power/drive-cost-per-usable-tb-calculator/`
+  14. `https://datastoragelab.com/tools/cost-power/ups-size-runtime-calculator/`
+  15. `https://datastoragelab.com/tools/developer-storage/`
+  16. `https://datastoragelab.com/tools/developer-storage/ci-artifact-retention-planner/`
+  17. `https://datastoragelab.com/tools/developer-storage/runner-disk-capacity-checker/`
+  18. `https://datastoragelab.com/tools/field-media/`
+  19. `https://datastoragelab.com/tools/postgresql-storage/wal-retention-replication-slot-planner/`
+  20. `https://datastoragelab.com/tools/storage-needs/annual-storage-growth-calculator/`
+  21. `https://datastoragelab.com/tools/storage-needs/computer-backup-storage-planner/`
+  22. `https://datastoragelab.com/tools/storage-needs/home-storage-backup-planner/`
+  23. `https://datastoragelab.com/tools/storage-needs/small-office-storage-planner/`
+- Healthy controls were selected by page type and cluster, without inventing index status: `/compare/2-5gbe-vs-10gbe-for-nas/`, `/guides/raid-is-not-a-backup/`, `/guides/local-backup-vs-offsite-backup/`, `/reference/tb-vs-tib/`, `/tools/nas-configuration/`, `/tools/ssd-endurance/`, `/tools/backup-planning/offsite-backup-capacity-planner/`, `/tools/developer-storage/git-lfs-storage-bandwidth-planner/`, `/tools/field-media/media-offload-time-planner/`, `/tools/postgresql-storage/vacuum-full-disk-space-checker/`, `/tools/storage-needs/creator-media-storage-planner/`, and `/tools/cost-power/nas-vs-cloud-five-year-cost-calculator/`.
+
+#### Production and indexability findings
+
+- Normal desktop UA: all 23 targets and all 12 controls returned final HTTP 200 from `GitHub.com`. Target response sizes ranged 2,403–18,854 bytes, median 8,588; controls ranged 3,390–12,102, median 8,367.
+- Googlebot Smartphone UA: all 23 targets and all 12 controls returned HTTP 200 at the same final URL. Every normal/Googlebot body SHA-256 and byte length matched exactly. No target-specific 403, 429, 5xx, redirect, cache, or body variation was found.
+- Canonicalization: all 23 targets expose exactly one correct HTTPS apex trailing-slash self-canonical. For every target, the canonical URL returned 200 while HTTPS apex without slash, HTTP apex, and HTTPS `www` each converged by one 301 to the same final canonical URL.
+- Robots: repository and production `robots.txt` match exactly (`User-agent: *`, `Allow: /`, canonical sitemap URL). No target has `noindex`/`nofollow`, an `X-Robots-Tag`, or a blocking robots pattern.
+- Sitemap: repository and production both contain exactly 101 `<loc>` entries and the same URL set. Each of the 23 targets and 12 controls occurs exactly once as an HTTPS apex trailing-slash URL; no target is a redirect or dead URL.
+- Initial HTML: all 23 contain a unique title, meta description, self-canonical, exactly one H1, meaningful main text, static contextual links, and valid JSON-LD. All 13 target tools have substantive static explanations; 11 also contain labels and controls directly in raw HTML. The two Cost & Power forms are created by their established shared runtime, but their titles, H1s, explanations, assumptions, limitations, and links are static; the same characteristic appears in the matched healthy Cost & Power control and is not an empty shell or a target-specific delivery defect. Shared header/footer partials are loaded by the same component runtime on targets and controls.
+- Content comparison: target main content ranged 90–1,277 words, median 670; controls ranged 225–972, median 658. The short `Snapshots vs Backups` page remains a meaningful comparison with unique title/H1/body and three relevant links, not a placeholder. There were zero exact main-content duplicates, zero duplicated titles/H1s/descriptions, and no copied JSON-LD URL. Maximum token-set similarity among target tool siblings was 0.625 versus 0.613 in controls; distinct inputs, outputs, and purposes remain visible. With no crawl record, GSC non-crawl itself was not used as quality evidence.
+- Repository/production drift before the fix: all 23 target titles, H1s, canonicals, robots directives, main-text hashes, word counts, and JSON-LD matched the repository exactly. No stale generated page, asset-key divergence affecting core content, soft-404 body, generic error, or wrong-page response was found.
+
+#### Proven Type 2 discovery defect and minimal repair
+
+- Site-wide static `<a href>` graph before the fix: target inbound source count range 1–11, median 3; controls 2–8, median 3.5. There were zero target or control orphans and zero unreachable pages. Most targets were at depth 1–4, matching controls, but three related targets were abnormally deep.
+- `Snapshot Storage Planner` had only one inbound source and depth 6 because its parent Backup Planning hub described snapshot sizing but linked only to the retention calculator. `Snapshots vs Backups` was therefore depth 5 despite links from the Guides index and the planner. The healthy backup tool control was depth 3 with a parent/workflow link.
+- `2-Bay vs 4-Bay NAS` had only the Comparisons index as an inbound source and depth 5, while the matched comparison control had three inbound sources and depth 3. The NAS Configuration hub discussed bay decisions but omitted the relevant comparison.
+- Root cause: two missing static, contextually expected parent-hub links. This was a localized discovery weakness, not a canonical, robots, sitemap, delivery, or content defect.
+- Minimal fix: `tools/backup-planning/index.html` now links its existing Retention and snapshots card to Snapshot Storage Planner, and `tools/nas-configuration/index.html` links its existing capacity/protection guidance to 2-Bay vs 4-Bay NAS. No target content, title, metadata, URL, canonical, sitemap, robots, stylesheet, JavaScript, calculator, header/footer, or global navigation changed.
+- Static graph after the fix: `Snapshot Storage Planner` inbound 1→2 and depth 6→2; `Snapshots vs Backups` depth 5→3 through the newly reachable planner; `2-Bay vs 4-Bay NAS` inbound 1→2 and depth 5→2. All 23 targets are now depth 1–4, the same range as controls; orphan count remains zero.
+
+#### Classification and QA
+
+- Type 1 — Technical indexability block: **0**.
+- Type 2 — Discovery defect: **3 URLs**, one two-link root cause repair (`Snapshot Storage Planner`, `Snapshots vs Backups`, `2-Bay vs 4-Bay NAS`).
+- Type 3 — Delivery/rendering defect: **0**.
+- Type 4 — No site-side defect found / crawl scheduling: **20 URLs**.
+- Type 5 — Content duplication/severe quality defect: **0**.
+- `node tools/qa.mjs`: PASS for all 101 pages and existing metadata, links, sitemap, GA4, JSON-LD, JavaScript, calculation, regression, badge, and contact checks.
+- `node tools/content-qa.mjs`: PASS for the exact 56 tools / 15 guides / eight references / four comparisons / 13 hubs / five basics inventory and all content safeguards. `git diff --check` passed.
+- Local real-browser QA used installed Edge 153 in headless CDP mode after Windows Computer Use could not safely determine the active browser URL and was stopped without further UI input. The two changed hubs and three affected target pages passed at 1440, 390, and 360 px: 15/15 checks with one H1, shared header/footer, expected new static links, zero clipped controls/links, zero document overflow, and zero console errors. Snapshot Storage Planner passed calculation, invalid-input messaging, copy handler, print handler, and reset at 390 px.
+- Production deployment verification, implementation commit, final live SHA, and clean synchronization follow after publication.
