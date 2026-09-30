@@ -27,12 +27,14 @@ const validateReserve = (value) => finite(num(value)) && num(value) >= 0 && num(
 
 export function calculateLifespan(input) {
   const errors = ['capacity','rated','warranty','writes','low','base','high','horizon','reserve'].reduce((all, key) => ({ ...all, ...(clean(input, key, key === 'rated' ? 'Rated endurance' : key, key === 'writes' || key === 'reserve' ? -1 : 0) ? { [key]: clean(input, key, key, key === 'writes' || key === 'reserve' ? -1 : 0) } : {}) }), {});
+  if (input.writes === null || input.writes === undefined || String(input.writes).trim() === '' || !finite(num(input.writes)) || num(input.writes) < 0) errors.writes = 'Enter a measured or planned write rate of 0 GB/day or greater.';
   if (num(input.low) < 1 || num(input.base) < 1 || num(input.high) < 1) errors.base = 'Each WAF scenario must be at least 1.';
   if (num(input.low) > num(input.base) || num(input.base) > num(input.high)) errors.base = 'Use Low WAF ≤ Base WAF ≤ High WAF.';
   const reserveError = validateReserve(input.reserve); if (reserveError) errors.reserve = reserveError;
   const rated = normalizeEnduranceToTBW(input.rated, input.enduranceUnit);
-  const existing = normalizeExistingWritesToTBW(input.existing || 0, input.existingUnit);
-  if (existing < 0) errors.existing = 'Existing writes cannot be negative.';
+  const existing = normalizeExistingWritesToTBW(input.existing ?? 0, input.existingUnit);
+  if (!finite(rated)) errors.rated = 'Rated endurance exceeds the supported numeric range.';
+  if (!finite(existing) || existing < 0) errors.existing = 'Existing writes must be a finite number of 0 or greater.';
   if (existing >= rated) errors.existing = 'Endurance exhausted: existing writes meet or exceed rated TBW.';
   if (Object.keys(errors).length) return { errors };
   const capacity = normalizeCapacityToGB(input.capacity, input.capacityUnit);
@@ -44,7 +46,8 @@ export function calculateLifespan(input) {
     return { name, effective, required, years: calculateYearsToRating(usable, effective), margin: calculateEnduranceMargin(usable, required), headroom: usable - required };
   });
   const base = scenarios[1];
-  return { result: { rated, remaining, usable, scenarios, ratedDwpd: tbwToDwpd(rated, capacity, input.warranty), actualDwpd: base.effective / capacity, maxLogical: usable * 1000 / (365 * num(input.warranty) * num(input.base)), status: status(base.margin) } };
+  if (scenarios.some(s => ![s.effective, s.required, s.headroom].every(finite) || (s.years !== null && !finite(s.years)) || (s.margin !== null && !finite(s.margin)))) return { errors: { writes: 'These values exceed the supported numeric range. Reduce the workload or planning horizon.' } };
+  return { result: { rated, remaining, usable, scenarios, ratedDwpd: tbwToDwpd(rated, capacity, input.warranty), actualDwpd: base.effective / capacity, maxLogical: usable * 1000 / (365 * num(input.warranty) * num(input.base)), status: base.margin === null ? 'No write-rate forecast' : status(base.margin) } };
 }
 export function calculateConverter(input) {
   const errors = {};
@@ -97,8 +100,12 @@ export function calculateRemaining(input) {
 }
 
 const render = (node, result, type) => {
-  const rows = type === 'lifespan' ? result.scenarios.map((s) => `<tr><th>${s.name} WAF</th><td>${formatDuration(s.years)}</td><td>${formatWriteVolume(s.required)}</td><td>${s.margin.toFixed(2)}×</td></tr>`).join('') : Object.entries(result).filter(([,v]) => typeof v === 'number').slice(0, 6).map(([key, value]) => `<tr><th>${key.replace(/([A-Z])/g, ' $1')}</th><td>${Number.isFinite(value) ? value.toLocaleString(undefined,{maximumFractionDigits:2}) : 'Not available'}</td></tr>`).join('');
+  const rows = type === 'lifespan' ? result.scenarios.map((s) => `<tr><th>${s.name} WAF</th><td>${formatDuration(s.years)}</td><td>${formatWriteVolume(s.required)}</td><td>${s.margin === null ? 'Not applicable' : s.margin.toFixed(2) + '×'}</td></tr>`).join('') : Object.entries(result).filter(([,v]) => typeof v === 'number').slice(0, 6).map(([key, value]) => `<tr><th>${key.replace(/([A-Z])/g, ' $1')}</th><td>${Number.isFinite(value) ? value.toLocaleString(undefined,{maximumFractionDigits:2}) : 'Not available'}</td></tr>`).join('');
   node.hidden = false; node.querySelector('[data-result-title]').textContent = result.status ? `${result.status} endurance outlook` : 'Converted endurance metrics'; node.querySelector('[data-result-summary]').textContent = result.exceeded ? 'Current writes exceed the rated TBW. Treat the estimate as a planning warning, not a physical failure prediction.' : type === 'lifespan' ? `Reserve retains ${(result.remaining - result.usable).toLocaleString(undefined,{maximumFractionDigits:2})} TB; results compare each scenario with ${result.usable.toLocaleString(undefined,{maximumFractionDigits:2})} TB of usable endurance.` : 'Results use decimal GB and TB. Review measured writes and vendor documentation before purchase or replacement.'; node.querySelector('[data-result-rows]').innerHTML = rows;
+  if (type === 'lifespan' && result.scenarios[1].margin === null) {
+    node.querySelector('[data-result-title]').textContent = 'No write-rate forecast';
+    node.querySelector('[data-result-summary]').textContent = `At 0 GB/day, the modeled write requirement is 0 TB and usable endurance remains ${result.usable.toLocaleString(undefined,{maximumFractionDigits:2})} TB. A finite threshold date and endurance margin cannot be calculated. Enter a positive measured rate to forecast; zero writes do not imply an unlimited physical lifespan.`;
+  }
 };
 const unitFactor = (unit, kind) => kind === 'capacity' ? (unit === 'TB' ? 1000 : 1) : (unit === 'PBW' || unit === 'PB' ? 1000 : 1);
 const createUnitSelect = (name, options, value, label) => {
@@ -140,13 +147,6 @@ function enhanceSsdInputs(form) {
     input.before(group); group.append(input, addon);
   });
   const existing = form.elements.namedItem('existing'); if (existing instanceof HTMLInputElement) { const helper = existing.closest('.field')?.querySelector('.help, .helper'); if (helper) helper.textContent = 'Optional; host writes already recorded by the drive.'; }
-  if (form.dataset.ssdForm === 'lifespan') {
-    document.querySelector('[data-ssd-results] th:nth-child(2)')?.replaceChildren('Years to reserve threshold');
-    const method = document.querySelector('[data-content-section="method"] p');
-    const example = document.querySelector('[data-content-section="example"] p');
-    if (method) method.textContent = 'Logical writes equal daily GB multiplied by 365 and the planning years. Effective writes multiply logical GB/day by WAF. The reserve is retained from remaining rated TBW: usable endurance equals remaining TBW times one minus reserve percent. Required TBW is compared with that usable endurance, while rated DWPD uses the full published rating, capacity, and warranty term.';
-    if (example) example.textContent = 'With a 1,000 GB drive rated for 600 TBW, 120 logical GB/day creates 219 TB over five years. Base WAF 1.5 creates 328.5 TB of effective writes. A 20% reserve retains 120 TB, leaving 480 TB usable endurance and 151.5 TB base headroom. The rated endurance is about 0.329 DWPD over five warranty years.';
-  }
   const metric = form.elements.namedItem('metric');
   if (metric instanceof HTMLSelectElement) {
     const sourceUnit = form.querySelector('[data-source-unit]'), sourceHelp = form.querySelector('[data-source-help]');
@@ -163,11 +163,29 @@ if (typeof document !== 'undefined') {
 document.querySelectorAll('[data-ssd-form]').forEach((form) => {
   const type = form.dataset.ssdForm, target = document.querySelector('[data-ssd-results]');
   enhanceSsdInputs(form);
+  if (type === 'lifespan') {
+    const printContext = target.querySelector('[data-lifespan-print-context]');
+    window.addEventListener('beforeprint', () => {
+      if (target.hidden || !printContext) return;
+      printContext.replaceChildren();
+      const title = document.createElement('h2'); title.textContent = 'SSD Endurance & Lifespan Calculator'; printContext.append(title);
+      const inputs = document.createElement('p');
+      inputs.textContent = Array.from(form.querySelectorAll('.field')).map(field => {
+        const label = field.querySelector('label')?.textContent.trim();
+        const input = field.querySelector('input');
+        const unit = field.querySelector('select')?.value || field.querySelector('.ssd-unit-addon')?.textContent.trim() || '';
+        return `${label}: ${input.value || '0'} ${unit}`;
+      }).join('; ');
+      const url = document.createElement('p'); url.textContent = location.href;
+      printContext.append(inputs, url); printContext.hidden = false;
+    });
+    window.addEventListener('afterprint', () => { if (printContext) printContext.hidden = true; });
+  }
   form.addEventListener('submit', (event) => { event.preventDefault(); const input = Object.fromEntries(new FormData(form)); const fn = ({ lifespan: calculateLifespan, converter: calculateConverter, cache: calculateCache, vm: calculateVm, remaining: calculateRemaining })[type]; const output = fn(input); form.querySelectorAll('[data-error]').forEach((el)=>el.textContent=''); form.querySelectorAll('[aria-invalid="true"]').forEach((el)=>el.removeAttribute('aria-invalid')); if (output.errors) { Object.entries(output.errors).forEach(([key,msg]) => { const el=form.querySelector(`[data-error="${key}"]`); const control=form.elements.namedItem(key); if(el) el.textContent=msg; if (control instanceof HTMLElement) control.setAttribute('aria-invalid','true'); }); target.hidden=true; return; } render(target, output.result, type); });
   form.addEventListener('input', () => { if (!target.hidden) form.requestSubmit(); });
   form.addEventListener('change', () => { if (!target.hidden) form.requestSubmit(); });
   form.querySelector('[data-reset-tool]')?.addEventListener('click', () => { form.reset(); form.querySelectorAll('select[data-previous-unit]').forEach((select) => { select.dataset.previousUnit = select.value; }); form.querySelector('[name="metric"]')?.dispatchEvent(new Event('change')); form.querySelector('[name="mode"]')?.dispatchEvent(new Event('change')); target.hidden=true; form.querySelectorAll('[data-error]').forEach((el)=>el.textContent=''); form.querySelectorAll('[aria-invalid="true"]').forEach((el)=>el.removeAttribute('aria-invalid')); });
 });
 document.querySelector('[data-copy-results]')?.addEventListener('click', async () => { const results=document.querySelector('[data-ssd-results]'); try { await navigator.clipboard.writeText(`${document.title}\n${results.innerText}\n${location.href}`); document.querySelector('[data-copy-status]').textContent='Results copied.'; } catch { document.querySelector('[data-copy-status]').textContent='Copy was unavailable; select the results to copy.'; } });
-document.querySelector('[data-print-results]')?.addEventListener('click', () => print());
+document.querySelector('[data-print-results]')?.addEventListener('click', () => { if (!document.querySelector('[data-ssd-results]').hidden) print(); });
 }

@@ -18,7 +18,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SSD Endurance and Lifespan Calculator","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","url":"https://datastoragelab.com/tools/ssd-endurance/ssd-endurance-lifespan-calculator/"}</script>
 <script defer src="/assets/js/components.js?v=20260730">
 </script>
-<script type="module" src="/assets/js/ssd-endurance-tools.mjs">
+<script type="module" src="/assets/js/ssd-endurance-tools.mjs?v=20260930">
 </script>
 </head>
 <body>
@@ -122,6 +122,7 @@
 </div>
 </form>
 <div class="results" data-ssd-results hidden aria-live="polite">
+<section class="result-card" data-lifespan-print-context hidden></section>
 <section class="result-card primary">
 <p class="result-kicker">Endurance outlook</p>
 <h2 data-result-title>
@@ -133,7 +134,7 @@
 <thead>
 <tr>
 <th>Scenario</th>
-<th>Years to rating</th>
+<th>Years to reserve threshold</th>
 <th>Required TBW</th>
 <th>Margin</th>
 </tr>
@@ -166,7 +167,7 @@
 </div>
 <div data-content-section="method">
 <h2>How the calculation works</h2>
-<p>Effective writes per day equal logical GB per day multiplied by WAF. Required TBW equals effective daily writes times 365 times the planning years, divided by 1,000; the reserve increases that requirement. Remaining TBW is rated TBW minus existing host writes. Years to rating divides remaining TBW by effective annual writes. Rated DWPD uses rated TBW, capacity, and warranty years. Actual workload DWPD uses effective daily writes divided by capacity GB.</p>
+<p>Logical writes equal daily GB multiplied by 365 and the planning years. Effective writes multiply logical GB/day by WAF. The reserve is retained from remaining rated TBW: usable endurance equals remaining TBW times one minus reserve percent. Required TBW is compared with that usable endurance, while rated DWPD uses the full published rating, capacity, and warranty term. At zero daily writes, required TBW is zero but duration and margin are unavailable. This is not a forecast of unlimited drive life.</p>
 </div>
 <div data-content-section="interpret">
 <h2>How to interpret the results</h2>
@@ -174,7 +175,7 @@
 </div>
 <div data-content-section="example">
 <h2>Worked example</h2>
-<p>A 1 TB SSD rated for 600 TBW, with 120 logical GB per day, a base WAF of 1.5, a five-year horizon, and 20% reserve needs 394.2 TBW. With no existing writes, its base margin is about 1.52× and its base endurance duration is about 9.1 years. The low and high WAF rows show why a single lifespan claim would be misleading. Adding 150 TB of observed writes cuts every remaining result.</p>
+<p>With a 1,000 GB drive rated for 600 TBW, 120 logical GB/day creates 219 TB over five years. Base WAF 1.5 creates 328.5 TB of effective writes. A 20% reserve retains 120 TB, leaving 480 TB usable endurance and 151.5 TB base headroom. The base margin is about 1.46× and the modeled duration to the reserve threshold is 7.3 years. The rated endurance is about 0.329 DWPD over five warranty years. Adding existing writes reduces the remaining budget before the reserve is applied.</p>
 </div>
 <div data-content-section="limits">
 <h2>Assumptions and limitations</h2>

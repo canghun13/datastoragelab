@@ -235,6 +235,15 @@ check(calculateLifespan({...lifespanAudit, capacity:1, capacityUnit:'TB', rated:
 check(calculateLifespan({...lifespanAudit, low:2, base:1.5, high:1.1}).errors?.base, 'WAF ordering validation failed');
 check(calculateLifespan({...lifespanAudit, existing:600}).errors?.existing, 'Exhausted endurance validation failed');
 check(calculateLifespan({...lifespanAudit, reserve:81}).errors?.reserve, 'Reserve upper-bound validation failed');
+const zeroLifespan = calculateLifespan({...lifespanAudit, writes:0}).result;
+check(zeroLifespan?.status === 'No write-rate forecast' && zeroLifespan.scenarios.every(s => s.required === 0 && s.years === null && s.margin === null && s.headroom === 480), 'Zero writes must preserve the 480 TB budget without a false duration or failure verdict');
+check(calculateLifespan({...lifespanAudit, writes:-.5}).errors?.writes, 'Fractional negative writes must be rejected');
+check(calculateLifespan({...lifespanAudit, writes:''}).errors?.writes, 'Missing write evidence must not become a measured zero');
+check(calculateLifespan({...lifespanAudit, existing:NaN}).errors?.existing, 'Non-finite existing writes must be rejected');
+check(calculateLifespan({...lifespanAudit, writes:1e308}).errors?.writes, 'Overflowing writes must be rejected before rendering');
+check(Math.abs(calculateLifespan({...lifespanAudit, writes:.5}).result.scenarios[1].required - 1.36875) < 1e-9, 'Small positive writes must retain the exact 1.36875 TB forecast');
+const lifespanSource = file('tools/ssd-endurance/ssd-endurance-lifespan-calculator/index.html');
+check(lifespanSource.includes('328.5 TB') && lifespanSource.includes('480 TB') && lifespanSource.includes('7.3 years') && !lifespanSource.includes('394.2 TBW'), 'Static lifespan explanation must match the verified reserve model');
 const cacheUnitAudit = { mode:'measured', measured:200, layout:'single', drives:1, capacity:1000, capacityUnit:'GB', rated:600, enduranceUnit:'TBW', existing:0, existingUnit:'TB', waf:1.5, years:5, reserve:20 };
 check(Math.abs(calculateCache(cacheUnitAudit).result.margin - calculateCache({...cacheUnitAudit, capacity:1, capacityUnit:'TB', rated:.6, enduranceUnit:'PBW', existing:0, existingUnit:'PB'}).result.margin) < 1e-12, 'Cache planner selectable unit equivalence failed');
 const vmUnitAudit = { vms:4, perVm:20, containers:30, logs:40, snapshots:25, copies:2, shares:'50,50', capacity:1000, capacityUnit:'GB', rated:1200, enduranceUnit:'TBW', existing:0, existingUnit:'TB', waf:1.7, years:5 };
