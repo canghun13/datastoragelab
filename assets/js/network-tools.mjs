@@ -1,7 +1,8 @@
 import { formatTb } from './storage-units.mjs';
 
 const numeric = (input, name, min, max, errors) => {
-  const value = Number(input[name]);
+  const raw = input[name];
+  const value = raw === null || raw === undefined || String(raw).trim() === '' ? NaN : Number(raw);
   if (!Number.isFinite(value) || value < min || value > max) { errors[name] = `Enter a value from ${min} to ${max}.`; return 0; }
   return value;
 };
@@ -82,8 +83,57 @@ function render(result) {
 }
 const form = typeof document === 'undefined' ? null : document.querySelector('[data-network-form]');
 if (form) {
-  form.addEventListener('submit', (event) => { event.preventDefault(); const output = calculateNetwork(form.dataset.tool, Object.fromEntries(new FormData(form))); form.querySelectorAll('[data-error]').forEach((node) => { node.textContent = ''; }); if (Object.keys(output.errors).length) { Object.entries(output.errors).forEach(([name, message]) => { const target = form.querySelector(`[data-error="${name}"]`); if (target) target.textContent = message; }); return; } render(output.result); });
-  document.querySelector('[data-reset-tool]')?.addEventListener('click', () => { form.reset(); document.querySelector('[data-tool-results]').hidden = true; });
-  document.querySelector('[data-copy-results]')?.addEventListener('click', () => navigator.clipboard.writeText(`${document.title}\nInputs: ${[...new FormData(form)].map(([key, value]) => `${key}: ${value}`).join(', ')}\n${document.querySelector('[data-result-title]').textContent}\n${document.querySelector('[data-result-summary]').textContent}\n${document.querySelector('[data-result-note]').textContent}\n${location.href}`));
-  document.querySelector('[data-print-results]')?.addEventListener('click', () => print());
+  const results = document.querySelector('[data-tool-results]');
+  let calculated = false;
+  const clearErrors = () => {
+    form.querySelectorAll('[data-error]').forEach((node) => { node.textContent = ''; });
+    form.querySelectorAll('[aria-invalid]').forEach((node) => node.removeAttribute('aria-invalid'));
+  };
+  const recalculate = () => {
+    const output = calculateNetwork(form.dataset.tool, Object.fromEntries(new FormData(form)));
+    clearErrors();
+    if (Object.keys(output.errors).length) {
+      results.hidden = true;
+      Object.entries(output.errors).forEach(([name, message]) => {
+        const target = form.querySelector(`[data-error="${name}"]`);
+        if (target) { target.textContent = message; target.setAttribute('aria-live', 'polite'); }
+        form.elements.namedItem(name)?.setAttribute('aria-invalid', 'true');
+      });
+      return;
+    }
+    render(output.result);
+  };
+  form.addEventListener('submit', (event) => { event.preventDefault(); calculated = true; recalculate(); });
+  for (const event of ['input', 'change']) form.addEventListener(event, () => { if (calculated) recalculate(); });
+  document.querySelector('[data-reset-tool]')?.addEventListener('click', () => {
+    form.reset(); calculated = false; results.hidden = true; clearErrors();
+  });
+  const inputSummary = () => [...form.querySelectorAll('.field')].map((field) => {
+    const control = field.querySelector('input, select');
+    return `${field.querySelector('label')?.textContent.trim()}: ${control.value}`;
+  }).join('; ');
+  const printContext = document.createElement('section');
+  printContext.hidden = true; printContext.dataset.networkPrintContext = ''; results.prepend(printContext);
+  window.addEventListener('beforeprint', () => {
+    if (results.hidden) return;
+    printContext.replaceChildren();
+    for (const [tag, text] of [['h2', document.querySelector('h1').textContent], ['p', inputSummary()], ['p', location.href]]) {
+      const node = document.createElement(tag); node.textContent = text; printContext.append(node);
+    }
+    printContext.hidden = false;
+  });
+  window.addEventListener('afterprint', () => { printContext.hidden = true; });
+  const copyButton = document.querySelector('[data-copy-results]');
+  const copyStatus = document.createElement('p'); copyStatus.className = 'no-print'; copyStatus.setAttribute('role', 'status'); results.append(copyStatus);
+  form.addEventListener('input', () => { copyStatus.textContent = ''; });
+  document.querySelector('[data-reset-tool]')?.addEventListener('click', () => { copyStatus.textContent = ''; });
+  copyButton?.addEventListener('click', async () => {
+    if (results.hidden) return;
+    const output = [...results.querySelectorAll('.result-card')].map((node) => node.innerText).join('\n');
+    try {
+      await navigator.clipboard.writeText(`${document.title}\nInputs: ${inputSummary()}\n${output}\n${location.href}`);
+      copyStatus.textContent = 'Results copied.';
+    } catch { copyStatus.textContent = 'Copy was unavailable; select the results to copy.'; }
+  });
+  document.querySelector('[data-print-results]')?.addEventListener('click', () => { if (!results.hidden) print(); });
 }

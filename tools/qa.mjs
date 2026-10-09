@@ -203,7 +203,20 @@ const networkTools = [
 for (const [label, kind, input] of networkTools) {
   for (const variation of [input, { ...input, data: .01 }, { ...input, data: 1000 }]) check(calculateNetwork(kind, variation).result, `${label}: Phase 5 valid calculation failed`);
   check(Object.keys(calculateNetwork(kind, { ...input, data: -1, upload: 0, link: 0, window: 0 }).errors).length, `${label}: Phase 5 invalid input was accepted`);
+  for (const name of Object.keys(input)) {
+    for (const value of ['', ' ', null, undefined, NaN, Infinity, -Infinity, -1]) {
+      const output = calculateNetwork(kind, { ...input, [name]: value });
+      check(Boolean(output.errors[name]) && !output.result, `${label}: ${name} invalid ${String(value)} was accepted`);
+    }
+  }
 }
+const cloudDefaults = networkTools[0][2];
+const cloudExpected = calculateNetwork('cloud', cloudDefaults).result;
+check(cloudExpected.title === 'Initial upload: 12.3 days', 'Cloud default continuous upload changed');
+check(cloudExpected.metrics[2][1] === '24.7 days', 'Cloud default scheduled upload changed');
+check(cloudExpected.rows[1][1] === '39.5 hours', 'Cloud default restore changed');
+check(calculateNetwork('cloud', { ...cloudDefaults, throttle: 10 }).result.title === 'Initial upload: 37.0 days', 'Cloud throttle regression');
+check(calculateNetwork('cloud', { ...cloudDefaults, active: 24 }).result.metrics[2][1] === '12.3 days', 'Cloud 24-hour schedule regression');
 const costTools=[['nascloud',{a:900,b:1200,c:180,d:45,e:250}],['dasnas',{a:300,b:700,c:1400,d:2,e:250}],['drive',{a:220,b:12,c:4,d:1,e:10}],['electricity',{a:75,b:42,c:8,d:.18,e:5}],['reserve',{a:4,b:220,c:2,d:5,e:20}],['ups',{a:120,b:30,c:.7,d:15,e:80}],['budget',{a:900,b:1000,c:500,d:450,e:240}]];
 for(const [kind,input] of costTools){for(const value of [input,{...input,a:1},{...input,a:10000}])check(calculateCost(kind,value).result,`${kind}: final cost calculation failed`);check(Object.keys(calculateCost(kind,{...input,a:-1}).errors).length,`${kind}: invalid cost input was accepted`);}
 const zeroCostInputs={nascloud:{a:0,b:1200,c:180,d:45,e:250},dasnas:{a:300,b:700,c:1400,d:0,e:250},drive:{a:220,b:0,c:4,d:1,e:10},electricity:{a:0,b:0,c:8,d:.18,e:5},reserve:{a:4,b:220,c:2,d:0,e:20},ups:{a:120,b:30,c:0,d:15,e:80},budget:{a:0,b:0,c:0,d:0,e:240}};
@@ -426,7 +439,7 @@ check(calculateBaseBackup({basePayloadGB:1,throughputMBs:0,walRateGBHour:0,copie
 for (const path of expected.filter((page) => /storage-needs\/(annual|creator|computer|small-office|media-library)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /nas-configuration\/(nas-bay|raid-capacity|raid-protection|nas-expansion|hdd-vs|cmr-vs)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /backup-planning\/(3-2-1|local-cloud|backup-retention|snapshot|offsite|backup-frequency|recovery-time|backup-verification)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
-for (const path of expected.filter((page) => /network-performance\/(cloud-backup|local-network|backup-window|network-tier|concurrent-user|video-editing)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
+for (const path of expected.filter((page) => /network-performance\/(cloud-backup|local-network|backup-window|network-tier|concurrent-user|video-editing)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); check(html.includes('network-tools.mjs?v=20261009'), `${path}: network result-state fix cache marker missing`); }
 for (const path of expected.filter((page) => /external-storage\/(drive-enclosure|connection-bottleneck|usb-power|port-topology|performance-troubleshooter)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /developer-storage\/(git-lfs|ci-artifact|build-cache|container-registry|runner-disk)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /postgresql-storage\/(vacuum-full|index-build|wal-retention|base-backup)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
