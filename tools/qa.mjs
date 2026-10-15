@@ -221,6 +221,30 @@ const costTools=[['nascloud',{a:900,b:1200,c:180,d:45,e:250}],['dasnas',{a:300,b
 for(const [kind,input] of costTools){for(const value of [input,{...input,a:1},{...input,a:10000}])check(calculateCost(kind,value).result,`${kind}: final cost calculation failed`);check(Object.keys(calculateCost(kind,{...input,a:-1}).errors).length,`${kind}: invalid cost input was accepted`);}
 const zeroCostInputs={nascloud:{a:0,b:1200,c:180,d:45,e:250},dasnas:{a:300,b:700,c:1400,d:0,e:250},drive:{a:220,b:0,c:4,d:1,e:10},electricity:{a:0,b:0,c:8,d:.18,e:5},reserve:{a:4,b:220,c:2,d:0,e:20},ups:{a:120,b:30,c:0,d:15,e:80},budget:{a:0,b:0,c:0,d:0,e:240}};
 for(const [kind,input] of Object.entries(zeroCostInputs))check(Object.keys(calculateCost(kind,input).errors).length,`${kind}: required zero cost input was accepted`);
+for(const [kind,input] of costTools){
+  for(const name of Object.keys(input))for(const invalid of [undefined,null,'',' ',NaN,Infinity,-Infinity,-1]){
+    const output=calculateCost(kind,{...input,[name]:invalid});
+    check(output.errors[name]&&!output.result,`${kind}.${name}: missing/non-finite/negative cost input was accepted`);
+  }
+}
+const costDefaultExpected=[
+  ['Cloud is lower in entered five-year cost',['$3,000','$2,950','$50']],
+  ['NAS is lower in entered initial cost',['$1,700','$1,650','$50']],
+  ['$27 per usable TB',['48.0 TB','36.0 TB','$968']],
+  ['About $84 per year',['53.0 W','464 kWh','$418']],
+  ['Reserve $58 per year',['$291','$5','$243']],
+  ['Specify at least 250 VA and 175 W',['156 W','223 VA','49 Wh']],
+  ['Target initial budget: $2,850',['$2,850','$3,570','$4,050']]
+];
+for(const [index,[kind,input]] of costTools.entries()){
+  const result=calculateCost(kind,input).result;
+  check(result.title===costDefaultExpected[index][0],`${kind}: independently expected default cost title changed`);
+  check(JSON.stringify(result.metrics.map(metric=>metric[1]))===JSON.stringify(costDefaultExpected[index][1]),`${kind}: independently expected default cost metrics changed`);
+}
+check(calculateCost('electricity',{a:75,b:42,c:0,d:.18,e:5}).result.metrics[0][1]==='42.0 W','Electricity explicit zero active hours must remain valid');
+check(calculateCost('nascloud',{a:900,b:1200,c:0,d:45,e:0}).result.metrics[0][1]==='$2,100','NAS/cloud explicit zero allowances must remain valid');
+check(calculateCost('budget',{a:900,b:1000,c:500,d:450,e:0}).result.metrics[2][1]==='$2,850','Budget explicit zero recurring cost must remain valid');
+for(const path of expected.filter(page=>/cost-power\/(nas-vs|das-vs|drive-cost|storage-electricity|drive-replacement|ups-size|full-storage)/.test(page)))check(file(path).includes('cost-tools.mjs?v=20261015'),`${path}: cost result-state cache marker missing`);
 const enduranceCases = [
   ['lifespan', calculateLifespan, {capacity:1000,capacityUnit:'GB',rated:600,enduranceUnit:'TBW',warranty:5,writes:120,existing:0,low:1.1,base:1.5,high:2,horizon:5,reserve:20}, 'result'],
   ['converter', calculateConverter, {capacity:1000,capacityUnit:'GB',years:5,metric:'TBW',value:600,waf:1.5}, 'result'],

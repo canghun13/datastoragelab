@@ -1,4 +1,4 @@
-const number=(v,n,min,max,e)=>{const x=Number(v);if(!Number.isFinite(x)||x<min||x>max){e[n]=`Enter a value from ${min} to ${max}.`;return 0;}return x;};
+const number=(v,n,min,max,e)=>{const x=Number(v);if(v===null||v===undefined||String(v).trim()===''||!Number.isFinite(x)||x<min||x>max){e[n]=`Enter a value from ${min} to ${max}.`;return 0;}return x;};
 const money=v=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(v);
 const requirePositive=(values,errors)=>{for(const [name,value] of values)if(value<=0)errors[name]='Enter a value greater than 0.';};
 export function calculateCost(kind,input){const errors={};const a=number(input.a,'a',0,10000000,errors),b=number(input.b,'b',0,10000000,errors),c=number(input.c,'c',0,10000000,errors),d=number(input.d,'d',0,10000000,errors),e=number(input.e,'e',0,10000000,errors);
@@ -20,4 +20,62 @@ if(kind==='nascloud'){const nas5=a+b+c*5,cloud5=d*60+e;title=nas5<=cloud5?'NAS i
 function render(r){document.querySelector('[data-result-title]').textContent=r.title;document.querySelector('[data-result-summary]').textContent=r.summary;document.querySelector('[data-result-metrics]').innerHTML=r.metrics.map(x=>`<div class="metric"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join('');document.querySelector('[data-result-rows]').innerHTML=r.rows.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td>${x[2]}</td></tr>`).join('');document.querySelector('[data-result-note]').textContent=r.note;document.querySelector('[data-tool-results]').hidden=false;}
 const configs={nascloud:[['a','NAS and enclosure price (USD)',900],['b','Drives, backup, and UPS (USD)',1200],['c','Annual power and replacement allowance (USD)',180],['d','Cloud subscription per month (USD)',45],['e','Five-year egress allowance (USD)',250]],dasnas:[['a','DAS enclosure price (USD)',300],['b','Protected storage per copy (USD)',700],['c','NAS system and drives (USD)',1400],['d','Equivalent copy targets',2],['e','Network upgrade (USD)',250]],drive:[['a','Price per drive (USD)',220],['b','Capacity per drive (TB)',12],['c','Drive count',4],['d','Protection/spare drive equivalents',1],['e','Comparison reserve (%)',10]],electricity:[['a','Active watts',75],['b','Idle watts',42],['c','Active hours per day',8],['d','Electricity rate per kWh (USD)',.18],['e','Planning years',5]],reserve:[['a','Installed drive count',4],['b','Current replacement price (USD)',220],['c','Annual price change (%)',2],['d','Planning years',5],['e','Contingency (%)',20]],ups:[['a','Connected device watts',120],['b','Startup and headroom (%)',30],['c','Power factor',.7],['d','Desired runtime (minutes)',15],['e','UPS efficiency (%)',80]],budget:[['a','Primary storage system (USD)',900],['b','Drives (USD)',1000],['c','Backup targets (USD)',500],['d','Network and UPS (USD)',450],['e','Annual services and power (USD)',240]]};
 const shell=typeof document==='undefined'?null:document.querySelector('[data-cost-shell]');if(shell){const kind=shell.dataset.tool;const fields=configs[kind].map(([name,label,value])=>`<div class="field"><label for="${name}">${label}</label><input id="${name}" name="${name}" type="number" value="${value}" step="any"><p class="error" data-error="${name}"></p></div>`).join('');shell.innerHTML=`<div class="tool-layout"><form class="form-card" data-cost-form data-tool="${kind}"><h2>Planning assumptions</h2><p class="form-intro">Use your own current prices, rates, measurements, and planning horizon.</p><div class="field-grid">${fields}</div><div class="button-row form-actions"><button class="button">Calculate plan</button><button class="button ghost" type="button" data-reset-tool>Start over</button></div></form><div class="results" data-tool-results hidden><section class="result-card primary"><p class="result-kicker">Decision summary</p><h2 data-result-title></h2><p data-result-summary></p><div class="metric-grid" data-result-metrics></div></section><section class="result-card"><div class="table-wrap"><table><tbody data-result-rows></tbody></table></div><p data-result-note></p></section><div class="button-row no-print"><button class="button" type="button" data-copy-results>Copy results</button><button class="button secondary" type="button" data-print-results>Print results</button></div></div></div>`;}
-const form=typeof document==='undefined'?null:document.querySelector('[data-cost-form]');if(form){form.addEventListener('submit',ev=>{ev.preventDefault();const out=calculateCost(form.dataset.tool,Object.fromEntries(new FormData(form)));form.querySelectorAll('[data-error]').forEach(n=>n.textContent='');if(Object.keys(out.errors).length){Object.entries(out.errors).forEach(([k,v])=>{const n=form.querySelector(`[data-error="${k}"]`);if(n)n.textContent=v;});return;}render(out.result);});document.querySelector('[data-reset-tool]')?.addEventListener('click',()=>{form.reset();document.querySelector('[data-tool-results]').hidden=true;});document.querySelector('[data-copy-results]')?.addEventListener('click',()=>navigator.clipboard.writeText(`${document.title}\n${[...new FormData(form)].map(([k,v])=>`${k}: ${v}`).join(', ')}\n${document.querySelector('[data-result-title]').textContent}\n${document.querySelector('[data-result-summary]').textContent}\n${document.querySelector('[data-result-note]').textContent}\n${location.href}`));document.querySelector('[data-print-results]')?.addEventListener('click',()=>print());}
+const form=typeof document==='undefined'?null:document.querySelector('[data-cost-form]');
+if(form){
+  const results=document.querySelector('[data-tool-results]');
+  let calculated=false;
+  const clearErrors=()=>{
+    form.querySelectorAll('[data-error]').forEach(node=>{node.textContent='';});
+    form.querySelectorAll('[aria-invalid]').forEach(node=>node.removeAttribute('aria-invalid'));
+  };
+  form.querySelectorAll('[data-error]').forEach(node=>{
+    node.id=`cost-error-${node.dataset.error}`;
+    node.setAttribute('aria-live','polite');
+    form.elements.namedItem(node.dataset.error)?.setAttribute('aria-describedby',node.id);
+  });
+  const recalculate=()=>{
+    const output=calculateCost(form.dataset.tool,Object.fromEntries(new FormData(form)));
+    clearErrors();
+    if(Object.keys(output.errors).length){
+      results.hidden=true;
+      Object.entries(output.errors).forEach(([name,message])=>{
+        const node=form.querySelector(`[data-error="${name}"]`);
+        if(node)node.textContent=message;
+        form.elements.namedItem(name)?.setAttribute('aria-invalid','true');
+      });
+      return;
+    }
+    render(output.result);
+  };
+  form.addEventListener('submit',event=>{event.preventDefault();calculated=true;recalculate();});
+  for(const event of ['input','change'])form.addEventListener(event,()=>{if(calculated)recalculate();});
+  document.querySelector('[data-reset-tool]')?.addEventListener('click',()=>{
+    form.reset();calculated=false;results.hidden=true;clearErrors();
+  });
+  const inputSummary=()=>[...form.querySelectorAll('.field')].map(field=>
+    `${field.querySelector('label').textContent.trim()}: ${field.querySelector('input').value}`
+  ).join('; ');
+  const printContext=document.createElement('section');
+  printContext.className='result-card';printContext.dataset.costPrintContext='';printContext.hidden=true;results.prepend(printContext);
+  window.addEventListener('beforeprint',()=>{
+    if(results.hidden)return;
+    printContext.replaceChildren();
+    for(const [tag,text] of [['h2',document.querySelector('h1').textContent],['p',inputSummary()],['p',location.href]]){
+      const node=document.createElement(tag);node.textContent=text;printContext.append(node);
+    }
+    printContext.hidden=false;
+  });
+  window.addEventListener('afterprint',()=>{printContext.hidden=true;});
+  const copyStatus=document.createElement('p');copyStatus.className='no-print';copyStatus.setAttribute('role','status');results.append(copyStatus);
+  for(const event of ['input','change'])form.addEventListener(event,()=>{copyStatus.textContent='';});
+  document.querySelector('[data-reset-tool]')?.addEventListener('click',()=>{copyStatus.textContent='';});
+  document.querySelector('[data-copy-results]')?.addEventListener('click',async()=>{
+    if(results.hidden)return;
+    const output=[...results.querySelectorAll('.result-card')].filter(node=>!node.hidden).map(node=>node.innerText).join('\n');
+    try{
+      await navigator.clipboard.writeText(`${document.title}\nInputs: ${inputSummary()}\n${output}\n${location.href}`);
+      copyStatus.textContent='Results copied.';
+    }catch{copyStatus.textContent='Copy was unavailable; select the results to copy.';}
+  });
+  document.querySelector('[data-print-results]')?.addEventListener('click',()=>{if(!results.hidden)print();});
+}
