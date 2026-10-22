@@ -244,7 +244,34 @@ for(const [index,[kind,input]] of costTools.entries()){
 check(calculateCost('electricity',{a:75,b:42,c:0,d:.18,e:5}).result.metrics[0][1]==='42.0 W','Electricity explicit zero active hours must remain valid');
 check(calculateCost('nascloud',{a:900,b:1200,c:0,d:45,e:0}).result.metrics[0][1]==='$2,100','NAS/cloud explicit zero allowances must remain valid');
 check(calculateCost('budget',{a:900,b:1000,c:500,d:450,e:0}).result.metrics[2][1]==='$2,850','Budget explicit zero recurring cost must remain valid');
-for(const path of expected.filter(page=>/cost-power\/(nas-vs|das-vs|drive-cost|storage-electricity|drive-replacement|ups-size|full-storage)/.test(page)))check(file(path).includes('cost-tools.mjs?v=20261015'),`${path}: cost result-state cache marker missing`);
+for(const path of expected.filter(page=>/cost-power\/(nas-vs|das-vs|drive-cost|storage-electricity|drive-replacement|ups-size|full-storage)/.test(page))){
+  const version=path.includes('drive-cost-per-usable-tb')?'20261022':'20261015';
+  check(file(path).includes(`cost-tools.mjs?v=${version}`),`${path}: current cost tool cache marker missing`);
+}
+const driveDefaults={a:220,b:12,c:4,d:1,e:10};
+for(const [label,changes,field] of [
+  ['all capacity is overhead',{d:4},'d'],['overhead exceeds count',{d:5},'d'],
+  ['single drive has no usable capacity',{c:1,d:1},'d'],['fractional drive count',{c:3.5},'c'],
+  ['sub-one drive count',{c:.5,d:0},'c'],['non-finite cost ratio',{b:1e-308},'b'],
+  ['underflowed usable capacity',{b:Number.MIN_VALUE,c:1,d:.5},'b'],
+  ['underflowed cost ratio',{a:Number.MIN_VALUE,b:10000000,c:1,d:0,e:0},'b']
+]){
+  const output=calculateCost('drive',{...driveDefaults,...changes});
+  check(output.errors[field]&&!output.result,`Drive cost ${label}: fabricated usable capacity/result`);
+}
+for(const [label,changes,title,metrics] of [
+  ['no protection',{d:0},'$20 per usable TB',['48.0 TB','48.0 TB','$968']],
+  ['three protection equivalents',{d:3},'$81 per usable TB',['48.0 TB','12.0 TB','$968']],
+  ['one unprotected drive',{c:1,d:0},'$20 per usable TB',['12.0 TB','12.0 TB','$242']],
+  ['fractional overhead',{d:.5},'$23 per usable TB',['48.0 TB','42.0 TB','$968']],
+  ['small positive capacity',{b:.001},'$322,667 per usable TB',['0.004 TB','0.003 TB','$968']],
+  ['positive capacity below old floor',{b:.001,c:1,d:0},'$242,000 per usable TB',['0.001 TB','0.001 TB','$242']],
+  ['zero reserve',{e:0},'$24 per usable TB',['48.0 TB','36.0 TB','$880']]
+]){
+  const output=calculateCost('drive',{...driveDefaults,...changes});
+  check(output.result?.title===title&&JSON.stringify(output.result.metrics.map(metric=>metric[1]))===JSON.stringify(metrics),`Drive cost ${label}: independent capacity/cost expectation failed`);
+}
+check(!file('assets/js/cost-tools.mjs').includes('Math.max(.01,raw-d*b)'), 'Drive cost must not fabricate a minimum usable capacity');
 const enduranceCases = [
   ['lifespan', calculateLifespan, {capacity:1000,capacityUnit:'GB',rated:600,enduranceUnit:'TBW',warranty:5,writes:120,existing:0,low:1.1,base:1.5,high:2,horizon:5,reserve:20}, 'result'],
   ['converter', calculateConverter, {capacity:1000,capacityUnit:'GB',years:5,metric:'TBW',value:600,waf:1.5}, 'result'],
