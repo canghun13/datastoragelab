@@ -245,7 +245,7 @@ check(calculateCost('electricity',{a:75,b:42,c:0,d:.18,e:5}).result.metrics[0][1
 check(calculateCost('nascloud',{a:900,b:1200,c:0,d:45,e:0}).result.metrics[0][1]==='$2,100','NAS/cloud explicit zero allowances must remain valid');
 check(calculateCost('budget',{a:900,b:1000,c:500,d:450,e:0}).result.metrics[2][1]==='$2,850','Budget explicit zero recurring cost must remain valid');
 for(const path of expected.filter(page=>/cost-power\/(nas-vs|das-vs|drive-cost|storage-electricity|drive-replacement|ups-size|full-storage)/.test(page))){
-  const version=path.includes('drive-cost-per-usable-tb')?'20261022':'20261015';
+  const version=path.includes('drive-cost-per-usable-tb')?'20261022':path.includes('ups-size-runtime')?'20261028':'20261015';
   check(file(path).includes(`cost-tools.mjs?v=${version}`),`${path}: current cost tool cache marker missing`);
 }
 const driveDefaults={a:220,b:12,c:4,d:1,e:10};
@@ -272,6 +272,30 @@ for(const [label,changes,title,metrics] of [
   check(output.result?.title===title&&JSON.stringify(output.result.metrics.map(metric=>metric[1]))===JSON.stringify(metrics),`Drive cost ${label}: independent capacity/cost expectation failed`);
 }
 check(!file('assets/js/cost-tools.mjs').includes('Math.max(.01,raw-d*b)'), 'Drive cost must not fabricate a minimum usable capacity');
+const upsDefaults={a:120,b:30,c:.7,d:15,e:80};
+for(const [label,changes,title,metrics] of [
+  ['one percent efficiency',{e:1},'Specify at least 250 VA and 175 W',['156 W','223 VA','3900 Wh']],
+  ['five percent efficiency',{e:5},'Specify at least 250 VA and 175 W',['156 W','223 VA','780 Wh']],
+  ['nine percent efficiency',{e:9},'Specify at least 250 VA and 175 W',['156 W','223 VA','433 Wh']],
+  ['ten percent efficiency',{e:10},'Specify at least 250 VA and 175 W',['156 W','223 VA','390 Wh']],
+  ['unity efficiency',{e:100},'Specify at least 250 VA and 175 W',['156 W','223 VA','39 Wh']],
+  ['minimum power factor',{c:.1},'Specify at least 1600 VA and 175 W',['156 W','1560 VA','49 Wh']],
+  ['unity power factor',{c:1},'Specify at least 200 VA and 175 W',['156 W','156 VA','49 Wh']],
+  ['alternate load and runtime',{a:100,b:0,c:.5,d:30,e:50},'Specify at least 200 VA and 100 W',['100 W','200 VA','100 Wh']],
+  ['zero headroom and unity ratios',{a:100,b:0,c:1,d:60,e:100},'Specify at least 100 VA and 100 W',['100 W','100 VA','100 Wh']]
+]){
+  const output=calculateCost('ups',{...upsDefaults,...changes});
+  check(output.result?.title===title&&JSON.stringify(output.result.metrics.map(metric=>metric[1]))===JSON.stringify(metrics),`UPS ${label}: independent watt/VA/energy expectation failed`);
+}
+for(const [label,changes,field] of [
+  ['power factor below boundary',{c:.09999},'c'],['low power factor',{c:.05},'c'],['power factor above unity',{c:1.0001},'c'],
+  ['efficiency below boundary',{e:.99},'e'],['low efficiency',{e:.5},'e'],['efficiency above unity',{e:100.1},'e'],
+  ['underflowed energy',{d:Number.MIN_VALUE},'d']
+]){
+  const output=calculateCost('ups',{...upsDefaults,...changes});
+  check(output.errors[field]&&!output.result,`UPS ${label}: out-of-range or underflowed input was silently substituted`);
+}
+check(!file('assets/js/cost-tools.mjs').includes('va=watts/Math.max(.1,c)')&&!file('assets/js/cost-tools.mjs').includes('/Math.max(.1,e/100)'), 'UPS must use validated entered ratios without substitution');
 const enduranceCases = [
   ['lifespan', calculateLifespan, {capacity:1000,capacityUnit:'GB',rated:600,enduranceUnit:'TBW',warranty:5,writes:120,existing:0,low:1.1,base:1.5,high:2,horizon:5,reserve:20}, 'result'],
   ['converter', calculateConverter, {capacity:1000,capacityUnit:'GB',years:5,metric:'TBW',value:600,waf:1.5}, 'result'],
