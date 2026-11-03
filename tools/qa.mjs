@@ -421,6 +421,31 @@ const troubleshootAudits = [
 ];
 for (const [input, ceiling, achieved, actions] of troubleshootAudits) { const result=calculateTroubleshooter(input).result; check(Math.abs(result.planningCeilingMBps-ceiling)<1e-9 && Math.abs(result.achievedPercent-achieved)<1e-9 && result.measuredMBps===input.measuredMBps && result.actions.length===actions, 'External performance troubleshooter expected decision failed'); }
 check(calculateTroubleshooter({expectedMBps:500,measuredMBps:0,negotiatedGbps:10,efficiency:80,path:'direct',cable:'documented',workload:'sequential',thermal:'no',busy:'no'}).errors, 'External troubleshooter accepted zero throughput');
+const externalNumericAudits = [
+  [calculateCompatibility, compatibilityAudits[0][0], ['driveLength','maxLength']],
+  [calculateBottleneck, bottleneckAudits[0][0], ['driveRead','driveWrite','enclosureGbps','portGbps','cableGbps','hubGbps','efficiency']],
+  [calculatePower, powerAudits[0][0], ['availableW','reserve','devices','steadyW','startupW','otherW','ports']],
+  [calculateTopology, topologyAudits[0][0], ['directPorts','highDevices','highMBps','lowDevices','lowMBps','hubPorts','hubLinks','hubGbps','efficiency']],
+  [calculateTroubleshooter, troubleshootAudits[0][0], ['expectedMBps','measuredMBps','negotiatedGbps','efficiency']]
+];
+for (const [calculate, input, fields] of externalNumericAudits) for (const field of fields) {
+  for (const invalid of ['', '  ', null, undefined, NaN, Infinity, -Infinity, 'not-a-number']) {
+    const output = calculate({...input, [field]:invalid});
+    check(output.errors?.[field] && !output.result, `${calculate.name}: missing/non-finite ${field} must not become zero or a valid result`);
+  }
+}
+for (const [changes, usable, steady, peak, maxDevices, ready] of [
+  [{availableW:20},16,11,17,2,false],
+  [{availableW:20,reserve:0},20,11,17,3,true],
+  [{otherW:0},19.2,9,15,3,true],
+  [{reserve:0,otherW:0},24,9,15,4,true],
+  [{availableW:17,reserve:0},17,11,17,3,true],
+  [{reserve:50},12,11,17,2,false],
+  [{steadyW:5,startupW:3},19.2,17,17,3,true]
+]) {
+  const result = calculatePower({...powerAudits[0][0],...changes}).result;
+  check(Math.abs(result.usableW-usable)<1e-9 && Math.abs(result.steadyLoadW-steady)<1e-9 && Math.abs(result.peakLoadW-peak)<1e-9 && result.maxDevices===maxDevices && result.ready===ready, 'USB explicit-zero/boundary independent expectation failed');
+}
 const close = (actual, expectedValue) => Math.abs(actual - expectedValue) < 1e-9;
 const lfsAudit1 = calculateLfs({currentGB:80,changedGB:6,releasesMonth:4,retentionMonths:12,horizonMonths:12,checkoutGB:24,downloadsMonth:30,storageQuotaGB:500,bandwidthQuotaGB:1000}).result;
 check(close(lfsAudit1.projectedStorageGB,368) && close(lfsAudit1.monthlyBandwidthGB,720) && lfsAudit1.storageReady && lfsAudit1.bandwidthReady, 'Git LFS normal forecast failed');
@@ -515,7 +540,7 @@ for (const path of expected.filter((page) => /storage-needs\/(annual|creator|com
 for (const path of expected.filter((page) => /nas-configuration\/(nas-bay|raid-capacity|raid-protection|nas-expansion|hdd-vs|cmr-vs)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /backup-planning\/(3-2-1|local-cloud|backup-retention|snapshot|offsite|backup-frequency|recovery-time|backup-verification)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /network-performance\/(cloud-backup|local-network|backup-window|network-tier|concurrent-user|video-editing)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); check(html.includes('network-tools.mjs?v=20261009'), `${path}: network result-state fix cache marker missing`); }
-for (const path of expected.filter((page) => /external-storage\/(drive-enclosure|connection-bottleneck|usb-power|port-topology|performance-troubleshooter)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
+for (const path of expected.filter((page) => /external-storage\/(drive-enclosure|connection-bottleneck|usb-power|port-topology|performance-troubleshooter)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); check(html.includes('external-storage-tools.mjs?v=20261103'), `${path}: external result-integrity fix cache marker missing`); }
 for (const path of expected.filter((page) => /developer-storage\/(git-lfs|ci-artifact|build-cache|container-registry|runner-disk)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /postgresql-storage\/(vacuum-full|index-build|wal-retention|base-backup)/.test(page))) { const html = file(path); check(/data-copy-results/.test(html) && /data-print-results/.test(html) && /data-reset-tool/.test(html), `${path}: Copy, Print, or Reset missing`); }
 for (const path of expected.filter((page) => /cost-power\/(nas-vs|das-vs|drive-cost|storage-electricity|drive-replacement|ups-size|full-storage)/.test(page))) check(/data-cost-shell/.test(file(path)), `${path}: cost workbench shell missing`);

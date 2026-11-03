@@ -2,6 +2,7 @@ const number = (value) => Number(value);
 const finite = (value) => Number.isFinite(number(value));
 
 function errorFor(value, label, { minimum = 0, maximum = Infinity, integer = false, allowZero = false } = {}) {
+  if (value === null || value === undefined || String(value).trim() === '') return `Enter ${label.toLowerCase()}. Use 0 only when it is explicitly allowed.`;
   const parsed = number(value);
   if (!finite(value) || parsed < minimum || (!allowZero && parsed === 0) || parsed > maximum) {
     const range = maximum < Infinity ? ` between ${minimum} and ${maximum}` : ` at least ${minimum}`;
@@ -239,7 +240,17 @@ if (typeof document !== 'undefined') {
     const type = form.dataset.externalStorageForm;
     const target = form.closest('.tool-layout')?.querySelector('[data-external-storage-results]');
     if (!target || !calculators[type]) return;
+    let calculated = false;
+    const status = target.querySelector('[data-copy-status]');
+    status?.setAttribute('role', 'status');
+    const clearStatus = () => { if (status) status.textContent = ''; };
+    form.querySelectorAll('[data-error]').forEach((node) => {
+      node.id = `external-error-${node.dataset.error}`;
+      node.setAttribute('aria-live', 'polite');
+      form.elements.namedItem(node.dataset.error)?.setAttribute('aria-describedby', node.id);
+    });
     const calculate = ({ focus = false } = {}) => {
+      clearStatus();
       const output = calculators[type](Object.fromEntries(new FormData(form)));
       form.querySelectorAll('[data-error]').forEach((node) => { node.textContent = ''; });
       form.querySelectorAll('[aria-invalid="true"]').forEach((node) => node.removeAttribute('aria-invalid'));
@@ -255,19 +266,37 @@ if (typeof document !== 'undefined') {
       render(target, type, output.result);
       if (focus) target.focus();
     };
-    form.addEventListener('submit', (event) => { event.preventDefault(); calculate({ focus: true }); });
-    form.addEventListener('input', () => { if (!target.hidden) calculate(); });
-    form.addEventListener('change', () => { if (!target.hidden) calculate(); });
+    form.addEventListener('submit', (event) => { event.preventDefault(); calculated = true; calculate({ focus: true }); });
+    form.addEventListener('input', () => { if (calculated) calculate(); });
+    form.addEventListener('change', () => { if (calculated) calculate(); });
     form.querySelector('[data-reset-tool]')?.addEventListener('click', () => {
-      form.reset(); target.hidden = true;
+      form.reset(); calculated = false; target.hidden = true; clearStatus();
       form.querySelectorAll('[data-error]').forEach((node) => { node.textContent = ''; });
       form.querySelectorAll('[aria-invalid="true"]').forEach((node) => node.removeAttribute('aria-invalid'));
     });
-    target.querySelector('[data-copy-results]')?.addEventListener('click', async () => {
-      const status = target.querySelector('[data-copy-status]');
-      try { await navigator.clipboard.writeText(`${document.title}\n${target.innerText}\n${location.href}`); status.textContent = 'Results copied.'; }
-      catch { status.textContent = 'Copy was unavailable; select the result text instead.'; }
+    const inputSummary = () => [...form.querySelectorAll('.field')].map((field) => {
+      const control = field.querySelector('input, select');
+      const value = control instanceof HTMLSelectElement ? control.selectedOptions[0]?.textContent.trim() : control.value;
+      const unit = field.querySelector('.input-wrap > span')?.textContent.trim();
+      return `${field.querySelector('label').textContent.trim()}: ${value}${unit ? ` ${unit}` : ''}`;
+    }).join('; ');
+    const printContext = document.createElement('section');
+    printContext.className = 'result-card'; printContext.dataset.externalPrintContext = ''; printContext.hidden = true; target.prepend(printContext);
+    window.addEventListener('beforeprint', () => {
+      if (target.hidden) return;
+      printContext.replaceChildren();
+      for (const [tag, text] of [['h2', document.querySelector('h1').textContent], ['p', inputSummary()], ['p', location.href]]) {
+        const node = document.createElement(tag); node.textContent = text; printContext.append(node);
+      }
+      printContext.hidden = false;
     });
-    target.querySelector('[data-print-results]')?.addEventListener('click', () => print());
+    window.addEventListener('afterprint', () => { printContext.hidden = true; });
+    target.querySelector('[data-copy-results]')?.addEventListener('click', async () => {
+      if (target.hidden) return;
+      const output = [...target.querySelectorAll('.result-card:not([data-external-print-context])')].map((node) => node.innerText).join('\n');
+      try { await navigator.clipboard.writeText(`${document.title}\nInputs: ${inputSummary()}\n${output}\n${location.href}`); if (status) status.textContent = 'Results copied.'; }
+      catch { if (status) status.textContent = 'Copy was unavailable; select the result text instead.'; }
+    });
+    target.querySelector('[data-print-results]')?.addEventListener('click', () => { if (!target.hidden) print(); });
   });
 }
