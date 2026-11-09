@@ -1,6 +1,7 @@
 const num = (value) => Number(value);
 const finite = (value) => Number.isFinite(value);
-export const validatePositiveNumber = (value, label = 'Value', minimum = 0) => finite(num(value)) && num(value) > minimum ? '' : `${label} must be greater than ${minimum}.`;
+const provided = (value) => value !== null && value !== undefined && String(value).trim() !== '';
+export const validatePositiveNumber = (value, label = 'Value', minimum = 0) => provided(value) && finite(num(value)) && num(value) > minimum ? '' : `${label} must be greater than ${minimum}.`;
 export const normalizeCapacityToGB = (value, unit = 'GB') => unit === 'TB' ? num(value) * 1000 : num(value);
 export const normalizeEnduranceToTBW = (value, unit = 'TBW') => unit === 'PBW' ? num(value) * 1000 : num(value);
 export const normalizeExistingWritesToTBW = (value, unit = 'TB') => unit === 'PB' ? num(value) * 1000 : num(value);
@@ -23,7 +24,7 @@ export const formatWriteVolume = (tb) => finite(tb) ? `${tb >= 1 ? tb.toLocaleSt
 export const formatDuration = (years) => years === null ? 'Write evidence required' : finite(years) ? `${years.toLocaleString(undefined, { maximumFractionDigits: 1 })} years` : 'Not available';
 const status = (margin) => margin >= 1.25 ? 'Pass' : margin >= 1 ? 'Marginal' : 'Insufficient';
 const clean = (input, key, label, minimum = 0) => validatePositiveNumber(input[key], label, minimum);
-const validateReserve = (value) => finite(num(value)) && num(value) >= 0 && num(value) <= 80 ? '' : 'Reserve must be between 0% and 80%.';
+const validateReserve = (value) => provided(value) && finite(num(value)) && num(value) >= 0 && num(value) <= 80 ? '' : 'Enter a reserve from 0% to 80%; use an explicit 0 for no reserve.';
 
 export function calculateLifespan(input) {
   const errors = ['capacity','rated','warranty','writes','low','base','high','horizon','reserve'].reduce((all, key) => ({ ...all, ...(clean(input, key, key === 'rated' ? 'Rated endurance' : key, key === 'writes' || key === 'reserve' ? -1 : 0) ? { [key]: clean(input, key, key, key === 'writes' || key === 'reserve' ? -1 : 0) } : {}) }), {});
@@ -135,7 +136,7 @@ function enhanceSsdInputs(form) {
     select.dataset.unitReady = 'true';
     select.addEventListener('change', () => {
       const oldUnit = select.dataset.previousUnit || defaultValue, nextUnit = select.value, value = num(input.value);
-      if (finite(value)) input.value = String(value * unitFactor(oldUnit, kind) / unitFactor(nextUnit, kind));
+      if (provided(input.value) && finite(value)) input.value = String(value * unitFactor(oldUnit, kind) / unitFactor(nextUnit, kind));
       select.dataset.previousUnit = nextUnit;
     });
   });
@@ -163,29 +164,68 @@ if (typeof document !== 'undefined') {
 document.querySelectorAll('[data-ssd-form]').forEach((form) => {
   const type = form.dataset.ssdForm, target = document.querySelector('[data-ssd-results]');
   enhanceSsdInputs(form);
-  if (type === 'lifespan') {
-    const printContext = target.querySelector('[data-lifespan-print-context]');
-    window.addEventListener('beforeprint', () => {
-      if (target.hidden || !printContext) return;
-      printContext.replaceChildren();
-      const title = document.createElement('h2'); title.textContent = 'SSD Endurance & Lifespan Calculator'; printContext.append(title);
-      const inputs = document.createElement('p');
-      inputs.textContent = Array.from(form.querySelectorAll('.field')).map(field => {
-        const label = field.querySelector('label')?.textContent.trim();
-        const input = field.querySelector('input');
-        const unit = field.querySelector('select')?.value || field.querySelector('.ssd-unit-addon')?.textContent.trim() || '';
-        return `${label}: ${input.value || '0'} ${unit}`;
-      }).join('; ');
-      const url = document.createElement('p'); url.textContent = location.href;
-      printContext.append(inputs, url); printContext.hidden = false;
-    });
-    window.addEventListener('afterprint', () => { if (printContext) printContext.hidden = true; });
-  }
-  form.addEventListener('submit', (event) => { event.preventDefault(); const input = Object.fromEntries(new FormData(form)); const fn = ({ lifespan: calculateLifespan, converter: calculateConverter, cache: calculateCache, vm: calculateVm, remaining: calculateRemaining })[type]; const output = fn(input); form.querySelectorAll('[data-error]').forEach((el)=>el.textContent=''); form.querySelectorAll('[aria-invalid="true"]').forEach((el)=>el.removeAttribute('aria-invalid')); if (output.errors) { Object.entries(output.errors).forEach(([key,msg]) => { const el=form.querySelector(`[data-error="${key}"]`); const control=form.elements.namedItem(key); if(el) el.textContent=msg; if (control instanceof HTMLElement) control.setAttribute('aria-invalid','true'); }); target.hidden=true; return; } render(target, output.result, type); });
-  form.addEventListener('input', () => { if (!target.hidden) form.requestSubmit(); });
-  form.addEventListener('change', () => { if (!target.hidden) form.requestSubmit(); });
-  form.querySelector('[data-reset-tool]')?.addEventListener('click', () => { form.reset(); form.querySelectorAll('select[data-previous-unit]').forEach((select) => { select.dataset.previousUnit = select.value; }); form.querySelector('[name="metric"]')?.dispatchEvent(new Event('change')); form.querySelector('[name="mode"]')?.dispatchEvent(new Event('change')); target.hidden=true; form.querySelectorAll('[data-error]').forEach((el)=>el.textContent=''); form.querySelectorAll('[aria-invalid="true"]').forEach((el)=>el.removeAttribute('aria-invalid')); });
+  let calculated = false;
+  const copyStatus = target.querySelector('[data-copy-status]');
+  copyStatus?.setAttribute('role', 'status');
+  const printContext = target.querySelector('[data-lifespan-print-context]') || document.createElement('section');
+  printContext.className = 'result-card'; printContext.dataset.ssdPrintContext = ''; printContext.hidden = true;
+  if (!printContext.parentNode) target.prepend(printContext);
+  const clearErrors = () => {
+    form.querySelectorAll('[data-error]').forEach((el) => { el.textContent = ''; });
+    form.querySelectorAll('[aria-invalid="true"]').forEach((el) => el.removeAttribute('aria-invalid'));
+    if (copyStatus) copyStatus.textContent = '';
+    printContext.hidden = true;
+  };
+  form.querySelectorAll('[data-error]').forEach((el) => {
+    el.id = `ssd-error-${el.dataset.error}`; el.setAttribute('aria-live', 'polite');
+    form.elements.namedItem(el.dataset.error)?.setAttribute('aria-describedby', el.id);
+  });
+  const calculate = () => {
+    const input = Object.fromEntries(new FormData(form));
+    const fn = ({ lifespan: calculateLifespan, converter: calculateConverter, cache: calculateCache, vm: calculateVm, remaining: calculateRemaining })[type];
+    const output = fn(input); clearErrors();
+    if (output.errors) {
+      Object.entries(output.errors).forEach(([key, msg]) => {
+        const el = form.querySelector(`[data-error="${key}"]`), control = form.elements.namedItem(key);
+        if (el) el.textContent = msg;
+        if (control instanceof HTMLElement) control.setAttribute('aria-invalid', 'true');
+      });
+      target.hidden = true; return;
+    }
+    render(target, output.result, type);
+  };
+  form.addEventListener('submit', (event) => { event.preventDefault(); calculated = true; calculate(); });
+  for (const event of ['input', 'change']) form.addEventListener(event, () => { if (calculated) calculate(); });
+  form.querySelector('[data-reset-tool]')?.addEventListener('click', () => {
+    calculated = false; form.reset();
+    form.querySelectorAll('select[data-previous-unit]').forEach((select) => { select.dataset.previousUnit = select.value; });
+    form.querySelector('[name="metric"]')?.dispatchEvent(new Event('change'));
+    form.querySelector('[name="mode"]')?.dispatchEvent(new Event('change'));
+    target.hidden = true; clearErrors();
+  });
+  const inputSummary = () => Array.from(form.querySelectorAll('.field')).flatMap((field) => {
+    const control = field.querySelector('input:not(:disabled), select:not(:disabled)');
+    if (!control) return [];
+    const label = field.querySelector('label')?.textContent.trim();
+    const value = control instanceof HTMLSelectElement ? control.selectedOptions[0]?.textContent.trim() : provided(control.value) ? control.value : control.name === 'existing' ? 'Not provided (0 assumed)' : 'Not provided';
+    const unit = control instanceof HTMLInputElement ? field.querySelector('select.ssd-unit-select:not(:disabled)')?.value || field.querySelector('.ssd-unit-addon, .input-wrap > span, [data-source-unit]')?.textContent.trim() || '' : '';
+    return [`${label}: ${value}${unit ? ` ${unit}` : ''}`];
+  }).join('; ');
+  window.addEventListener('beforeprint', () => {
+    if (target.hidden) return;
+    printContext.replaceChildren();
+    for (const [tag, text] of [['h2', document.querySelector('h1').textContent], ['p', inputSummary()], ['p', location.href]]) {
+      const node = document.createElement(tag); node.textContent = text; printContext.append(node);
+    }
+    printContext.hidden = false;
+  });
+  window.addEventListener('afterprint', () => { printContext.hidden = true; });
+  target.querySelector('[data-copy-results]')?.addEventListener('click', async () => {
+    if (target.hidden) return;
+    const output = Array.from(target.querySelectorAll('.result-card:not([data-ssd-print-context])')).map((node) => node.innerText).join('\n');
+    try { await navigator.clipboard.writeText(`${document.title}\nInputs: ${inputSummary()}\n${output}\n${location.href}`); if (copyStatus) copyStatus.textContent = 'Results copied.'; }
+    catch { if (copyStatus) copyStatus.textContent = 'Copy was unavailable; select the results to copy.'; }
+  });
+  target.querySelector('[data-print-results]')?.addEventListener('click', () => { if (!target.hidden) print(); });
 });
-document.querySelector('[data-copy-results]')?.addEventListener('click', async () => { const results=document.querySelector('[data-ssd-results]'); try { await navigator.clipboard.writeText(`${document.title}\n${results.innerText}\n${location.href}`); document.querySelector('[data-copy-status]').textContent='Results copied.'; } catch { document.querySelector('[data-copy-status]').textContent='Copy was unavailable; select the results to copy.'; } });
-document.querySelector('[data-print-results]')?.addEventListener('click', () => { if (!document.querySelector('[data-ssd-results]').hidden) print(); });
 }

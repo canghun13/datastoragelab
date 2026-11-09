@@ -338,6 +338,35 @@ const vmUnitAudit = { vms:4, perVm:20, containers:30, logs:40, snapshots:25, cop
 check(Math.abs(calculateVm(vmUnitAudit).result.margin - calculateVm({...vmUnitAudit, capacity:1, capacityUnit:'TB', rated:1.2, enduranceUnit:'PBW', existing:0, existingUnit:'PB'}).result.margin) < 1e-12, 'VM planner selectable unit equivalence failed');
 const remainingUnitAudit = { rated:600, enduranceUnit:'TBW', capacity:1000, capacityUnit:'GB', unit:'tb', previous:100, current:115, days:30, smart:20, threshold:80, growth:10, lead:60 };
 check(Math.abs(calculateRemaining(remainingUnitAudit).result.usage - calculateRemaining({...remainingUnitAudit, rated:.6, enduranceUnit:'PBW', capacity:1, capacityUnit:'TB'}).result.usage) < 1e-12, 'Remaining planner selectable unit equivalence failed');
+const ssdNumericAudits = [
+  [calculateLifespan, lifespanAudit, ['capacity','rated','warranty','writes','low','base','high','horizon','reserve']],
+  [calculateConverter, enduranceCases[1][2], ['capacity','years','value']],
+  [calculateCache, cacheUnitAudit, ['drives','capacity','rated','waf','years','reserve']],
+  [calculateVm, vmUnitAudit, ['vms','perVm','containers','logs','snapshots','copies','capacity','rated','waf','years']],
+  [calculateRemaining, remainingUnitAudit, ['rated','capacity','previous','current','days','threshold','growth','lead']]
+];
+for (const [calculate, input, fields] of ssdNumericAudits) for (const field of fields) {
+  for (const invalid of ['', '  ', null, undefined, NaN, Infinity, -Infinity, 'not-a-number']) {
+    const output = calculate({...input, [field]:invalid});
+    check(output.errors?.[field] && !output.result, `${calculate.name}: missing/non-finite ${field} must not become a valid result`);
+  }
+}
+for (const [changes, usable, required, headroom, expectedStatus] of [
+  [{reserve:0},600,328.5,271.5,'Pass'],
+  [{reserve:50},300,328.5,-28.5,'Insufficient'],
+  [{reserve:80},120,328.5,-208.5,'Insufficient'],
+  [{writes:0,reserve:0},600,0,600,'No write-rate forecast'],
+  [{existing:100},400,328.5,71.5,'Marginal'],
+  [{existing:100,reserve:0},500,328.5,171.5,'Pass'],
+  [{writes:100,low:1,base:1,high:1,horizon:1,reserve:0},600,36.5,563.5,'Pass']
+]) {
+  const r = calculateLifespan({...lifespanAudit,...changes}).result;
+  check(Math.abs(r.usable-usable)<1e-9 && Math.abs(r.scenarios[1].required-required)<1e-9 && Math.abs(r.scenarios[1].headroom-headroom)<1e-9 && r.status===expectedStatus, 'SSD reserve/explicit-zero independent expectation failed');
+}
+check(calculateLifespan({...lifespanAudit,existing:''}).result?.usable===480, 'Optional blank existing host writes must keep its documented zero default');
+check(calculateConverter({...enduranceCases[1][2],waf:''}).result?.logical===null, 'Optional blank converter WAF must remain unavailable, not required');
+check(calculateRemaining({...remainingUnitAudit,smart:''}).result, 'Optional blank SMART observation must remain optional');
+for (const slug of ssdTools) check(file(`tools/ssd-endurance/${slug}/index.html`).includes('ssd-endurance-tools.mjs?v=20261109'), `${slug}: SSD evidence/state fix cache marker missing`);
 const fieldCases = [
   ['cards', calculateCards, { cameras:2, photos:2500, photoMB:48, videoMinutes:30, bitrate:400, slots:2, cardGB:128, usable:93, reserve:10, spares:1 }],
   ['offload', calculateOffload, { dataGB:420, cards:8, readers:2, readerSpeed:180, destinations:2, destinationSpeed:500, verify:'reread', verifySpeed:450, efficiency:80 }],
